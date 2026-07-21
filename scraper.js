@@ -82,16 +82,20 @@ export async function scrapeAll() {
 
     for (const cat of CATALOGS) {
       console.log(`📦 ${cat.label}`);
-      const items = await scrapeWithFreshBrowser(cat.id, 20);
-      let added = 0;
-      for (const item of items) {
-        if (!globalItems.has(item.id)) {
-          if (item.favourite_count == null) item.favourite_count = 0;
-          globalItems.set(item.id, item);
-          added++;
+      try {
+        const items = await scrapeWithFreshBrowser(cat.id, 20);
+        let added = 0;
+        for (const item of items) {
+          if (!globalItems.has(item.id)) {
+            if (item.favourite_count == null) item.favourite_count = 0;
+            globalItems.set(item.id, item);
+            added++;
+          }
         }
+        console.log(`  ✅ ${added} new unique (total: ${globalItems.size})`);
+      } catch (err) {
+        console.error(`  ⚠️ ${cat.label} failed, skipping: ${err.message}`);
       }
-      console.log(`  ✅ ${added} new unique (total: ${globalItems.size})`);
       await sleep(3000);
     }
 
@@ -122,6 +126,7 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null) 
     headless: 'new',
     executablePath: CHROME_EXEC,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    protocolTimeout: 60000,
   });
   try {
     const page = await browser.newPage();
