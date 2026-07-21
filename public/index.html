@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔥 Hot on Vinted — Most Liked Listings Right Now</title>
+  <meta name="description" content="Discover the most-liked and trending listings on Vinted UK right now, sorted by popularity.">
+
+  <!-- Google AdSense — replace ca-pub-XXXXXXXXXXXXXXXX with your publisher ID -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #09b1ba;
+      --red: #e53935;
+      --bg: #f5f5f5;
+      --card: #fff;
+      --text: #1a1a1a;
+      --muted: #757575;
+      --border: #e0e0e0;
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Header ── */
+    header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--border); }
+    .header-inner { max-width: 1400px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 20px; }
+    .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; color: var(--text); text-decoration: none; }
+    .logo span { color: var(--accent); }
+    .search-wrap { flex: 1; max-width: 480px; position: relative; }
+    .search-wrap input { width: 100%; padding: 10px 16px 10px 40px; border: 1.5px solid var(--border); border-radius: 999px; font-size: 0.875rem; outline: none; background: var(--bg); transition: border-color 0.15s; font-family: inherit; }
+    .search-wrap input:focus { border-color: var(--accent); background: #fff; }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    .last-updated { margin-left: auto; font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+
+    /* ── Ad Banner ── */
+    .ad-banner { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
+    .ad-slot { background: #f0f0f0; border: 1px dashed #ccc; border-radius: 8px; height: 90px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.8rem; }
+
+    /* ── Status ── */
+    .status-bar { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
+    .status-text { font-size: 0.83rem; color: var(--muted); }
+    .status-text strong { color: var(--text); }
+
+    /* ── Grid ── */
+    .grid-wrap { max-width: 1400px; margin: 16px auto 0; padding: 0 24px; }
+    .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+    @media (max-width: 1100px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 800px)  { .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 600px)  { .grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; } }
+
+    /* ── Mid-page ad ── */
+    .ad-mid { max-width: 1400px; margin: 24px auto; padding: 0 24px; }
+
+    /* ── Card ── */
+    .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: transform 0.15s, box-shadow 0.15s; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.10); }
+    .card-img-wrap { position: relative; aspect-ratio: 3/4; overflow: hidden; background: #f0f0f0; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+    .card:hover .card-img { transform: scale(1.04); }
+    .like-badge { position: absolute; top: 9px; right: 9px; background: rgba(255,255,255,0.92); backdrop-filter: blur(4px); border-radius: 999px; padding: 3px 9px; font-size: 0.75rem; font-weight: 700; color: var(--red); box-shadow: 0 2px 8px rgba(0,0,0,0.10); }
+    .card-body { padding: 11px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .card-brand { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+    .card-title { font-size: 0.85rem; font-weight: 500; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.35; }
+    .card-meta { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 3px; }
+    .pill { background: var(--bg); border-radius: 999px; padding: 2px 7px; font-size: 0.7rem; color: var(--muted); border: 1px solid var(--border); }
+    .card-footer { padding: 0 11px 11px; display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+    .price { font-size: 0.97rem; font-weight: 700; }
+    .total-price { font-size: 0.7rem; color: var(--muted); }
+
+    /* ── Skeleton / Empty ── */
+    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200%; animation: shimmer 1.4s infinite; border-radius: 12px; aspect-ratio: 3/4; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .empty { text-align: center; padding: 80px 24px; color: var(--muted); grid-column: 1/-1; }
+    .empty h2 { font-size: 2rem; margin-bottom: 8px; }
+
+    /* ── Footer ── */
+    footer { max-width: 1400px; margin: 48px auto 0; padding: 24px; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+    @media (max-width: 600px) {
+      .last-updated { display: none; }
+      .header-inner { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/">🔥 Hot on <span>Vinted</span></a>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search brand, item…" autocomplete="off">
+    </div>
+    <span class="last-updated" id="last-updated"></span>
+  </div>
+</header>
+
+<div class="ad-banner">
+  <div class="ad-slot">Advertisement</div>
+</div>
+
+<div class="status-bar">
+  <span class="status-text" id="status-text">Loading…</span>
+</div>
+
+<main class="grid-wrap">
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="ad-mid">
+  <div class="ad-slot">Advertisement</div>
+</div>
+
+<div class="grid-wrap" style="margin-top:0">
+  <div class="grid" id="grid2"></div>
+</div>
+
+<footer>
+  <span>🔥 Hot on Vinted — not affiliated with Vinted UAB</span>
+  <span id="footer-updated"></span>
+</footer>
+
+<script>
+  let homeItems = [];
+  let currentTerm = '';
+  let searchTimer;
+  let activeSearch = null;
+
+  async function loadListings() {
+    const grid = document.getElementById('grid');
+    const grid2 = document.getElementById('grid2');
+    const status = document.getElementById('status-text');
+    if (currentTerm) return;
+
+    grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
+    grid2.innerHTML = '';
+
+    try {
+      const res = await fetch('/api/listings');
+      const data = await res.json();
+
+      if (data.loading) {
+        status.innerHTML = data.message;
+        grid.innerHTML = `<div class="empty"><h2>⏳</h2><p>${data.message}</p></div>`;
+        setTimeout(loadListings, 30000);
+        return;
+      }
+
+      homeItems = data.items || [];
+
+      if (data.lastUpdated) {
+        const d = new Date(data.lastUpdated);
+        const ago = Math.round((Date.now() - d) / 60000);
+        const ts = ago < 2 ? 'just now' : `${ago}m ago`;
+        document.getElementById('last-updated').textContent = `Updated ${ts}`;
+        document.getElementById('footer-updated').textContent = `Last refreshed: ${d.toLocaleTimeString()}`;
+      }
+
+      renderHome();
+    } catch {
+      status.innerHTML = 'Error loading listings.';
+      grid.innerHTML = `<div class="empty"><h2>😬</h2><p>Could not load listings. Is the server running?</p></div>`;
+    }
+  }
+
+  function renderHome() {
+    const status = document.getElementById('status-text');
+    status.innerHTML = `Showing <strong>${homeItems.length}</strong> trending listings — search a brand or keyword to find more`;
+    if (!homeItems.length) {
+      document.getElementById('grid').innerHTML = `<div class="empty"><h2>🤷</h2><p>No listings yet.</p></div>`;
+      document.getElementById('grid2').innerHTML = '';
+      return;
+    }
+    document.getElementById('grid').innerHTML = homeItems.slice(0, 100).map(cardHTML).join('');
+    document.getElementById('grid2').innerHTML = homeItems.slice(100).map(cardHTML).join('');
+  }
+
+  async function runSearch(term) {
+    const status = document.getElementById('status-text');
+    const grid = document.getElementById('grid');
+    const grid2 = document.getElementById('grid2');
+
+    if (activeSearch) activeSearch.abort();
+    const ctrl = new AbortController();
+    activeSearch = ctrl;
+
+    status.innerHTML = `🔍 Finding most-liked <strong>${esc(term)}</strong> listings on Vinted…`;
+    grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
+    grid2.innerHTML = '';
+
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(term)}`, { signal: ctrl.signal });
+      const data = await res.json();
+      if (ctrl.signal.aborted) return;
+
+      const items = data.items || [];
+      status.innerHTML = items.length
+        ? `<strong>${items.length}</strong> results for <strong>${esc(term)}</strong> — sorted by most liked`
+        : `No liked results for <strong>${esc(term)}</strong>. Try another brand or keyword.`;
+
+      grid.innerHTML = items.slice(0, 100).map(cardHTML).join('');
+      grid2.innerHTML = items.slice(100).map(cardHTML).join('');
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      status.innerHTML = `Search failed — try again in a moment.`;
+      grid.innerHTML = `<div class="empty"><h2>😬</h2><p>Search failed.</p></div>`;
+    } finally {
+      if (activeSearch === ctrl) activeSearch = null;
+    }
+  }
+
+  function clearSearch() {
+    currentTerm = '';
+    if (activeSearch) { activeSearch.abort(); activeSearch = null; }
+    renderHome();
+  }
+
+  function cardHTML(item) {
+    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+    const price = item.price ? `£${parseFloat(item.price.amount).toFixed(2)}` : '';
+    const totalPrice = item.total_item_price ? `£${parseFloat(item.total_item_price.amount).toFixed(2)} inc. fees` : '';
+    const pills = [item.size_title, item.status].filter(Boolean).map(p => `<span class="pill">${esc(p)}</span>`).join('');
+    return `<a class="card" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">
+      <div class="card-img-wrap">
+        ${photo ? `<img class="card-img" src="${esc(photo)}" alt="${esc(item.title || '')}" loading="lazy">` : ''}
+        <span class="like-badge">❤️ ${item.favourite_count}</span>
+      </div>
+      <div class="card-body">
+        ${item.brand_title ? `<div class="card-brand">${esc(item.brand_title)}</div>` : ''}
+        <div class="card-title">${esc(item.title || '')}</div>
+        ${pills ? `<div class="card-meta">${pills}</div>` : ''}
+      </div>
+      <div class="card-footer">
+        <span class="price">${price}</span>
+        <span class="total-price">${totalPrice}</span>
+      </div>
+    </a>`;
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.getElementById('search-input').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    const val = e.target.value.trim();
+    if (!val) { clearSearch(); return; }
+    searchTimer = setTimeout(() => {
+      currentTerm = val;
+      runSearch(currentTerm);
+    }, 600);
+  });
+
+  loadListings();
+  setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
+</script>
+</body>
+</html>

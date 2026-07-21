@@ -1,0 +1,423 @@
+[
+  {
+    "id": "women",
+    "label": "Women",
+    "url": "https://www.vinted.co.uk/catalog/1904-women",
+    "subcategories": [
+      {
+        "id": "4",
+        "label": "Clothing",
+        "href": "https://www.vinted.co.uk/catalog/4-womens"
+      },
+      {
+        "id": "16",
+        "label": "Shoes",
+        "href": "https://www.vinted.co.uk/catalog/16-footwear"
+      },
+      {
+        "id": "1187",
+        "label": "Accessories",
+        "href": "https://www.vinted.co.uk/catalog/1187-accessories_jewellery"
+      },
+      {
+        "id": "19",
+        "label": "Bags",
+        "href": "https://www.vinted.co.uk/catalog/19-bags_backpacks"
+      },
+      {
+        "id": "146",
+        "label": "Beauty",
+        "href": "https://www.vinted.co.uk/catalog/146-cosmetics_and_beauty_products"
+      }
+    ]
+  },
+  {
+    "id": "men",
+    "label": "Men",
+    "url": "https://www.vinted.co.uk/catalog/5-mens",
+    "subcategories": [
+      {
+        "id": "2050",
+        "label": "Clothing",
+        "href": "https://www.vinted.co.uk/catalog/2050-men_clothing"
+      },
+      {
+        "id": "1231",
+        "label": "Shoes",
+        "href": "https://www.vinted.co.uk/catalog/1231-men_shoes_new"
+      },
+      {
+        "id": "82",
+        "label": "Accessories",
+        "href": "https://www.vinted.co.uk/catalog/82-men_accessories"
+      },
+      {
+        "id": "139",
+        "label": "Grooming",
+        "href": "https://www.vinted.co.uk/catalog/139-cosmetics_and_beauty_items"
+      }
+    ]
+  },
+  {
+    "id": "kids",
+    "label": "Kids",
+    "url": "https://www.vinted.co.uk/catalog/1193-children_new",
+    "subcategories": [
+      {
+        "id": "1195",
+        "label": "Girls clothing",
+        "href": "https://www.vinted.co.uk/catalog/1195-girls_new"
+      },
+      {
+        "id": "1194",
+        "label": "Boys clothing",
+        "href": "https://www.vinted.co.uk/catalog/1194-boys_new"
+      },
+      {
+        "id": "1499",
+        "label": "Toys",
+        "href": "https://www.vinted.co.uk/catalog/1499-toys_and_games_new"
+      },
+      {
+        "id": "3296",
+        "label": "Sleep & bedding",
+        "href": "https://www.vinted.co.uk/catalog/3296-kid_sleep_bedding"
+      },
+      {
+        "id": "3432",
+        "label": "Nursing & feeding",
+        "href": "https://www.vinted.co.uk/catalog/3432-nursing_feeding"
+      },
+      {
+        "id": "1502",
+        "label": "Other kids' items",
+        "href": "https://www.vinted.co.uk/catalog/1502-all_other_new"
+      },
+      {
+        "id": "1498",
+        "label": "Furniture & decor",
+        "href": "https://www.vinted.co.uk/catalog/1498-kids_furniture_new"
+      },
+      {
+        "id": "1496",
+        "label": "Pushchairs, carriers & car seats",
+        "href": "https://www.vinted.co.uk/catalog/1496-strollers_new"
+      },
+      {
+        "id": "3393",
+        "label": "Bathing & changing",
+        "href": "https://www.vinted.co.uk/catalog/3393-kid_bathing_changing"
+      },
+      {
+        "id": "1501",
+        "label": "School supplies",
+        "href": "https://www.vinted.co.uk/catalog/1501-books_and_school_new"
+      },
+      {
+        "id": "3427",
+        "label": "Childproofing & safety equipment",
+        "href": "https://www.vinted.co.uk/catalog/3427-babyproofing"
+      },
+      {
+        "id": "3419",
+        "label": "Health & pregnancy",
+        "href": "https://www.vinted.co.uk/catalog/3419-kid_health_pregnancy"
+      }
+    ]
+  },
+  {
+    "id": "home",
+    "label": "Home",
+    "url": "https://www.vinted.co.uk/catalog/1918-home",
+    "subcategories": [
+      {
+        "id": "1934",
+        "label": "Home accessories",
+        "href": "https://www.vinted.co.uk/catalog/1934-h_accessories"
+      },
+      {
+        "id": "1920",
+        "label": "Tableware",
+        "href": "https://www.vinted.co.uk/catalog/1920-h_tableware"
+      },
+      {
+        "id": "1919",
+        "label": "Textiles",
+        "href": "https://www.vinted.co.uk/catalog/1919-h_textiles"
+      },
+      {
+        "id": "2915",
+        "label": "Celebrations & holidays",
+        "href": "https://www.vinted.co.uk/catalog/2915-holidays_celebrations"
+      },
+      {
+        "id": "5106",
+        "label": "Pet care",
+        "href": "https://www.vinted.co.uk/catalog/5106-h_pet_care"
+      },
+      {
+        "id": "3811",
+        "label": "Tools & DIY",
+        "href": "https://www.vinted.co.uk/catalog/3811-h_tools_diy"
+      },
+      {
+        "id": "5428",
+        "label": "Office supplies",
+        "href": "https://www.vinted.co.uk/catalog/5428-office_supplies"
+      },
+      {
+        "id": "3477",
+        "label": "Kitchen tools",
+        "href": "https://www.vinted.co.uk/catalog/3477-kitchen_tools"
+      },
+      {
+        "id": "3474",
+        "label": "Small kitchen appliances",
+        "href": "https://www.vinted.co.uk/catalog/3474-small_kitchen_appliances"
+      },
+      {
+        "id": "3478",
+        "label": "Household care",
+        "href": "https://www.vinted.co.uk/catalog/3478-household_care"
+      },
+      {
+        "id": "3812",
+        "label": "Outdoor & garden",
+        "href": "https://www.vinted.co.uk/catalog/3812-h_outdoor_garden"
+      },
+      {
+        "id": "3476",
+        "label": "Cookware & bakeware",
+        "href": "https://www.vinted.co.uk/catalog/3476-cookware_bakeware"
+      },
+      {
+        "id": "3154",
+        "label": "Furniture",
+        "href": "https://www.vinted.co.uk/catalog/3154-furniture"
+      },
+      {
+        "id": "3475",
+        "label": "Large appliances",
+        "href": "https://www.vinted.co.uk/catalog/3475-large_appliances"
+      }
+    ]
+  },
+  {
+    "id": "electronics",
+    "label": "Electronics",
+    "url": "https://www.vinted.co.uk/catalog/2994-electronics",
+    "subcategories": [
+      {
+        "id": "3002",
+        "label": "Video games & consoles",
+        "href": "https://www.vinted.co.uk/catalog/3002-electronics_video_games"
+      },
+      {
+        "id": "3565",
+        "label": "Mobile phones & communication",
+        "href": "https://www.vinted.co.uk/catalog/3565-electronics_phones"
+      },
+      {
+        "id": "2995",
+        "label": "Other devices & accessories",
+        "href": "https://www.vinted.co.uk/catalog/2995-electronics_accessories"
+      },
+      {
+        "id": "3569",
+        "label": "Beauty & personal care electronics",
+        "href": "https://www.vinted.co.uk/catalog/3569-electronics_beauty"
+      },
+      {
+        "id": "3564",
+        "label": "Computers & accessories",
+        "href": "https://www.vinted.co.uk/catalog/3564-electronics_computers"
+      },
+      {
+        "id": "3566",
+        "label": "Audio, headphones & hi-fi",
+        "href": "https://www.vinted.co.uk/catalog/3566-electronics_audio"
+      },
+      {
+        "id": "3054",
+        "label": "Cameras & accessories",
+        "href": "https://www.vinted.co.uk/catalog/3054-electronics_cameras_accessories"
+      },
+      {
+        "id": "3004",
+        "label": "Wearables",
+        "href": "https://www.vinted.co.uk/catalog/3004-electronics_wearables"
+      },
+      {
+        "id": "3567",
+        "label": "Tablets, e-readers & accessories",
+        "href": "https://www.vinted.co.uk/catalog/3567-electronics_tablets_acc"
+      },
+      {
+        "id": "3568",
+        "label": "TV & home cinema",
+        "href": "https://www.vinted.co.uk/catalog/3568-electronics_tv"
+      }
+    ]
+  },
+  {
+    "id": "sports",
+    "label": "Sports",
+    "url": "https://www.vinted.co.uk/catalog/4332-sports",
+    "subcategories": [
+      {
+        "id": "4334",
+        "label": "Fitness, running & yoga",
+        "href": "https://www.vinted.co.uk/catalog/4334-fitness"
+      },
+      {
+        "id": "4340",
+        "label": "Equestrian",
+        "href": "https://www.vinted.co.uk/catalog/4340-equestrian"
+      },
+      {
+        "id": "4335",
+        "label": "Outdoor sports",
+        "href": "https://www.vinted.co.uk/catalog/4335-outdoorsport"
+      },
+      {
+        "id": "4333",
+        "label": "Cycling",
+        "href": "https://www.vinted.co.uk/catalog/4333-cycling"
+      },
+      {
+        "id": "4336",
+        "label": "Water sports",
+        "href": "https://www.vinted.co.uk/catalog/4336-watersport"
+      },
+      {
+        "id": "4339",
+        "label": "Golf",
+        "href": "https://www.vinted.co.uk/catalog/4339-golf"
+      },
+      {
+        "id": "4337",
+        "label": "Team sports",
+        "href": "https://www.vinted.co.uk/catalog/4337-teamsports"
+      },
+      {
+        "id": "4342",
+        "label": "Boxing & martial arts",
+        "href": "https://www.vinted.co.uk/catalog/4342-boxmartialsport"
+      },
+      {
+        "id": "4343",
+        "label": "Casual sports & games",
+        "href": "https://www.vinted.co.uk/catalog/4343-casualsports"
+      },
+      {
+        "id": "4341",
+        "label": "Skateboards & scooters",
+        "href": "https://www.vinted.co.uk/catalog/4341-skatesport"
+      },
+      {
+        "id": "4338",
+        "label": "Racket sports",
+        "href": "https://www.vinted.co.uk/catalog/4338-racquetsport"
+      },
+      {
+        "id": "4344",
+        "label": "Winter sports",
+        "href": "https://www.vinted.co.uk/catalog/4344-wintersports"
+      }
+    ]
+  },
+  {
+    "id": "entertainment",
+    "label": "Entertainment",
+    "url": "https://www.vinted.co.uk/catalog/2309-entertainment",
+    "subcategories": [
+      {
+        "id": "2312",
+        "label": "Books",
+        "href": "https://www.vinted.co.uk/catalog/2312-books"
+      },
+      {
+        "id": "3036",
+        "label": "Music",
+        "href": "https://www.vinted.co.uk/catalog/3036-entertainment_music"
+      },
+      {
+        "id": "3037",
+        "label": "Video",
+        "href": "https://www.vinted.co.uk/catalog/3037-entertainment_video"
+      },
+      {
+        "id": "5424",
+        "label": "Magazines",
+        "href": "https://www.vinted.co.uk/catalog/5424-magazines"
+      }
+    ]
+  },
+  {
+    "id": "hobbies",
+    "label": "Hobbies & Collectables",
+    "url": "https://www.vinted.co.uk/catalog/4824-hobbies_collectables",
+    "subcategories": [
+      {
+        "id": "4874",
+        "label": "Trading cards",
+        "href": "https://www.vinted.co.uk/catalog/4874-hc_trading_cards"
+      },
+      {
+        "id": "5151",
+        "label": "Arts & crafts",
+        "href": "https://www.vinted.co.uk/catalog/5151-hc_artscrafts"
+      },
+      {
+        "id": "4901",
+        "label": "Memorabilia",
+        "href": "https://www.vinted.co.uk/catalog/4901-hc_memorabilia"
+      },
+      {
+        "id": "4881",
+        "label": "Board games",
+        "href": "https://www.vinted.co.uk/catalog/4881-hc_board_games"
+      },
+      {
+        "id": "4882",
+        "label": "Puzzles",
+        "href": "https://www.vinted.co.uk/catalog/4882-hc_puzzles"
+      },
+      {
+        "id": "4895",
+        "label": "Coins & banknotes",
+        "href": "https://www.vinted.co.uk/catalog/4895-hc_numismatics"
+      },
+      {
+        "id": "4906",
+        "label": "Collectables storage",
+        "href": "https://www.vinted.co.uk/catalog/4906-hc_storage"
+      },
+      {
+        "id": "4825",
+        "label": "Musical instruments & gear",
+        "href": "https://www.vinted.co.uk/catalog/4825-musical_instruments_gear"
+      },
+      {
+        "id": "4883",
+        "label": "Tabletop & miniature gaming",
+        "href": "https://www.vinted.co.uk/catalog/4883-hc_tabletop_miniatures"
+      },
+      {
+        "id": "4916",
+        "label": "Gaming accessories",
+        "href": "https://www.vinted.co.uk/catalog/4916-hc_gaming_accessories"
+      },
+      {
+        "id": "4894",
+        "label": "Postcards",
+        "href": "https://www.vinted.co.uk/catalog/4894-hc_postcards"
+      },
+      {
+        "id": "4888",
+        "label": "Stamps",
+        "href": "https://www.vinted.co.uk/catalog/4888-hc_philately"
+      }
+    ]
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "name": "hot-on-vinted",
+  "version": "2.0.0",
+  "description": "Most-liked listings on Vinted right now",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.19.0",
+    "puppeteer": "^22.0.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}
