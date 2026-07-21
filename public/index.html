@@ -6,6 +6,7 @@
   <title>🔥 Hot on Vinted UK — Most Liked Listings Right Now</title>
   <meta name="description" content="Discover the most-liked and trending listings on Vinted UK right now, sorted by popularity. Search any brand to find its most-loved items.">
   <link rel="canonical" href="https://hotonvinted.com/">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -98,6 +99,13 @@
     .empty { text-align: center; padding: 80px 24px; color: var(--muted); grid-column: 1/-1; }
     .empty h2 { font-size: 2rem; margin-bottom: 8px; }
 
+    /* ── Brand chips ── */
+    .chips-wrap { max-width: 1400px; margin: 16px auto 0; padding: 0 24px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { background: #fff; border: 1.5px solid var(--border); border-radius: 999px; padding: 6px 14px; font-size: 0.8rem; font-weight: 500; cursor: pointer; color: var(--text); transition: border-color 0.15s, background 0.15s; white-space: nowrap; }
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+    .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
     /* ── Footer ── */
     footer { max-width: 1400px; margin: 48px auto 0; padding: 24px; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
 
@@ -122,6 +130,21 @@
 
 <div class="ad-banner">
   <div class="ad-slot">Advertisement</div>
+</div>
+
+<div class="chips-wrap">
+  <div class="chips" id="chips">
+    <button class="chip" data-q="Nike">Nike</button>
+    <button class="chip" data-q="Zara">Zara</button>
+    <button class="chip" data-q="Lululemon">Lululemon</button>
+    <button class="chip" data-q="North Face">North Face</button>
+    <button class="chip" data-q="ASOS">ASOS</button>
+    <button class="chip" data-q="H&M">H&amp;M</button>
+    <button class="chip" data-q="Adidas">Adidas</button>
+    <button class="chip" data-q="Vintage">Vintage</button>
+    <button class="chip" data-q="Levi's">Levi's</button>
+    <button class="chip" data-q="Topshop">Topshop</button>
+  </div>
 </div>
 
 <div class="status-bar">
@@ -200,6 +223,22 @@
     document.getElementById('grid2').innerHTML = homeItems.slice(100).map(cardHTML).join('');
   }
 
+  function setActiveChip(q) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.q === q));
+  }
+
+  document.getElementById('chips').addEventListener('click', e => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    const q = chip.dataset.q;
+    const input = document.getElementById('search-input');
+    input.value = q;
+    clearTimeout(searchTimer);
+    currentTerm = q;
+    setActiveChip(q);
+    runSearch(q);
+  });
+
   async function runSearch(term) {
     const status = document.getElementById('status-text');
     const grid = document.getElementById('grid');
@@ -208,6 +247,9 @@
     if (activeSearch) activeSearch.abort();
     const ctrl = new AbortController();
     activeSearch = ctrl;
+
+    // GA search event
+    if (typeof gtag !== 'undefined') gtag('event', 'search', { search_term: term });
 
     status.innerHTML = `🔍 Finding most-liked <strong>${esc(term)}</strong> listings on Vinted…`;
     grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
@@ -237,6 +279,7 @@
   function clearSearch() {
     currentTerm = '';
     if (activeSearch) { activeSearch.abort(); activeSearch = null; }
+    setActiveChip(null);
     renderHome();
   }
 
@@ -269,6 +312,7 @@
   document.getElementById('search-input').addEventListener('input', e => {
     clearTimeout(searchTimer);
     const val = e.target.value.trim();
+    setActiveChip(null);
     if (!val) { clearSearch(); return; }
     searchTimer = setTimeout(() => {
       currentTerm = val;
