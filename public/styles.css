@@ -17,7 +17,7 @@ header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom
 .header-inner { max-width: 1400px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 16px; }
 .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; color: var(--text); text-decoration: none; flex-shrink: 0; }
 .logo span { color: var(--accent); }
-.last-updated { margin-left: auto; font-size: 0.78rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+.last-updated { margin-left: auto; font-size: 0.78rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; padding-left: 16px; border-left: 1px solid var(--border); }
 
 /* ── Chips in header ── */
 .chips-header { flex: 1; min-width: 0; overflow: hidden; }
