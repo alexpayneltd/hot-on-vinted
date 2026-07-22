@@ -38,7 +38,7 @@ async function getWarmPage(domain = 'vinted.co.uk') {
   });
   const page = (await browser.pages())[0];
   await page.setViewport({ width: 1280, height: 900 });
-  const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : 'en-GB,en;q=0.9';
+  const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : domain === 'vinted.de' ? 'de-DE,de;q=0.9' : 'en-GB,en;q=0.9';
   await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
   await page.goto(`https://www.${domain}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
   await sleep(2000);
@@ -135,7 +135,7 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, 
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 900 });
-    const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : 'en-GB,en;q=0.9';
+    const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : domain === 'vinted.de' ? 'de-DE,de;q=0.9' : 'en-GB,en;q=0.9';
     await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
     await page.goto(`https://www.${domain}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
     await sleep(2500);
