@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
 Hot on Vinted — daily Instagram poster
-Supports UK, FR, and DE. Usage:
+Supports UK, FR, DE, and NL. Usage:
   python post-to-instagram.py           # defaults to UK
   python post-to-instagram.py --country fr
   python post-to-instagram.py --country de
+  python post-to-instagram.py --country nl
 """
 
 import json
@@ -23,7 +24,7 @@ load_dotenv()
 
 # ── Args ──────────────────────────────────────────────────────────────────────
 parser = argparse.ArgumentParser()
-parser.add_argument("--country", choices=["uk", "fr", "de"], default="uk")
+parser.add_argument("--country", choices=["uk", "fr", "de", "nl"], default="uk")
 args = parser.parse_args()
 COUNTRY = args.country
 
@@ -32,7 +33,7 @@ IG_USERNAME = os.environ.get("IG_USERNAME", "hot.on.vinted")
 IG_PASSWORD = os.environ.get("IG_PASSWORD")
 
 BASE_URL    = "https://hotonvinted.com"
-API_URL     = f"{BASE_URL}/fr/api/listings" if COUNTRY == "fr" else f"{BASE_URL}/de/api/listings" if COUNTRY == "de" else f"{BASE_URL}/api/listings"
+API_URL     = f"{BASE_URL}/fr/api/listings" if COUNTRY == "fr" else f"{BASE_URL}/de/api/listings" if COUNTRY == "de" else f"{BASE_URL}/nl/api/listings" if COUNTRY == "nl" else f"{BASE_URL}/api/listings"
 POSTED_FILE = Path(__file__).parent / f"posted-{COUNTRY}.json"
 AUTH_FILE   = Path(__file__).parent / "ig-auth.json"
 TMP_IMG     = Path("/tmp/vinted_post.jpg")
@@ -101,7 +102,7 @@ def make_caption(item):
         symbol        = "€" if currency_code == "EUR" else "£"
         price_str     = f"{symbol}{price.get('amount', '')}"
     else:
-        symbol    = "€" if COUNTRY == "fr" else "£"
+        symbol    = "€" if COUNTRY in ("fr", "de", "nl") else "£"
         price_str = f"{symbol}{price}" if price else ""
 
     if COUNTRY == "fr":
@@ -125,6 +126,17 @@ def make_caption(item):
             "",
             "#vinted #vinteddeutschland #vintedde #secondhand #nachhaltigemode",
             "#gebrauchtkauf #vintedverkauf #hotonvinted #vintedfund #preloved",
+        ]
+    elif COUNTRY == "nl":
+        lines = [
+            f"🔥 {title}",
+            "",
+            f"{'💰 ' + price_str + '  ' if price_str else ''}❤️ {likes} favorieten op Vinted",
+            "",
+            "Vind het op hotonvinted.com/nl 🔥 (link in bio)",
+            "",
+            "#vinted #vintednederland #vintedfind #tweedehandse #duurzamefashion",
+            "#tweedehands #vintedseller #hotonvinted #vintedkopen #preloved",
         ]
     else:
         lines = [

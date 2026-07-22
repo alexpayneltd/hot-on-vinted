@@ -27,6 +27,10 @@ const CACHE = {
     all:    path.join(__dirname, 'cache', 'de', 'all.json'),
     brands: path.join(__dirname, 'cache', 'de', 'brands'),
   },
+  nl: {
+    all:    path.join(__dirname, 'cache', 'nl', 'all.json'),
+    brands: path.join(__dirname, 'cache', 'nl', 'brands'),
+  },
 };
 for (const c of Object.values(CACHE)) {
   if (!fs.existsSync(c.brands)) fs.mkdirSync(c.brands, { recursive: true });
@@ -63,6 +67,21 @@ const FR_BRANDS = [
   { slug: 'most-liked-lululemon-vinted-fr',   query: 'Lululemon',   name: 'Lululemon' },
 ];
 
+const NL_BRANDS = [
+  { slug: 'most-liked-nike-vinted-nl',          query: 'Nike',           name: 'Nike' },
+  { slug: 'most-liked-adidas-vinted-nl',        query: 'Adidas',         name: 'Adidas' },
+  { slug: 'most-liked-zara-vinted-nl',          query: 'Zara',           name: 'Zara' },
+  { slug: 'most-liked-hm-vinted-nl',            query: 'H&M',            name: 'H&M' },
+  { slug: 'most-liked-levis-vinted-nl',         query: "Levi's",         name: "Levi's" },
+  { slug: 'most-liked-tommy-hilfiger-vinted-nl',query: 'Tommy Hilfiger', name: 'Tommy Hilfiger' },
+  { slug: 'most-liked-vintage-vinted-nl',       query: 'Vintage',        name: 'Vintage' },
+  { slug: 'most-liked-gstar-raw-vinted-nl',     query: 'G-Star Raw',     name: 'G-Star Raw' },
+  { slug: 'most-liked-scotch-soda-vinted-nl',   query: 'Scotch & Soda',  name: 'Scotch & Soda' },
+  { slug: 'most-liked-new-balance-vinted-nl',   query: 'New Balance',    name: 'New Balance' },
+  { slug: 'most-liked-jack-jones-vinted-nl',    query: 'Jack & Jones',   name: 'Jack & Jones' },
+  { slug: 'most-liked-vans-vinted-nl',          query: 'Vans',           name: 'Vans' },
+];
+
 const DE_BRANDS = [
   { slug: 'most-liked-nike-vinted-de',          query: 'Nike',           name: 'Nike' },
   { slug: 'most-liked-adidas-vinted-de',        query: 'Adidas',         name: 'Adidas' },
@@ -79,8 +98,8 @@ const DE_BRANDS = [
 ];
 
 // ── In-memory search caches (per country) ─────────────────────────────────────
-const searchCaches    = { uk: new Map(), fr: new Map(), de: new Map() };
-const pendingSearches = { uk: new Map(), fr: new Map(), de: new Map() };
+const searchCaches    = { uk: new Map(), fr: new Map(), de: new Map(), nl: new Map() };
+const pendingSearches = { uk: new Map(), fr: new Map(), de: new Map(), nl: new Map() };
 const SEARCH_CACHE_TTL = 30 * 60 * 1000;
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -111,13 +130,14 @@ function cardHTML(item, currency = '£') {
 }
 
 function countrySwitcher(active) {
-  const flag = active === 'fr' ? '🇫🇷' : active === 'de' ? '🇩🇪' : '🇬🇧';
+  const flag = active === 'fr' ? '🇫🇷' : active === 'de' ? '🇩🇪' : active === 'nl' ? '🇳🇱' : '🇬🇧';
   return `<div class="country-switcher">
       <button class="country-current" id="country-btn" aria-label="Select country">${flag}</button>
       <div class="country-dropdown" id="country-dropdown">
         <a href="/uk" class="country-option${active === 'uk' ? ' active' : ''}">🇬🇧 United Kingdom</a>
         <a href="/fr" class="country-option${active === 'fr' ? ' active' : ''}">🇫🇷 France</a>
         <a href="/de" class="country-option${active === 'de' ? ' active' : ''}">🇩🇪 Deutschland</a>
+        <a href="/nl" class="country-option${active === 'nl' ? ' active' : ''}">🇳🇱 Nederland</a>
       </div>
     </div>`;
 }
@@ -859,10 +879,331 @@ function deBrandPageHTML(brand, items) {
 </html>`;
 }
 
+// ── Netherlands homepage HTML ──────────────────────────────────────────────────
+function nlHomeHTML() {
+  const chipsHTML = NL_BRANDS.map(b =>
+    `<a href="/nl/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>`
+  ).join('\n        ');
+
+  const mobileOrder = ['Nike','Zara','H&M','Adidas',"Levi's",'Vintage','G-Star Raw','New Balance','Tommy Hilfiger','Vans','Jack & Jones','Scotch & Soda'];
+  const mobileChipsHTML = mobileOrder.map(name => {
+    const b = NL_BRANDS.find(x => x.name === name);
+    return b ? `<a href="/nl/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
+  }).filter(Boolean).join('\n    ');
+
+  return `<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hot on Vinted Nederland — De populairste items</title>
+  <meta name="description" content="Ontdek de meest gelikte items op Vinted Nederland, gesorteerd op populariteit. Zoek een merk om de meest favoriete items te vinden.">
+  <link rel="canonical" href="https://hotonvinted.com/nl">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hotonvinted.com/nl">
+  <meta property="og:title" content="Hot on Vinted Nederland — De populairste items">
+  <meta property="og:description" content="Ontdek de meest gelikte items op Vinted Nederland, gesorteerd op populariteit.">
+  <meta property="og:site_name" content="Hot on Vinted">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/nl" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+      <span style="font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;">Hot on <span style="color:#09b1ba;">Vinted</span> NL</span>
+    </a>
+    <div class="chips-header">
+      <div class="chips" id="chips">
+        ${chipsHTML}
+      </div>
+    </div>
+    ${countrySwitcher('nl')}
+    <button class="burger-btn" id="burger-btn" aria-label="Merken bekijken">☰</button>
+  </div>
+  <div class="chips-mobile" id="chips-mobile">
+    ${mobileChipsHTML}
+  </div>
+</header>
+
+<div class="search-section">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-input" placeholder="Zoek een merk, item of categorie…" autocomplete="off">
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="status-text" id="status-text">Laden…</span>
+</div>
+
+<main class="grid-wrap">
+  <div class="grid" id="grid"></div>
+</main>
+<div class="grid-wrap" style="margin-top:0">
+  <div class="grid" id="grid2"></div>
+</div>
+
+<footer>
+  <span>🔥 Hot on Vinted — niet gelieerd aan Vinted UAB</span>
+  <span style="display:flex;gap:16px;align-items:center;">
+    <a href="/privacy" style="color:inherit;text-decoration:underline;">Privacybeleid</a>
+    <span id="footer-updated"></span>
+  </span>
+</footer>
+
+<script>
+  const burgerBtn = document.getElementById('burger-btn');
+  const chipsMobile = document.getElementById('chips-mobile');
+  burgerBtn.addEventListener('click', () => chipsMobile.classList.toggle('open'));
+  chipsMobile.addEventListener('click', e => {
+    if (e.target.classList.contains('chip')) chipsMobile.classList.remove('open');
+  });
+  document.addEventListener('click', e => {
+    if (!burgerBtn.contains(e.target) && !chipsMobile.contains(e.target)) chipsMobile.classList.remove('open');
+  });
+  const countryBtn = document.getElementById('country-btn');
+  const countryDropdown = document.getElementById('country-dropdown');
+  countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
+  document.addEventListener('click', () => countryDropdown.classList.remove('open'));
+
+  let homeItems = [];
+  let currentTerm = '';
+  let searchTimer;
+  let activeSearch = null;
+
+  async function loadListings() {
+    const grid = document.getElementById('grid');
+    const grid2 = document.getElementById('grid2');
+    const status = document.getElementById('status-text');
+    if (currentTerm) return;
+    if (!homeItems.length) {
+      grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
+      grid2.innerHTML = '';
+    }
+    try {
+      const res = await fetch('/nl/api/listings');
+      const data = await res.json();
+      if (data.loading) {
+        status.innerHTML = '';
+        grid.innerHTML = '<div class="empty"><h2>⏳</h2><p>' + data.message + '</p></div>';
+        setTimeout(loadListings, 30000);
+        return;
+      }
+      homeItems = data.items || [];
+      if (data.lastUpdated) {
+        const d = new Date(data.lastUpdated);
+        document.getElementById('footer-updated').textContent = 'Bijgewerkt: ' + d.toLocaleTimeString('nl-NL');
+      }
+      renderHome();
+    } catch {
+      status.innerHTML = 'Fout bij laden.';
+      grid.innerHTML = '<div class="empty"><h2>😬</h2><p>Kan items niet laden.</p></div>';
+    }
+  }
+
+  function renderHome() {
+    const status = document.getElementById('status-text');
+    status.innerHTML = 'Een selectie van de <strong>meest gelikte</strong> items op Vinted Nederland — 🔍 zoek een merk voor meer';
+    if (!homeItems.length) {
+      document.getElementById('grid').innerHTML = '<div class="empty"><h2>🤷</h2><p>Nog geen items.</p></div>';
+      document.getElementById('grid2').innerHTML = '';
+      return;
+    }
+    document.getElementById('grid').innerHTML = homeItems.slice(0, 100).map(cardHTML).join('');
+    document.getElementById('grid2').innerHTML = '';
+  }
+
+  function setActiveChip(q) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.q === q));
+  }
+
+  function handleChipClick(e) {
+    const chip = e.target.closest('.chip');
+    if (!chip || !chip.dataset.q) return;
+    e.preventDefault();
+    const q = chip.dataset.q;
+    document.getElementById('search-input').value = q;
+    clearTimeout(searchTimer);
+    currentTerm = q;
+    setActiveChip(q);
+    runSearch(q);
+  }
+  document.getElementById('chips').addEventListener('click', handleChipClick);
+  document.getElementById('chips-mobile').addEventListener('click', handleChipClick);
+
+  async function runSearch(term) {
+    const status = document.getElementById('status-text');
+    const grid = document.getElementById('grid');
+    const grid2 = document.getElementById('grid2');
+    if (activeSearch) activeSearch.abort();
+    const ctrl = new AbortController();
+    activeSearch = ctrl;
+    status.innerHTML = '🔍 Meest gelikte <strong>' + esc(term) + '</strong> items zoeken op Vinted…';
+    grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
+    grid2.innerHTML = '';
+    try {
+      const res = await fetch('/nl/api/search?q=' + encodeURIComponent(term), { signal: ctrl.signal });
+      const data = await res.json();
+      if (ctrl.signal.aborted) return;
+      const items = data.items || [];
+      status.innerHTML = items.length
+        ? '<strong>' + items.length + '</strong> resultaten voor <strong>' + esc(term) + '</strong> — gesorteerd op meest geliked'
+        : 'Geen resultaten voor <strong>' + esc(term) + '</strong>. Probeer een ander merk.';
+      grid.innerHTML = items.slice(0, 100).map(cardHTML).join('');
+      grid2.innerHTML = items.slice(100).map(cardHTML).join('');
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      status.innerHTML = 'Zoeken mislukt — probeer het opnieuw.';
+      grid.innerHTML = '<div class="empty"><h2>😬</h2><p>Zoeken mislukt.</p></div>';
+    } finally {
+      if (activeSearch === ctrl) activeSearch = null;
+    }
+  }
+
+  function clearSearch() {
+    currentTerm = '';
+    if (activeSearch) { activeSearch.abort(); activeSearch = null; }
+    setActiveChip(null);
+    renderHome();
+  }
+
+  function cardHTML(item) {
+    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+    const price = item.price ? '€' + parseFloat(item.price.amount).toFixed(2) : '';
+    const totalPrice = item.total_item_price ? '€' + parseFloat(item.total_item_price.amount).toFixed(2) + ' incl. kosten' : '';
+    const pills = [item.size_title, item.status].filter(Boolean).map(p => '<span class="pill">' + esc(p) + '</span>').join('');
+    return '<a class="card" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">'
+      + '<div class="card-img-wrap">'
+      + (photo ? '<img class="card-img" src="' + esc(photo) + '" alt="' + esc(item.title || '') + '" loading="lazy">' : '')
+      + '<span class="like-badge">❤️ ' + item.favourite_count + '</span>'
+      + '</div><div class="card-body">'
+      + (item.brand_title ? '<div class="card-brand">' + esc(item.brand_title) + '</div>' : '')
+      + '<div class="card-title">' + esc(item.title || '') + '</div>'
+      + (pills ? '<div class="card-meta">' + pills + '</div>' : '')
+      + '</div><div class="card-footer">'
+      + '<span class="price">' + price + '</span>'
+      + '<span class="total-price">' + totalPrice + '</span>'
+      + '</div></a>';
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.getElementById('search-input').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    const val = e.target.value.trim();
+    setActiveChip(null);
+    if (!val) { clearSearch(); return; }
+    searchTimer = setTimeout(() => { currentTerm = val; runSearch(currentTerm); }, 600);
+  });
+
+  loadListings();
+  setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
+</script>
+</body>
+</html>`;
+}
+
+// ── Netherlands brand page HTML ────────────────────────────────────────────────
+function nlBrandPageHTML(brand, items) {
+  const chipsHTML = NL_BRANDS.map(b =>
+    `<a href="/nl/${b.slug}" class="chip${b.slug === brand.slug ? ' active' : ''}">${esc(b.name)}</a>`
+  ).join('\n        ');
+  const mobileChipsHTML = NL_BRANDS.map(b =>
+    `<a href="/nl/${b.slug}" class="chip">${esc(b.name)}</a>`
+  ).join('\n    ');
+  const gridHTML = items.length
+    ? items.slice(0, 96).map(i => cardHTML(i, '€')).join('\n')
+    : `<div class="empty"><h2>🤷</h2><p>Nog geen items — kom later terug.</p></div>`;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Meest gelikte ${brand.name} op Vinted Nederland`,
+    description: `De meest gelikte ${brand.name} items op Vinted Nederland, gesorteerd op populariteit.`,
+    url: `https://hotonvinted.com/nl/${brand.slug}`,
+    itemListElement: items.slice(0, 20).map((item, i) => {
+      const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+      const price = item.price ? parseFloat(item.price.amount).toFixed(2) : null;
+      return {
+        '@type': 'ListItem', position: i + 1,
+        item: {
+          '@type': 'Product', name: item.title || '', url: item.url || '',
+          ...(photo ? { image: photo } : {}),
+          ...(price ? { offers: { '@type': 'Offer', price, priceCurrency: 'EUR', availability: 'https://schema.org/InStock' } } : {}),
+        },
+      };
+    }),
+  };
+
+  return `<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meest gelikte ${esc(brand.name)} op Vinted Nederland | Hot on Vinted</title>
+  <meta name="description" content="Bekijk de meest gelikte ${esc(brand.name)} items op Vinted Nederland, gesorteerd op populariteit.">
+  <link rel="canonical" href="https://hotonvinted.com/nl/${brand.slug}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hotonvinted.com/nl/${brand.slug}">
+  <meta property="og:title" content="Meest gelikte ${esc(brand.name)} op Vinted Nederland | Hot on Vinted">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/nl" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+      <span style="font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;">Hot on <span style="color:#09b1ba;">Vinted</span> NL</span>
+    </a>
+    <div class="chips-header">
+      <div class="chips">
+        ${chipsHTML}
+      </div>
+    </div>
+    ${countrySwitcher('nl')}
+    <button class="burger-btn" id="burger-btn" aria-label="Merken bekijken">☰</button>
+  </div>
+  <div class="chips-mobile" id="chips-mobile">
+    ${mobileChipsHTML}
+  </div>
+</header>
+<div class="page-heading">
+  <h1>Meest gelikte ${esc(brand.name)} op Vinted Nederland</h1>
+  <p>De meest gelikte ${esc(brand.name)} items, elke 30 minuten bijgewerkt.</p>
+</div>
+<main class="grid-wrap">
+  <div class="grid">${gridHTML}</div>
+</main>
+<footer>
+  <span>🔥 Hot on Vinted — niet gelieerd aan Vinted UAB</span>
+  <a href="/privacy" style="color:inherit;text-decoration:underline;">Privacybeleid</a>
+</footer>
+<script>
+  const burgerBtn = document.getElementById('burger-btn');
+  const chipsMobile = document.getElementById('chips-mobile');
+  burgerBtn.addEventListener('click', () => chipsMobile.classList.toggle('open'));
+  document.addEventListener('click', e => {
+    if (!burgerBtn.contains(e.target) && !chipsMobile.contains(e.target)) chipsMobile.classList.remove('open');
+  });
+  const countryBtn = document.getElementById('country-btn');
+  const countryDropdown = document.getElementById('country-dropdown');
+  countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
+  document.addEventListener('click', () => countryDropdown.classList.remove('open'));
+</script>
+</body>
+</html>`;
+}
+
 // ── Brand cache scraping ───────────────────────────────────────────────────────
 async function scrapeAndCacheAllBrands(country = 'uk') {
-  const brands   = country === 'fr' ? FR_BRANDS : country === 'de' ? DE_BRANDS : UK_BRANDS;
-  const domain   = country === 'fr' ? 'vinted.fr' : country === 'de' ? 'vinted.de' : 'vinted.co.uk';
+  const brands   = country === 'fr' ? FR_BRANDS : country === 'de' ? DE_BRANDS : country === 'nl' ? NL_BRANDS : UK_BRANDS;
+  const domain   = country === 'fr' ? 'vinted.fr' : country === 'de' ? 'vinted.de' : country === 'nl' ? 'vinted.nl' : 'vinted.co.uk';
   const cacheDir = CACHE[country].brands;
   console.log(`\n🏷️  Brand cache scrape (${country.toUpperCase()})...`);
   for (const brand of brands) {
@@ -884,9 +1225,11 @@ app.get('/', (req, res) => {
   const cfCountry = req.headers['cf-ipcountry'];
   if (cfCountry === 'FR') return res.redirect(302, '/fr');
   if (cfCountry === 'DE') return res.redirect(302, '/de');
+  if (cfCountry === 'NL') return res.redirect(302, '/nl');
   const primaryLang = (req.headers['accept-language'] || '').split(',')[0].toLowerCase().trim();
   if (primaryLang.startsWith('fr')) return res.redirect(302, '/fr');
   if (primaryLang.startsWith('de')) return res.redirect(302, '/de');
+  if (primaryLang.startsWith('nl')) return res.redirect(302, '/nl');
   res.redirect(302, '/uk');
 });
 
@@ -911,6 +1254,8 @@ app.get('/sitemap.xml', (req, res) => {
     ...UK_BRANDS.map(b => ({ loc: `https://hotonvinted.com/${b.slug}`,    lastmod: readLastmod(path.join(CACHE.uk.brands, `${b.slug}.json`)) })),
     ...FR_BRANDS.map(b => ({ loc: `https://hotonvinted.com/fr/${b.slug}`, lastmod: readLastmod(path.join(CACHE.fr.brands, `${b.slug}.json`)) })),
     ...DE_BRANDS.map(b => ({ loc: `https://hotonvinted.com/de/${b.slug}`, lastmod: readLastmod(path.join(CACHE.de.brands, `${b.slug}.json`)) })),
+    { loc: 'https://hotonvinted.com/nl', lastmod: now },
+    ...NL_BRANDS.map(b => ({ loc: `https://hotonvinted.com/nl/${b.slug}`, lastmod: readLastmod(path.join(CACHE.nl.brands, `${b.slug}.json`)) })),
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -1003,6 +1348,49 @@ for (const brand of DE_BRANDS) {
   });
 }
 
+// ── Netherlands homepage ───────────────────────────────────────────────────────
+app.get('/nl', (req, res) => res.send(nlHomeHTML()));
+
+// ── Netherlands API ────────────────────────────────────────────────────────────
+app.get('/nl/api/listings', (req, res) => {
+  if (!fs.existsSync(CACHE.nl.all)) return res.json({ items: [], lastUpdated: null, loading: true, message: 'Laden — kom over een minuut terug.' });
+  try { res.json(JSON.parse(fs.readFileSync(CACHE.nl.all, 'utf8'))); } catch { res.status(500).json({ error: 'Cache read error' }); }
+});
+
+app.get('/nl/api/search', async (req, res) => {
+  const term = (req.query.q || '').trim().toLowerCase().slice(0, 100);
+  if (!term) return res.json({ items: [], term });
+  const cached = searchCaches.nl.get(term);
+  if (cached && Date.now() - cached.cachedAt < SEARCH_CACHE_TTL) return res.json({ items: cached.items, term, fromCache: true });
+  if (pendingSearches.nl.has(term)) {
+    try { return res.json({ items: await pendingSearches.nl.get(term), term }); } catch { return res.status(500).json({ error: 'Search failed' }); }
+  }
+  const promise = scrapeSearch(term, 5, 'vinted.nl');
+  pendingSearches.nl.set(term, promise);
+  try {
+    const items = await promise;
+    searchCaches.nl.set(term, { items, cachedAt: Date.now() });
+    res.json({ items, term });
+  } catch { res.status(500).json({ error: 'Search failed' }); }
+  finally { pendingSearches.nl.delete(term); }
+});
+
+app.get('/nl/api/status', (req, res) => {
+  if (!fs.existsSync(CACHE.nl.all)) return res.json({ cached: false });
+  const { lastUpdated, total } = JSON.parse(fs.readFileSync(CACHE.nl.all, 'utf8'));
+  res.json({ cached: true, lastUpdated, total });
+});
+
+// ── Netherlands brand pages ────────────────────────────────────────────────────
+for (const brand of NL_BRANDS) {
+  app.get(`/nl/${brand.slug}`, (req, res) => {
+    const cacheFile = path.join(CACHE.nl.brands, `${brand.slug}.json`);
+    let items = [];
+    if (fs.existsSync(cacheFile)) { try { items = JSON.parse(fs.readFileSync(cacheFile, 'utf8')).items || []; } catch {} }
+    res.send(nlBrandPageHTML(brand, items));
+  });
+}
+
 // ── France homepage ────────────────────────────────────────────────────────────
 app.get('/fr', (req, res) => res.send(frHomeHTML()));
 
@@ -1054,6 +1442,8 @@ async function startScraping() {
   await scrapeAndCacheAllBrands('fr');
   await scrapeAll('vinted.de', CACHE.de.all);
   await scrapeAndCacheAllBrands('de');
+  await scrapeAll('vinted.nl', CACHE.nl.all);
+  await scrapeAndCacheAllBrands('nl');
 }
 
 startScraping();
