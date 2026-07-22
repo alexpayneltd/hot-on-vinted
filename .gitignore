@@ -1,3 +1,9 @@
 node_modules/
 cache/
 .env
+ig-auth.json
+ig-session.json
+posted.json
+*.log
+com.hotonvinted.daily.plist
+hotonvinted-profile.png
