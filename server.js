@@ -173,13 +173,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/privacy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
 
 app.get('/sitemap.xml', (req, res) => {
-  const urls = [
-    'https://hotonvinted.com/',
-    ...BRANDS.map(b => `https://hotonvinted.com/${b.slug}`),
+  const now = new Date().toISOString().split('T')[0];
+
+  // Use actual brand cache timestamps where available
+  const urlEntries = [
+    { loc: 'https://hotonvinted.com/', lastmod: now },
+    ...BRANDS.map(b => {
+      const cacheFile = path.join(BRAND_CACHE_DIR, `${b.slug}.json`);
+      let lastmod = now;
+      if (fs.existsSync(cacheFile)) {
+        try { lastmod = JSON.parse(fs.readFileSync(cacheFile, 'utf8')).lastUpdated?.split('T')[0] || now; } catch {}
+      }
+      return { loc: `https://hotonvinted.com/${b.slug}`, lastmod };
+    }),
   ];
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(u => `  <url><loc>${u}</loc><changefreq>hourly</changefreq></url>`).join('\n')}
+${urlEntries.map(u => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod}</lastmod><changefreq>hourly</changefreq></url>`).join('\n')}
 </urlset>`;
   res.set('Content-Type', 'application/xml').send(xml);
 });
