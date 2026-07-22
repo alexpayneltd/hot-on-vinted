@@ -192,4 +192,12 @@ async function _doSearch(term, pages) {
   }
 }
 
+export async function scrapeBrandItems(query, pages = 5) {
+  const items = await scrapeWithFreshBrowser(null, pages, query);
+  return items
+    .filter((v, i, a) => a.findIndex(x => x.id === v.id) === i)
+    .map(i => { if (i.favourite_count == null) i.favourite_count = 0; return i; })
+    .sort((a, b) => b.favourite_count - a.favourite_count);
+}
+
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
