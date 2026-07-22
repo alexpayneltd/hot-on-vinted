@@ -564,7 +564,7 @@ function deHomeHTML() {
     `<a href="/de/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>`
   ).join('\n        ');
 
-  const mobileOrder = ['Nike','Adidas','Zara','H&M',"Levi's",'Puma','Vintage','New Balance','Hugo Boss'];
+  const mobileOrder = ['Nike','Adidas','Zara','H&M',"Levi's",'Puma','Vintage','New Balance','Hugo Boss','s.Oliver'];
   const mobileChipsHTML = mobileOrder.map(name => {
     const b = DE_BRANDS.find(x => x.name === name);
     return b ? `<a href="/de/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
@@ -885,7 +885,7 @@ function nlHomeHTML() {
     `<a href="/nl/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>`
   ).join('\n        ');
 
-  const mobileOrder = ['Nike','Adidas','Zara','H&M',"Levi's",'Vintage','Vans','New Balance','G-Star Raw'];
+  const mobileOrder = ['Nike','Adidas','Zara','H&M',"Levi's",'Vintage','Vans','New Balance','G-Star Raw','Jack & Jones'];
   const mobileChipsHTML = mobileOrder.map(name => {
     const b = NL_BRANDS.find(x => x.name === name);
     return b ? `<a href="/nl/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
