@@ -49,14 +49,22 @@
 
     /* ── Header ── */
     header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--border); }
-    .header-inner { max-width: 1400px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 20px; }
-    .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; color: var(--text); text-decoration: none; }
+    .header-inner { max-width: 1400px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 16px; overflow: hidden; }
+    .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; color: var(--text); text-decoration: none; flex-shrink: 0; }
     .logo span { color: var(--accent); }
-    .search-wrap { flex: 1; max-width: 480px; position: relative; }
-    .search-wrap input { width: 100%; padding: 10px 16px 10px 40px; border: 1.5px solid var(--border); border-radius: 999px; font-size: 0.875rem; outline: none; background: var(--bg); transition: border-color 0.15s; font-family: inherit; }
-    .search-wrap input:focus { border-color: var(--accent); background: #fff; }
-    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
-    .last-updated { margin-left: auto; font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+    .last-updated { margin-left: auto; font-size: 0.78rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+
+    /* ── Chips in header ── */
+    .chips-header { flex: 1; min-width: 0; -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%); mask-image: linear-gradient(to right, black 85%, transparent 100%); }
+    .chips { display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .chips::-webkit-scrollbar { display: none; }
+
+    /* ── Search hero ── */
+    .search-section { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
+    .search-wrap { position: relative; }
+    .search-wrap input { width: 100%; padding: 14px 20px 14px 48px; border: 2px solid var(--border); border-radius: 999px; font-size: 1rem; outline: none; background: #fff; transition: border-color 0.15s, box-shadow 0.15s; font-family: inherit; }
+    .search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(9,177,186,0.1); }
+    .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 1.1rem; }
 
     /* ── Status ── */
     .status-bar { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
@@ -93,12 +101,6 @@
     .empty h2 { font-size: 2rem; margin-bottom: 8px; }
 
     /* ── Brand chips ── */
-    .chips-wrap { max-width: 1400px; margin: 16px auto 0; padding: 0 24px; }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    @media (max-width: 600px) {
-      .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; -webkit-mask-image: linear-gradient(to right, black 75%, transparent 100%); mask-image: linear-gradient(to right, black 75%, transparent 100%); }
-      .chips::-webkit-scrollbar { display: none; }
-    }
     .chip { background: #fff; border: 1.5px solid var(--border); border-radius: 999px; padding: 6px 14px; font-size: 0.8rem; font-weight: 500; cursor: pointer; color: var(--text); transition: border-color 0.15s, background 0.15s; white-space: nowrap; }
     .chip:hover { border-color: var(--accent); color: var(--accent); }
     .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -108,7 +110,8 @@
 
     @media (max-width: 600px) {
       .last-updated { display: none; }
-      .header-inner { gap: 12px; }
+      .header-inner { gap: 10px; }
+      .search-wrap input { font-size: 0.9rem; padding: 12px 16px 12px 42px; }
     }
   </style>
 </head>
@@ -120,28 +123,30 @@
       <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
       <span style="font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;">Hot on <span style="color:#09b1ba;">Vinted</span> UK</span>
     </a>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="search-input" placeholder="Search any brand or item…" autocomplete="off">
+    <div class="chips-header">
+      <div class="chips" id="chips">
+        <button class="chip" data-q="Nike">Nike</button>
+        <button class="chip" data-q="Zara">Zara</button>
+        <button class="chip" data-q="Lululemon">Lululemon</button>
+        <button class="chip" data-q="North Face">North Face</button>
+        <button class="chip" data-q="ASOS">ASOS</button>
+        <button class="chip" data-q="H&M">H&amp;M</button>
+        <button class="chip" data-q="Adidas">Adidas</button>
+        <button class="chip" data-q="Vintage">Vintage</button>
+        <button class="chip" data-q="Levi's">Levi's</button>
+        <button class="chip" data-q="Topshop">Topshop</button>
+        <button class="chip" data-q="New Balance">New Balance</button>
+        <button class="chip" data-q="Gymshark">Gymshark</button>
+      </div>
     </div>
     <span class="last-updated" id="last-updated"></span>
   </div>
 </header>
 
-<div class="chips-wrap">
-  <div class="chips" id="chips">
-    <button class="chip" data-q="Nike">Nike</button>
-    <button class="chip" data-q="Zara">Zara</button>
-    <button class="chip" data-q="Lululemon">Lululemon</button>
-    <button class="chip" data-q="North Face">North Face</button>
-    <button class="chip" data-q="ASOS">ASOS</button>
-    <button class="chip" data-q="H&M">H&amp;M</button>
-    <button class="chip" data-q="Adidas">Adidas</button>
-    <button class="chip" data-q="Vintage">Vintage</button>
-    <button class="chip" data-q="Levi's">Levi's</button>
-    <button class="chip" data-q="Topshop">Topshop</button>
-    <button class="chip" data-q="New Balance">New Balance</button>
-    <button class="chip" data-q="Gymshark">Gymshark</button>
+<div class="search-section">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-input" placeholder="Search any brand or item…" autocomplete="off">
   </div>
 </div>
 
@@ -210,7 +215,7 @@
 
   function renderHome() {
     const status = document.getElementById('status-text');
-    status.innerHTML = `Top <strong>100</strong> most liked on Vinted right now — 🔍 search any brand above to find more`;
+    status.innerHTML = `A selection of the <strong>most liked</strong> listings on Vinted UK right now — 🔍 search a brand to find more`;
     if (!homeItems.length) {
       document.getElementById('grid').innerHTML = `<div class="empty"><h2>🤷</h2><p>No listings yet.</p></div>`;
       document.getElementById('grid2').innerHTML = '';
