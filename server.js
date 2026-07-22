@@ -5,7 +5,7 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { scrapeAll, scrapeSearch, scrapeBrandItems } from './scraper.js';
+import { scrapeAll, scrapeSearch, scrapeAllBrands } from './scraper.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -1206,16 +1206,10 @@ async function scrapeAndCacheAllBrands(country = 'uk') {
   const domain   = country === 'fr' ? 'vinted.fr' : country === 'de' ? 'vinted.de' : country === 'nl' ? 'vinted.nl' : 'vinted.co.uk';
   const cacheDir = CACHE[country].brands;
   console.log(`\n🏷️  Brand cache scrape (${country.toUpperCase()})...`);
-  for (const brand of brands) {
-    const cacheFile = path.join(cacheDir, `${brand.slug}.json`);
-    try {
-      const items = await scrapeBrandItems(brand.query, 5, domain);
-      fs.writeFileSync(cacheFile, JSON.stringify({ items, lastUpdated: new Date().toISOString() }));
-      console.log(`  ✅ ${brand.name} (${country}): ${items.length} items`);
-    } catch (err) {
-      console.error(`  ⚠️ ${brand.name} (${country}) failed: ${err.message}`);
-    }
-    await new Promise(r => setTimeout(r, 2000));
+  try {
+    await scrapeAllBrands(brands, domain, cacheDir, fs, path);
+  } catch (err) {
+    console.error(`  ⚠️ Brand scrape (${country}) failed: ${err.message}`);
   }
   console.log(`🏷️  Brand cache complete (${country.toUpperCase()})\n`);
 }
