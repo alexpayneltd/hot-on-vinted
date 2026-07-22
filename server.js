@@ -287,7 +287,7 @@ function frHomeHTML() {
 <div class="search-section">
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input type="text" id="search-input" placeholder="Rechercher une marque, article ou catégorie…" autocomplete="off">
+    <input type="text" id="search-input" placeholder="Rechercher une marque ou article…" autocomplete="off">
   </div>
 </div>
 
