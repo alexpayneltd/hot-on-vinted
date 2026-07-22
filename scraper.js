@@ -40,10 +40,21 @@ async function getWarmPage(domain = 'vinted.co.uk') {
   await page.setViewport({ width: 1280, height: 900 });
   const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : domain === 'vinted.de' ? 'de-DE,de;q=0.9' : domain === 'vinted.nl' ? 'nl-NL,nl;q=0.9' : 'en-GB,en;q=0.9';
   await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
-  await page.goto(`https://www.${domain}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
-  await sleep(2000);
 
-  warmSessions.set(domain, { browser, page, timer });
+  // Capture Bearer token for domains that require it (e.g. vinted.nl)
+  let capturedAuthToken = null;
+  await page.setRequestInterception(true);
+  page.on('request', req => {
+    const auth = req.headers()['authorization'];
+    if (auth && auth.startsWith('Bearer ') && !capturedAuthToken) capturedAuthToken = auth;
+    req.continue();
+  });
+
+  await page.goto(`https://www.${domain}`, { waitUntil: 'networkidle2', timeout: 60000 });
+  await sleep(2000);
+  if (capturedAuthToken) console.log(`   🔑 Warm auth token captured (${domain})`);
+
+  warmSessions.set(domain, { browser, page, timer, authToken: capturedAuthToken });
   console.log(`🌐 Warm page ready (${domain})`);
   return page;
 }
@@ -137,19 +148,34 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, 
     await page.setViewport({ width: 1280, height: 900 });
     const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : domain === 'vinted.de' ? 'de-DE,de;q=0.9' : domain === 'vinted.nl' ? 'nl-NL,nl;q=0.9' : 'en-GB,en;q=0.9';
     await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
-    await page.goto(`https://www.${domain}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
-    await sleep(2500);
+
+    // Intercept requests to capture the Bearer auth token (required by some domains e.g. vinted.nl)
+    let capturedAuthToken = null;
+    await page.setRequestInterception(true);
+    page.on('request', req => {
+      const auth = req.headers()['authorization'];
+      if (auth && auth.startsWith('Bearer ') && !capturedAuthToken) {
+        capturedAuthToken = auth;
+      }
+      req.continue();
+    });
+
+    await page.goto(`https://www.${domain}`, { waitUntil: 'networkidle2', timeout: 60000 });
+    await sleep(3000);
+    if (capturedAuthToken) console.log(`   🔑 Auth token captured (${domain})`);
 
     const items = [];
     for (let p = 1; p <= pages; p++) {
       let url = `https://www.${domain}/api/v2/catalog/items?page=${p}&per_page=96`;
       if (catalogId) url += `&catalog[]=${catalogId}`;
       if (searchTerm) url += `&search_text=${encodeURIComponent(searchTerm)}`;
-      const result = await page.evaluate(async (u) => {
-        const r = await fetch(u, { headers: { Accept: 'application/json' } });
+      const result = await page.evaluate(async (u, token) => {
+        const headers = { Accept: 'application/json' };
+        if (token) headers['Authorization'] = token;
+        const r = await fetch(u, { headers });
         const text = await r.text();
         return { status: r.status, ok: r.ok, text };
-      }, url);
+      }, url, capturedAuthToken);
 
       if (!result.ok) {
         console.log(`   ⚠️ API ${result.status} (${domain}) p${p}: ${result.text.slice(0, 150)}`);
@@ -181,13 +207,16 @@ async function _doSearch(term, pages, domain) {
   console.log(`\n[${new Date().toISOString()}] 🔎 Searching "${term}" on ${domain}`);
   try {
     const page = await getWarmPage(domain);
+    const authToken = warmSessions.get(domain)?.authToken || null;
     const items = [];
     for (let p = 1; p <= pages; p++) {
       const url = `https://www.${domain}/api/v2/catalog/items?page=${p}&per_page=96&search_text=${encodeURIComponent(term)}`;
-      const data = await page.evaluate(async (u) => {
-        const r = await fetch(u, { headers: { Accept: 'application/json' } });
+      const data = await page.evaluate(async (u, token) => {
+        const headers = { Accept: 'application/json' };
+        if (token) headers['Authorization'] = token;
+        const r = await fetch(u, { headers });
         return r.ok ? r.json() : null;
-      }, url);
+      }, url, authToken);
       if (!data?.items?.length) break;
       items.push(...data.items);
       await sleep(150);
