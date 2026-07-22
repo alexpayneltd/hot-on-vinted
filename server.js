@@ -47,16 +47,16 @@ const UK_BRANDS = [
 const FR_BRANDS = [
   { slug: 'most-liked-nike-vinted-fr',        query: 'Nike',        name: 'Nike' },
   { slug: 'most-liked-zara-vinted-fr',        query: 'Zara',        name: 'Zara' },
-  { slug: 'most-liked-lululemon-vinted-fr',   query: 'Lululemon',   name: 'Lululemon' },
-  { slug: 'most-liked-north-face-vinted-fr',  query: 'North Face',  name: 'North Face' },
-  { slug: 'most-liked-asos-vinted-fr',        query: 'ASOS',        name: 'ASOS' },
   { slug: 'most-liked-hm-vinted-fr',          query: 'H&M',         name: 'H&M' },
   { slug: 'most-liked-adidas-vinted-fr',      query: 'Adidas',      name: 'Adidas' },
-  { slug: 'most-liked-vintage-vinted-fr',     query: 'Vintage',     name: 'Vintage' },
   { slug: 'most-liked-levis-vinted-fr',       query: "Levi's",      name: "Levi's" },
+  { slug: 'most-liked-lacoste-vinted-fr',     query: 'Lacoste',     name: 'Lacoste' },
   { slug: 'most-liked-sezane-vinted-fr',      query: 'Sézane',      name: 'Sézane' },
+  { slug: 'most-liked-maje-vinted-fr',        query: 'Maje',        name: 'Maje' },
+  { slug: 'most-liked-vintage-vinted-fr',     query: 'Vintage',     name: 'Vintage' },
   { slug: 'most-liked-new-balance-vinted-fr', query: 'New Balance', name: 'New Balance' },
-  { slug: 'most-liked-gymshark-vinted-fr',    query: 'Gymshark',    name: 'Gymshark' },
+  { slug: 'most-liked-north-face-vinted-fr',  query: 'North Face',  name: 'North Face' },
+  { slug: 'most-liked-lululemon-vinted-fr',   query: 'Lululemon',   name: 'Lululemon' },
 ];
 
 // ── In-memory search caches (per country) ─────────────────────────────────────
@@ -92,9 +92,13 @@ function cardHTML(item, currency = '£') {
 }
 
 function countrySwitcher(active) {
+  const flag = active === 'fr' ? '🇫🇷' : '🇬🇧';
   return `<div class="country-switcher">
-      <a href="/uk" class="country-btn${active === 'uk' ? ' active' : ''}" title="Vinted UK">🇬🇧</a>
-      <a href="/fr" class="country-btn${active === 'fr' ? ' active' : ''}" title="Vinted France">🇫🇷</a>
+      <button class="country-current" id="country-btn" aria-label="Select country">${flag}</button>
+      <div class="country-dropdown" id="country-dropdown">
+        <a href="/uk" class="country-option${active === 'uk' ? ' active' : ''}">🇬🇧 United Kingdom</a>
+        <a href="/fr" class="country-option${active === 'fr' ? ' active' : ''}">🇫🇷 France</a>
+      </div>
     </div>`;
 }
 
@@ -183,6 +187,10 @@ function ukBrandPageHTML(brand, items) {
   document.addEventListener('click', e => {
     if (!burgerBtn.contains(e.target) && !chipsMobile.contains(e.target)) chipsMobile.classList.remove('open');
   });
+  const countryBtn = document.getElementById('country-btn');
+  const countryDropdown = document.getElementById('country-dropdown');
+  countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
+  document.addEventListener('click', () => countryDropdown.classList.remove('open'));
 </script>
 </body>
 </html>`;
@@ -194,7 +202,7 @@ function frHomeHTML() {
     `<a href="/fr/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>`
   ).join('\n        ');
 
-  const mobileOrder = ['Nike','Zara','H&M','ASOS',"Levi's",'Adidas','Vintage','Sézane','Gymshark','Lululemon','North Face','New Balance'];
+  const mobileOrder = ['Nike','Zara','H&M','Maje',"Levi's",'Adidas','Vintage','Sézane','Lacoste','Lululemon','North Face','New Balance'];
   const mobileChipsHTML = mobileOrder.map(name => {
     const b = FR_BRANDS.find(x => x.name === name);
     return b ? `<a href="/fr/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
@@ -407,6 +415,11 @@ function frHomeHTML() {
 
   loadListings();
   setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
+
+  const countryBtn = document.getElementById('country-btn');
+  const countryDropdown = document.getElementById('country-dropdown');
+  countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
+  document.addEventListener('click', () => countryDropdown.classList.remove('open'));
 </script>
 </body>
 </html>`;
@@ -496,6 +509,10 @@ function frBrandPageHTML(brand, items) {
   document.addEventListener('click', e => {
     if (!burgerBtn.contains(e.target) && !chipsMobile.contains(e.target)) chipsMobile.classList.remove('open');
   });
+  const countryBtn = document.getElementById('country-btn');
+  const countryDropdown = document.getElementById('country-dropdown');
+  countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
+  document.addEventListener('click', () => countryDropdown.classList.remove('open'));
 </script>
 </body>
 </html>`;
@@ -525,8 +542,9 @@ async function scrapeAndCacheAllBrands(country = 'uk') {
 app.get('/', (req, res) => {
   const cfCountry = req.headers['cf-ipcountry'];
   if (cfCountry === 'FR') return res.redirect(302, '/fr');
-  const lang = (req.headers['accept-language'] || '').toLowerCase();
-  if (lang.startsWith('fr') || lang.includes(',fr') || lang.includes(';fr')) return res.redirect(302, '/fr');
+  // Only redirect if French is the PRIMARY language (not just a low-priority fallback)
+  const primaryLang = (req.headers['accept-language'] || '').split(',')[0].toLowerCase().trim();
+  if (primaryLang.startsWith('fr')) return res.redirect(302, '/fr');
   res.redirect(302, '/uk');
 });
 

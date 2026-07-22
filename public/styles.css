@@ -23,11 +23,15 @@ header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom
 .chips { display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
 .chips::-webkit-scrollbar { display: none; }
 
-/* ── Country switcher ── */
-.country-switcher { display: flex; gap: 2px; flex-shrink: 0; }
-.country-btn { font-size: 1.3rem; padding: 4px 6px; border-radius: 6px; text-decoration: none; opacity: 0.35; transition: opacity 0.15s; line-height: 1; }
-.country-btn:hover { opacity: 0.7; }
-.country-btn.active { opacity: 1; }
+/* ── Country switcher dropdown ── */
+.country-switcher { position: relative; flex-shrink: 0; }
+.country-current { background: none; border: none; font-size: 1.6rem; line-height: 1; padding: 4px 6px; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
+.country-current:hover { background: rgba(0,0,0,0.05); }
+.country-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 8px); background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); min-width: 170px; z-index: 200; overflow: hidden; }
+.country-dropdown.open { display: block; }
+.country-option { display: flex; align-items: center; gap: 10px; padding: 11px 16px; text-decoration: none; color: var(--text); font-size: 0.88rem; transition: background 0.1s; }
+.country-option:hover { background: var(--bg); }
+.country-option.active { font-weight: 700; }
 
 /* ── Burger button (mobile only) ── */
 .burger-btn { display: none; background: none; border: 1.5px solid var(--accent); border-radius: 8px; padding: 8px 12px; cursor: pointer; color: var(--accent); font-size: 1.4rem; line-height: 1; flex-shrink: 0; }

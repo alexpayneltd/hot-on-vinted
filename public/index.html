@@ -59,8 +59,11 @@
       </div>
     </div>
     <div class="country-switcher">
-      <a href="/uk" class="country-btn active" title="Vinted UK">🇬🇧</a>
-      <a href="/fr" class="country-btn" title="Vinted France">🇫🇷</a>
+      <button class="country-current" id="country-btn" aria-label="Select country">🇬🇧</button>
+      <div class="country-dropdown" id="country-dropdown">
+        <a href="/uk" class="country-option active">🇬🇧 United Kingdom</a>
+        <a href="/fr" class="country-option">🇫🇷 France</a>
+      </div>
     </div>
     <button class="burger-btn" id="burger-btn" aria-label="Browse brands">☰</button>
   </div>
@@ -278,6 +281,11 @@
 
   loadListings();
   setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
+
+  const countryBtn = document.getElementById('country-btn');
+  const countryDropdown = document.getElementById('country-dropdown');
+  countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
+  document.addEventListener('click', () => countryDropdown.classList.remove('open'));
 </script>
 </body>
 </html>
