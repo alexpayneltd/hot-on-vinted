@@ -23,8 +23,14 @@ header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom
 .chips { display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
 .chips::-webkit-scrollbar { display: none; }
 
+/* ── Country switcher ── */
+.country-switcher { display: flex; gap: 2px; flex-shrink: 0; }
+.country-btn { font-size: 1.3rem; padding: 4px 6px; border-radius: 6px; text-decoration: none; opacity: 0.35; transition: opacity 0.15s; line-height: 1; }
+.country-btn:hover { opacity: 0.7; }
+.country-btn.active { opacity: 1; }
+
 /* ── Burger button (mobile only) ── */
-.burger-btn { display: none; background: none; border: 1.5px solid var(--accent); border-radius: 8px; padding: 8px 12px; cursor: pointer; color: var(--accent); font-size: 1.4rem; line-height: 1; flex-shrink: 0; margin-left: auto; }
+.burger-btn { display: none; background: none; border: 1.5px solid var(--accent); border-radius: 8px; padding: 8px 12px; cursor: pointer; color: var(--accent); font-size: 1.4rem; line-height: 1; flex-shrink: 0; }
 .burger-btn:hover { background: rgba(9,177,186,0.08); }
 
 /* ── Mobile chips dropdown ── */
@@ -89,9 +95,10 @@ header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom
 footer { max-width: 1400px; margin: 48px auto 0; padding: 24px; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
 
 @media (max-width: 600px) {
-.chips-header { display: none; }
+  .chips-header { display: none; }
   .burger-btn { display: block; }
-  .header-inner { gap: 10px; }
+  .country-switcher { margin-left: auto; }
+  .header-inner { gap: 8px; }
   .search-wrap input { font-size: 1rem; padding: 12px 16px 12px 42px; }
   .chips-mobile .chip { font-size: 0.8rem; padding: 6px 14px; }
 }

@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hot on Vinted UK — Most Liked Listings Right Now</title>
   <meta name="description" content="Discover the most-liked and trending listings on Vinted UK right now, sorted by popularity. Search any brand to find its most-loved items.">
-  <link rel="canonical" href="https://hotonvinted.com/">
+  <link rel="canonical" href="https://hotonvinted.com/uk">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://hotonvinted.com/">
+  <meta property="og:url" content="https://hotonvinted.com/uk">
   <meta property="og:title" content="Hot on Vinted UK — Most Liked Listings Right Now">
   <meta property="og:description" content="See which Vinted UK listings have the most likes right now. Search any brand to find its most-loved items.">
   <meta property="og:site_name" content="Hot on Vinted">
@@ -38,7 +38,7 @@
 
 <header>
   <div class="header-inner">
-    <a class="logo" href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+    <a class="logo" href="/uk" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
       <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
       <span style="font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;">Hot on <span style="color:#09b1ba;">Vinted</span> UK</span>
     </a>
@@ -57,6 +57,10 @@
         <a href="/most-liked-new-balance-vinted-uk" class="chip" data-q="New Balance">New Balance</a>
         <a href="/most-liked-gymshark-vinted-uk" class="chip" data-q="Gymshark">Gymshark</a>
       </div>
+    </div>
+    <div class="country-switcher">
+      <a href="/uk" class="country-btn active" title="Vinted UK">🇬🇧</a>
+      <a href="/fr" class="country-btn" title="Vinted France">🇫🇷</a>
     </div>
     <button class="burger-btn" id="burger-btn" aria-label="Browse brands">☰</button>
   </div>
@@ -150,9 +154,6 @@
 
       if (data.lastUpdated) {
         const d = new Date(data.lastUpdated);
-        const ago = Math.round((Date.now() - d) / 60000);
-        const ts = ago < 2 ? 'just now' : `${ago}m ago`;
-        document.getElementById('last-updated').textContent = `Updated ${ts}`;
         document.getElementById('footer-updated').textContent = `Last refreshed: ${d.toLocaleTimeString()}`;
       }
 

@@ -6,65 +6,71 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// On Mac: set CHROME_PATH in .env to use system Chrome (avoids re-downloading)
-// On Railway/Linux: leave unset — puppeteer's bundled Chromium is used automatically
 const CHROME_EXEC = process.env.CHROME_PATH || executablePath();
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 puppeteer.use(StealthPlugin());
 
-const CACHE_FILE = path.join(__dirname, 'cache', 'all.json');
 const CACHE_DIR = path.join(__dirname, 'cache');
 if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR);
 
-
-let scraping = false;
-
-// ── Warm page for fast searches ──────────────────────────────────────────────
-let warmBrowser = null;
-let warmPage = null;
-let warmPageBusy = false;
-let warmBrowserTimer = null;
 const WARM_IDLE_TTL = 25 * 60 * 1000;
 
-async function getWarmPage() {
-  // Reset idle timer
-  clearTimeout(warmBrowserTimer);
-  warmBrowserTimer = setTimeout(closeWarmBrowser, WARM_IDLE_TTL);
+// ── Per-domain warm pages ─────────────────────────────────────────────────────
+const warmSessions = new Map(); // domain → { browser, page, timer }
 
-  if (warmPage && !warmPage.isClosed()) return warmPage;
+async function getWarmPage(domain = 'vinted.co.uk') {
+  const session = warmSessions.get(domain) || {};
+  if (session.timer) clearTimeout(session.timer);
+  const timer = setTimeout(() => closeWarmBrowser(domain), WARM_IDLE_TTL);
 
-  console.log('🌐 Warming up search browser...');
-  if (warmBrowser) await warmBrowser.close().catch(() => {});
+  if (session.page && !session.page.isClosed()) {
+    warmSessions.set(domain, { ...session, timer });
+    return session.page;
+  }
 
-  warmBrowser = await puppeteer.launch({
+  console.log(`🌐 Warming up search browser (${domain})...`);
+  if (session.browser) await session.browser.close().catch(() => {});
+
+  const browser = await puppeteer.launch({
     headless: 'new',
     executablePath: CHROME_EXEC,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
   });
-  warmPage = (await warmBrowser.pages())[0];
-  await warmPage.setViewport({ width: 1280, height: 900 });
-  await warmPage.setExtraHTTPHeaders({ 'Accept-Language': 'en-GB,en;q=0.9' });
-  await warmPage.goto('https://www.vinted.co.uk', { waitUntil: 'domcontentloaded', timeout: 45000 });
+  const page = (await browser.pages())[0];
+  await page.setViewport({ width: 1280, height: 900 });
+  const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : 'en-GB,en;q=0.9';
+  await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
+  await page.goto(`https://www.${domain}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
   await sleep(2000);
-  console.log('🌐 Warm page ready');
-  return warmPage;
+
+  warmSessions.set(domain, { browser, page, timer });
+  console.log(`🌐 Warm page ready (${domain})`);
+  return page;
 }
 
-async function closeWarmBrowser() {
-  clearTimeout(warmBrowserTimer);
-  warmPage = null;
-  if (warmBrowser) {
-    console.log('🌐 Warm browser closed (idle)');
-    await warmBrowser.close().catch(() => {});
-    warmBrowser = null;
+async function closeWarmBrowser(domain = 'vinted.co.uk') {
+  const session = warmSessions.get(domain);
+  if (session) {
+    if (session.timer) clearTimeout(session.timer);
+    if (session.browser) {
+      console.log(`🌐 Warm browser closed (idle) (${domain})`);
+      await session.browser.close().catch(() => {});
+    }
+    warmSessions.delete(domain);
   }
 }
 
-export async function scrapeAll() {
-  if (scraping) { console.log('Scrape already in progress, skipping.'); return; }
-  scraping = true;
-  console.log(`\n[${new Date().toISOString()}] 🔍 Starting scrape...`);
+// ── Per-domain scrape locks ───────────────────────────────────────────────────
+const scrapingDomains = new Set();
+
+// ── Per-domain search queues ──────────────────────────────────────────────────
+const searchQueues = new Map(); // domain → Promise
+
+// ── Main catalog scrape ───────────────────────────────────────────────────────
+export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(CACHE_DIR, 'all.json')) {
+  if (scrapingDomains.has(domain)) { console.log(`Scrape already in progress (${domain}), skipping.`); return; }
+  scrapingDomains.add(domain);
+  console.log(`\n[${new Date().toISOString()}] 🔍 Starting scrape (${domain})...`);
 
   const globalItems = new Map();
 
@@ -81,9 +87,9 @@ export async function scrapeAll() {
     ];
 
     for (const cat of CATALOGS) {
-      console.log(`📦 ${cat.label}`);
+      console.log(`📦 ${cat.label} (${domain})`);
       try {
-        const items = await scrapeWithFreshBrowser(cat.id, 20);
+        const items = await scrapeWithFreshBrowser(cat.id, 20, null, domain);
         let added = 0;
         for (const item of items) {
           if (!globalItems.has(item.id)) {
@@ -99,29 +105,27 @@ export async function scrapeAll() {
       await sleep(3000);
     }
 
-    // Sort all unique items by likes
     const sorted = [...globalItems.values()]
       .sort((a, b) => b.favourite_count - a.favourite_count)
       .filter(i => i.favourite_count > 0);
 
-    fs.writeFileSync(CACHE_FILE, JSON.stringify({
-      items: sorted,
-      lastUpdated: new Date().toISOString(),
-      total: sorted.length,
-    }));
+    const dir = path.dirname(cacheFile);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(cacheFile, JSON.stringify({ items: sorted, lastUpdated: new Date().toISOString(), total: sorted.length }));
 
     const top5 = sorted.slice(0, 5).map(i => `${i.favourite_count} ❤️  ${i.title}`);
-    console.log(`\n✅ Saved ${sorted.length} liked items from ${globalItems.size} unique. Top 5:\n  ${top5.join('\n  ')}`);
+    console.log(`\n✅ (${domain}) Saved ${sorted.length} items. Top 5:\n  ${top5.join('\n  ')}`);
 
   } catch (err) {
-    console.error('Scrape error:', err.message);
+    console.error(`Scrape error (${domain}):`, err.message);
   } finally {
-    scraping = false;
-    console.log(`[${new Date().toISOString()}] Done\n`);
+    scrapingDomains.delete(domain);
+    console.log(`[${new Date().toISOString()}] Done (${domain})\n`);
   }
 }
 
-async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null) {
+// ── Fresh browser scrape (catalog or search) ──────────────────────────────────
+async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, domain = 'vinted.co.uk') {
   const browser = await puppeteer.launch({
     headless: 'new',
     executablePath: CHROME_EXEC,
@@ -131,13 +135,14 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null) 
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 900 });
-    await page.setExtraHTTPHeaders({ 'Accept-Language': 'en-GB,en;q=0.9' });
-    await page.goto('https://www.vinted.co.uk', { waitUntil: 'domcontentloaded', timeout: 45000 });
+    const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : 'en-GB,en;q=0.9';
+    await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
+    await page.goto(`https://www.${domain}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
     await sleep(2500);
 
     const items = [];
     for (let p = 1; p <= pages; p++) {
-      let url = `https://www.vinted.co.uk/api/v2/catalog/items?page=${p}&per_page=96`;
+      let url = `https://www.${domain}/api/v2/catalog/items?page=${p}&per_page=96`;
       if (catalogId) url += `&catalog[]=${catalogId}`;
       if (searchTerm) url += `&search_text=${encodeURIComponent(searchTerm)}`;
       const data = await page.evaluate(async (u) => {
@@ -154,23 +159,23 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null) 
   }
 }
 
-// Serialise searches so they don't clobber each other on the shared warm page
-let searchQueue = Promise.resolve();
-
-export async function scrapeSearch(term, pages = 5) {
+// ── Search (warm browser, serialised per domain) ──────────────────────────────
+export async function scrapeSearch(term, pages = 5, domain = 'vinted.co.uk') {
+  if (!searchQueues.has(domain)) searchQueues.set(domain, Promise.resolve());
   const result = new Promise((resolve, reject) => {
-    searchQueue = searchQueue.then(() => _doSearch(term, pages).then(resolve, reject));
+    const next = searchQueues.get(domain).then(() => _doSearch(term, pages, domain).then(resolve, reject));
+    searchQueues.set(domain, next);
   });
   return result;
 }
 
-async function _doSearch(term, pages) {
-  console.log(`\n[${new Date().toISOString()}] 🔎 Searching: "${term}"`);
+async function _doSearch(term, pages, domain) {
+  console.log(`\n[${new Date().toISOString()}] 🔎 Searching "${term}" on ${domain}`);
   try {
-    const page = await getWarmPage();
+    const page = await getWarmPage(domain);
     const items = [];
     for (let p = 1; p <= pages; p++) {
-      const url = `https://www.vinted.co.uk/api/v2/catalog/items?page=${p}&per_page=96&search_text=${encodeURIComponent(term)}`;
+      const url = `https://www.${domain}/api/v2/catalog/items?page=${p}&per_page=96&search_text=${encodeURIComponent(term)}`;
       const data = await page.evaluate(async (u) => {
         const r = await fetch(u, { headers: { Accept: 'application/json' } });
         return r.ok ? r.json() : null;
@@ -183,17 +188,18 @@ async function _doSearch(term, pages) {
       .filter((v, i, a) => a.findIndex(x => x.id === v.id) === i)
       .map(i => { if (i.favourite_count == null) i.favourite_count = 0; return i; })
       .sort((a, b) => b.favourite_count - a.favourite_count);
-    console.log(`  ✅ "${term}": ${sorted.length} items, top likes: ${sorted[0]?.favourite_count ?? 0}`);
+    console.log(`  ✅ "${term}" (${domain}): ${sorted.length} items, top likes: ${sorted[0]?.favourite_count ?? 0}`);
     return sorted;
   } catch (err) {
-    console.error(`Search error for "${term}":`, err.message);
-    await closeWarmBrowser(); // force re-warm on next search
+    console.error(`Search error for "${term}" on ${domain}:`, err.message);
+    await closeWarmBrowser(domain);
     throw err;
   }
 }
 
-export async function scrapeBrandItems(query, pages = 5) {
-  const items = await scrapeWithFreshBrowser(null, pages, query);
+// ── Brand items (fresh browser) ───────────────────────────────────────────────
+export async function scrapeBrandItems(query, pages = 5, domain = 'vinted.co.uk') {
+  const items = await scrapeWithFreshBrowser(null, pages, query, domain);
   return items
     .filter((v, i, a) => a.findIndex(x => x.id === v.id) === i)
     .map(i => { if (i.favourite_count == null) i.favourite_count = 0; return i; })
