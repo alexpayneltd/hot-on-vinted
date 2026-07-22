@@ -18,18 +18,18 @@ if (!fs.existsSync(BRAND_CACHE_DIR)) fs.mkdirSync(BRAND_CACHE_DIR, { recursive: 
 
 // ── Brand config ───────────────────────────────────────────────────────────────
 const BRANDS = [
-  { slug: 'nike',        query: 'Nike',        name: 'Nike' },
-  { slug: 'zara',        query: 'Zara',        name: 'Zara' },
-  { slug: 'lululemon',   query: 'Lululemon',   name: 'Lululemon' },
-  { slug: 'north-face',  query: 'North Face',  name: 'North Face' },
-  { slug: 'asos',        query: 'ASOS',        name: 'ASOS' },
-  { slug: 'hm',          query: 'H&M',         name: 'H&M' },
-  { slug: 'adidas',      query: 'Adidas',      name: 'Adidas' },
-  { slug: 'vintage',     query: 'Vintage',     name: 'Vintage' },
-  { slug: 'levis',       query: "Levi's",      name: "Levi's" },
-  { slug: 'topshop',     query: 'Topshop',     name: 'Topshop' },
-  { slug: 'new-balance', query: 'New Balance', name: 'New Balance' },
-  { slug: 'gymshark',    query: 'Gymshark',    name: 'Gymshark' },
+  { slug: 'most-liked-nike-vinted-uk',        oldSlug: 'nike',        query: 'Nike',        name: 'Nike' },
+  { slug: 'most-liked-zara-vinted-uk',        oldSlug: 'zara',        query: 'Zara',        name: 'Zara' },
+  { slug: 'most-liked-lululemon-vinted-uk',   oldSlug: 'lululemon',   query: 'Lululemon',   name: 'Lululemon' },
+  { slug: 'most-liked-north-face-vinted-uk',  oldSlug: 'north-face',  query: 'North Face',  name: 'North Face' },
+  { slug: 'most-liked-asos-vinted-uk',        oldSlug: 'asos',        query: 'ASOS',        name: 'ASOS' },
+  { slug: 'most-liked-hm-vinted-uk',          oldSlug: 'hm',          query: 'H&M',         name: 'H&M' },
+  { slug: 'most-liked-adidas-vinted-uk',      oldSlug: 'adidas',      query: 'Adidas',      name: 'Adidas' },
+  { slug: 'most-liked-vintage-vinted-uk',     oldSlug: 'vintage',     query: 'Vintage',     name: 'Vintage' },
+  { slug: 'most-liked-levis-vinted-uk',       oldSlug: 'levis',       query: "Levi's",      name: "Levi's" },
+  { slug: 'most-liked-topshop-vinted-uk',     oldSlug: 'topshop',     query: 'Topshop',     name: 'Topshop' },
+  { slug: 'most-liked-new-balance-vinted-uk', oldSlug: 'new-balance', query: 'New Balance', name: 'New Balance' },
+  { slug: 'most-liked-gymshark-vinted-uk',    oldSlug: 'gymshark',    query: 'Gymshark',    name: 'Gymshark' },
 ];
 
 // In-memory search cache: term → { items, cachedAt }
@@ -78,6 +78,29 @@ function brandPageHTML(brand, items) {
     ? items.slice(0, 96).map(cardHTML).join('\n')
     : `<div class="empty"><h2>🤷</h2><p>No listings found right now — check back soon.</p></div>`;
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Most liked ${brand.name} on Vinted UK`,
+    description: `The most favourited ${brand.name} listings on Vinted UK right now, sorted by popularity.`,
+    url: `https://hotonvinted.com/${brand.slug}`,
+    itemListElement: items.slice(0, 20).map((item, i) => {
+      const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+      const price = item.price ? parseFloat(item.price.amount).toFixed(2) : null;
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Product',
+          name: item.title || '',
+          url: item.url || '',
+          ...(photo ? { image: photo } : {}),
+          ...(price ? { offers: { '@type': 'Offer', price, priceCurrency: 'GBP', availability: 'https://schema.org/InStock' } } : {}),
+        },
+      };
+    }),
+  };
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,6 +115,7 @@ function brandPageHTML(brand, items) {
   <meta property="og:title" content="Most liked ${esc(brand.name)} on Vinted UK | Hot on Vinted">
   <meta property="og:description" content="Browse the most liked ${esc(brand.name)} listings on Vinted UK right now, sorted by popularity.">
   <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 </head>
 <body>
 
@@ -247,6 +271,10 @@ app.get('/api/status', (req, res) => {
 
 // ── Brand pages (SSR) ─────────────────────────────────────────────────────────
 for (const brand of BRANDS) {
+  // 301 redirect from old short slug
+  app.get(`/${brand.oldSlug}`, (req, res) => res.redirect(301, `/${brand.slug}`));
+
+  // New SEO-friendly URL
   app.get(`/${brand.slug}`, (req, res) => {
     const cacheFile = path.join(BRAND_CACHE_DIR, `${brand.slug}.json`);
     let items = [];
