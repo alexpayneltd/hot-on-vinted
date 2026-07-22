@@ -58,10 +58,6 @@
     .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
     .last-updated { margin-left: auto; font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
 
-    /* ── Ad Banner ── */
-    .ad-banner { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
-    .ad-slot { background: #f0f0f0; border: 1px dashed #ccc; border-radius: 8px; height: 90px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.8rem; }
-
     /* ── Status ── */
     .status-bar { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
     .status-text { font-size: 0.83rem; color: var(--muted); }
@@ -73,9 +69,6 @@
     @media (max-width: 1100px) { .grid { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 800px)  { .grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 600px)  { .grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; } }
-
-    /* ── Mid-page ad ── */
-    .ad-mid { max-width: 1400px; margin: 24px auto; padding: 0 24px; }
 
     /* ── Card ── */
     .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: transform 0.15s, box-shadow 0.15s; }
@@ -119,18 +112,14 @@
 
 <header>
   <div class="header-inner">
-    <a class="logo" href="/">🔥 Hot on <span>Vinted</span></a>
+    <a class="logo" href="/"><img src="/logo.png" alt="Hot on Vinted" style="height:44px;width:44px;border-radius:50%;object-fit:cover;"></a>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="search-input" placeholder="Search brand, item…" autocomplete="off">
+      <input type="text" id="search-input" placeholder="Search…" autocomplete="off">
     </div>
     <span class="last-updated" id="last-updated"></span>
   </div>
 </header>
-
-<div class="ad-banner">
-  <div class="ad-slot">Advertisement</div>
-</div>
 
 <div class="chips-wrap">
   <div class="chips" id="chips">
@@ -154,10 +143,6 @@
 <main class="grid-wrap">
   <div class="grid" id="grid"></div>
 </main>
-
-<div class="ad-mid">
-  <div class="ad-slot">Advertisement</div>
-</div>
 
 <div class="grid-wrap" style="margin-top:0">
   <div class="grid" id="grid2"></div>

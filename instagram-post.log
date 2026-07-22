@@ -1,0 +1,42 @@
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+📡 Fetching listings from https://hotonvinted.com/api/listings...
+   1704 items available
+
+📸 Item: Lovely brown checkered bakers boy hat with leather and wooden details (❤️ 149)
+   Downloading image...
+   Image ready: (600, 600)
+
+📝 Caption:
+🔥 Lovely brown checkered bakers boy hat with leather and wooden details
+
+💰 £12.0  ❤️ 149 favourites on Vinted
+
+Find it at hotonvinted.com 🔥 (link in bio)
+
+#vinted #vinteduk #secondhand #preloved #sust...
+
+   Opening Instagram...
+Traceback (most recent call last):
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 253, in <module>
+    main()
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 246, in main
+    post_to_instagram(img_path, caption)
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 119, in post_to_instagram
+    page.goto("https://www.instagram.com/", wait_until="networkidle", timeout=30000)
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/sync_api/_generated.py", line 9612, in goto
+    self._sync(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_page.py", line 557, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_frame.py", line 156, in goto
+    await self._channel.send(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+Call log:
+  - navigating to "https://www.instagram.com/", waiting until "networkidle"
+
