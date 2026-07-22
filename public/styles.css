@@ -88,9 +88,6 @@ header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom
 
 /* ── Footer ── */
 footer { max-width: 1400px; margin: 48px auto 0; padding: 24px; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-.footer-brands { max-width: 1400px; margin: 32px auto 0; padding: 0 24px; }
-.footer-brands h3 { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-.footer-brands .chips { flex-wrap: wrap; gap: 8px; }
 
 @media (max-width: 600px) {
   .last-updated { display: none; }
