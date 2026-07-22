@@ -95,7 +95,12 @@
     /* ── Brand chips ── */
     .chips-wrap { max-width: 1400px; margin: 16px auto 0; padding: 0 24px; }
     .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    @media (max-width: 600px) { .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; } .chips::-webkit-scrollbar { display: none; } }
+    @media (max-width: 600px) {
+      .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+      .chips::-webkit-scrollbar { display: none; }
+      .chips-wrap { position: relative; }
+      .chips-wrap::after { content: ''; position: absolute; right: 0; top: 0; bottom: 4px; width: 40px; background: linear-gradient(to right, transparent, #f5f5f5); pointer-events: none; }
+    }
     .chip { background: #fff; border: 1.5px solid var(--border); border-radius: 999px; padding: 6px 14px; font-size: 0.8rem; font-weight: 500; cursor: pointer; color: var(--text); transition: border-color 0.15s, background 0.15s; white-space: nowrap; }
     .chip:hover { border-color: var(--accent); color: var(--accent); }
     .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
