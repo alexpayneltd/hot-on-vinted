@@ -49,13 +49,13 @@
 
     /* ── Header ── */
     header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--border); }
-    .header-inner { max-width: 1400px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 16px; overflow: hidden; }
+    .header-inner { max-width: 1400px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 16px; }
     .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; color: var(--text); text-decoration: none; flex-shrink: 0; }
     .logo span { color: var(--accent); }
     .last-updated { margin-left: auto; font-size: 0.78rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
 
     /* ── Chips in header ── */
-    .chips-header { flex: 1; min-width: 0; -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%); mask-image: linear-gradient(to right, black 85%, transparent 100%); }
+    .chips-header { flex: 1; min-width: 0; overflow: hidden; -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%); mask-image: linear-gradient(to right, black 85%, transparent 100%); }
     .chips { display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
     .chips::-webkit-scrollbar { display: none; }
 
@@ -110,6 +110,7 @@
 
     @media (max-width: 600px) {
       .last-updated { display: none; }
+      .chips-header { display: none; }
       .header-inner { gap: 10px; }
       .search-wrap input { font-size: 0.9rem; padding: 12px 16px 12px 42px; }
     }
