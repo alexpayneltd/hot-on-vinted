@@ -1,4 +1,7 @@
-# Railway build config — installs Chrome's Linux dependencies
+# Railway build config — force Node.js, installs Chrome's Linux dependencies
+[providers]
+name = "node"
+
 [phases.setup]
 aptPkgs = [
   "libnss3",
