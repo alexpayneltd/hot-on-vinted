@@ -111,16 +111,38 @@ def post_to_instagram(img_path, caption):
         page.goto("https://www.instagram.com/", wait_until="networkidle", timeout=30000)
         time.sleep(2)
 
-        # If not logged in, let user do it manually
-        if not AUTH_FILE.exists() or "login" in page.url:
-            print("\n⚠️  Not logged in — please log into Instagram in the browser window.")
-            print("   Once you're on the home feed, press Enter here to continue...")
-            input()
-            # Save session so we never need to do this again
+        # Dismiss cookies modal if present
+        for cookie_label in ["Allow all cookies", "Allow All Cookies", "Decline optional cookies"]:
+            try:
+                btn = page.get_by_role("button", name=cookie_label)
+                if btn.is_visible(timeout=2000):
+                    btn.click()
+                    time.sleep(1)
+                    break
+            except Exception:
+                pass
+
+        # Wait for redirect after cookies
+        time.sleep(2)
+
+        # If not logged in, login automatically
+        if "login" in page.url or page.get_by_role("textbox", name="Mobile number, username or").is_visible(timeout=3000):
+            print("   Logging in...")
+            username_box = page.get_by_role("textbox", name="Mobile number, username or")
+            username_box.wait_for(state="visible", timeout=10000)
+            username_box.fill(IG_USERNAME)
+            page.get_by_role("textbox", name="Password").fill(IG_PASSWORD)
+            time.sleep(1)
+            page.get_by_role("textbox", name="Password").press("Enter")
+            time.sleep(4)
+            for btn_name in ["Save info", "Not Now"]:
+                try:
+                    page.get_by_role("button", name=btn_name).click(timeout=4000)
+                    time.sleep(1)
+                except Exception:
+                    pass
             context.storage_state(path=str(AUTH_FILE))
-            print("   ✅ Session saved — future runs will skip login")
-            page.goto("https://www.instagram.com/", wait_until="networkidle", timeout=30000)
-            time.sleep(2)
+            print("   ✅ Logged in, session saved")
 
         # Open create post flow
         print("   Opening create post...")

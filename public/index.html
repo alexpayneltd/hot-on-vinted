@@ -204,14 +204,14 @@
 
   function renderHome() {
     const status = document.getElementById('status-text');
-    status.innerHTML = `Showing <strong>${homeItems.length}</strong> trending listings — search a brand or keyword to find more`;
+    status.innerHTML = `Top <strong>100</strong> most liked listings on Vinted right now — search a brand or keyword to find more`;
     if (!homeItems.length) {
       document.getElementById('grid').innerHTML = `<div class="empty"><h2>🤷</h2><p>No listings yet.</p></div>`;
       document.getElementById('grid2').innerHTML = '';
       return;
     }
     document.getElementById('grid').innerHTML = homeItems.slice(0, 100).map(cardHTML).join('');
-    document.getElementById('grid2').innerHTML = homeItems.slice(100).map(cardHTML).join('');
+    document.getElementById('grid2').innerHTML = '';
   }
 
   function setActiveChip(q) {
