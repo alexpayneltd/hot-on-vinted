@@ -117,7 +117,7 @@ function countrySwitcher(active) {
       <div class="country-dropdown" id="country-dropdown">
         <a href="/uk" class="country-option${active === 'uk' ? ' active' : ''}">🇬🇧 United Kingdom</a>
         <a href="/fr" class="country-option${active === 'fr' ? ' active' : ''}">🇫🇷 France</a>
-        <a href="/de" class="country-option${active === 'de' ? ' active' : ''}">🇩🇪 Germany</a>
+        <a href="/de" class="country-option${active === 'de' ? ' active' : ''}">🇩🇪 Deutschland</a>
       </div>
     </div>`;
 }

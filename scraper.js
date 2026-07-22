@@ -124,6 +124,29 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
   }
 }
 
+// ── Cookie consent handler (required for vinted.de) ──────────────────────────
+async function dismissCookieBanner(page, domain) {
+  if (domain !== 'vinted.de') return;
+  const result = await page.evaluate(() => {
+    // Try various selectors and text patterns for German cookie banners
+    const candidates = [
+      ...document.querySelectorAll('button'),
+    ].filter(b => {
+      const t = (b.textContent || '').toLowerCase().trim();
+      return t.includes('akzeptieren') || t.includes('alle akzeptieren') ||
+             t.includes('accept all') || t.includes('zustimmen');
+    });
+    if (candidates.length) { candidates[0].click(); return candidates[0].textContent.trim(); }
+    return null;
+  });
+  if (result) {
+    console.log(`   🍪 Cookie consent dismissed (${domain}): "${result}"`);
+    await sleep(1500);
+  } else {
+    console.log(`   🍪 No cookie banner found on ${domain}`);
+  }
+}
+
 // ── Fresh browser scrape (catalog or search) ──────────────────────────────────
 async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, domain = 'vinted.co.uk') {
   const browser = await puppeteer.launch({
@@ -139,16 +162,25 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, 
     await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
     await page.goto(`https://www.${domain}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
     await sleep(2500);
+    await dismissCookieBanner(page, domain);
 
     const items = [];
     for (let p = 1; p <= pages; p++) {
       let url = `https://www.${domain}/api/v2/catalog/items?page=${p}&per_page=96`;
       if (catalogId) url += `&catalog[]=${catalogId}`;
       if (searchTerm) url += `&search_text=${encodeURIComponent(searchTerm)}`;
-      const data = await page.evaluate(async (u) => {
+      const result = await page.evaluate(async (u) => {
         const r = await fetch(u, { headers: { Accept: 'application/json' } });
-        return r.ok ? r.json() : null;
+        const text = await r.text();
+        return { status: r.status, ok: r.ok, text };
       }, url);
+
+      if (!result.ok) {
+        console.log(`   ⚠️ API ${result.status} (${domain}) p${p}: ${result.text.slice(0, 150)}`);
+        break;
+      }
+      let data;
+      try { data = JSON.parse(result.text); } catch { break; }
       if (!data?.items?.length) break;
       items.push(...data.items);
       await sleep(300);
