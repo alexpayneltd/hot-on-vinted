@@ -163,7 +163,7 @@
 
   function renderHome() {
     const status = document.getElementById('status-text');
-    status.innerHTML = `A selection of the <strong>most liked</strong> listings on Vinted UK right now — 🔍 search a brand, item or category to find more`;
+    status.innerHTML = `A selection of the <strong>most liked</strong> listings on Vinted UK — 🔍 search a brand, item or category to find more`;
     if (!homeItems.length) {
       document.getElementById('grid').innerHTML = `<div class="empty"><h2>🤷</h2><p>No listings yet.</p></div>`;
       document.getElementById('grid2').innerHTML = '';
