@@ -20,6 +20,8 @@ const pendingSearches = new Map(); // term → Promise (dedup concurrent request
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/privacy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
+
 app.get('/api/listings', (req, res) => {
   if (!fs.existsSync(CACHE_FILE)) {
     return res.json({ items: [], lastUpdated: null, loading: true, message: 'Loading — check back in a minute.' });
