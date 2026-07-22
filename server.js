@@ -881,7 +881,8 @@ function deBrandPageHTML(brand, items) {
 
 // ── Netherlands homepage HTML ──────────────────────────────────────────────────
 function nlHomeHTML() {
-  const chipsHTML = NL_BRANDS.map(b =>
+  const desktopOrder = NL_BRANDS.filter(b => b.name !== 'Scotch & Soda');
+  const chipsHTML = desktopOrder.map(b =>
     `<a href="/nl/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>`
   ).join('\n        ');
 
