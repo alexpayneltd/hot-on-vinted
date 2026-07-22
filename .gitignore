@@ -3,7 +3,7 @@ cache/
 .env
 ig-auth.json
 ig-session.json
-posted.json
+posted*.json
 *.log
-com.hotonvinted.daily.plist
+com.hotonvinted.daily*.plist
 hotonvinted-profile.png

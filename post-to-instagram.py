@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
 Hot on Vinted — daily Instagram poster
-Uses Playwright with recorded selectors to post via instagram.com
+Supports UK and FR. Usage:
+  python post-to-instagram.py           # defaults to UK
+  python post-to-instagram.py --country fr
 """
 
 import json
 import os
 import sys
+import argparse
 import requests
 import time
 from pathlib import Path
@@ -17,16 +20,30 @@ from playwright.sync_api import sync_playwright
 
 load_dotenv()
 
+# ── Args ──────────────────────────────────────────────────────────────────────
+parser = argparse.ArgumentParser()
+parser.add_argument("--country", choices=["uk", "fr"], default="uk")
+args = parser.parse_args()
+COUNTRY = args.country
+
 # ── Config ────────────────────────────────────────────────────────────────────
-IG_USERNAME   = os.environ.get("IG_USERNAME", "hot.on.vinted")
-IG_PASSWORD   = os.environ.get("IG_PASSWORD")
-API_URL       = "https://hotonvinted.com/api/listings"
-POSTED_FILE   = Path(__file__).parent / "posted.json"
-AUTH_FILE     = Path(__file__).parent / "ig-auth.json"   # saved browser session
-TMP_IMG       = Path("/tmp/vinted_post.jpg")
+IG_USERNAME = os.environ.get("IG_USERNAME", "hot.on.vinted")
+IG_PASSWORD = os.environ.get("IG_PASSWORD")
+
+BASE_URL    = "https://hotonvinted.com"
+API_URL     = f"{BASE_URL}/fr/api/listings" if COUNTRY == "fr" else f"{BASE_URL}/api/listings"
+POSTED_FILE = Path(__file__).parent / f"posted-{COUNTRY}.json"
+AUTH_FILE   = Path(__file__).parent / "ig-auth.json"
+TMP_IMG     = Path("/tmp/vinted_post.jpg")
+
+print(f"🌍 Country: {COUNTRY.upper()} | API: {API_URL}")
 
 # ── Posted history ────────────────────────────────────────────────────────────
 def load_posted():
+    # Migrate legacy posted.json → posted-uk.json on first UK run
+    legacy = Path(__file__).parent / "posted.json"
+    if not POSTED_FILE.exists() and legacy.exists() and COUNTRY == "uk":
+        legacy.rename(POSTED_FILE)
     if POSTED_FILE.exists():
         return set(json.loads(POSTED_FILE.read_text()))
     return set()
@@ -36,7 +53,7 @@ def save_posted(posted):
 
 # ── Fetch listings ────────────────────────────────────────────────────────────
 def get_top_item(posted):
-    print(f"📡 Fetching listings from {API_URL}...")
+    print(f"📡 Fetching listings...")
     r = requests.get(API_URL, timeout=30)
     r.raise_for_status()
     items = r.json().get("items", [])
@@ -76,23 +93,38 @@ def download_and_prepare_image(item):
 def make_caption(item):
     title = item.get("title", "")
     price = item.get("price", "")
-    if isinstance(price, dict):
-        symbol    = "£" if price.get("currency_code") == "GBP" else price.get("currency_code", "")
-        price_str = f"{symbol}{price.get('amount', '')}"
-    else:
-        price_str = f"£{price}" if price else ""
     likes = item.get("favourite_count", 0)
 
-    lines = [
-        f"🔥 {title}",
-        "",
-        f"{'💰 ' + price_str + '  ' if price_str else ''}❤️ {likes} favourites on Vinted",
-        "",
-        "Find it at hotonvinted.com 🔥 (link in bio)",
-        "",
-        "#vinted #vinteduk #secondhand #preloved #sustainablefashion",
-        "#thrifted #vintedfind #ukvinted #hotonvinted #vintedseller",
-    ]
+    if isinstance(price, dict):
+        currency_code = price.get("currency_code", "")
+        symbol        = "€" if currency_code == "EUR" else "£"
+        price_str     = f"{symbol}{price.get('amount', '')}"
+    else:
+        symbol    = "€" if COUNTRY == "fr" else "£"
+        price_str = f"{symbol}{price}" if price else ""
+
+    if COUNTRY == "fr":
+        lines = [
+            f"🔥 {title}",
+            "",
+            f"{'💰 ' + price_str + '  ' if price_str else ''}❤️ {likes} favoris sur Vinted",
+            "",
+            "Retrouve-le sur hotonvinted.com/fr 🔥 (lien en bio)",
+            "",
+            "#vinted #vintedfrance #vintedfr #modedurable #secondemain",
+            "#chinedressing #vintedvendeur #hotonvinted #modeethique #prelove",
+        ]
+    else:
+        lines = [
+            f"🔥 {title}",
+            "",
+            f"{'💰 ' + price_str + '  ' if price_str else ''}❤️ {likes} favourites on Vinted",
+            "",
+            "Find it at hotonvinted.com 🔥 (link in bio)",
+            "",
+            "#vinted #vinteduk #secondhand #preloved #sustainablefashion",
+            "#thrifted #vintedfind #ukvinted #hotonvinted #vintedseller",
+        ]
     return "\n".join(lines)
 
 # ── Post via Playwright ───────────────────────────────────────────────────────
@@ -100,7 +132,6 @@ def post_to_instagram(img_path, caption):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
 
-        # Load saved auth session if available
         if AUTH_FILE.exists():
             context = browser.new_context(storage_state=str(AUTH_FILE))
             print("   Loaded saved session")
@@ -111,7 +142,6 @@ def post_to_instagram(img_path, caption):
         page.goto("https://www.instagram.com/", wait_until="networkidle", timeout=30000)
         time.sleep(2)
 
-        # Dismiss cookies modal if present
         for cookie_label in ["Allow all cookies", "Allow All Cookies", "Decline optional cookies"]:
             try:
                 btn = page.get_by_role("button", name=cookie_label)
@@ -122,10 +152,8 @@ def post_to_instagram(img_path, caption):
             except Exception:
                 pass
 
-        # Wait for redirect after cookies
         time.sleep(2)
 
-        # If not logged in, login automatically
         if "login" in page.url or page.get_by_role("textbox", name="Mobile number, username or").is_visible(timeout=3000):
             print("   Logging in...")
             username_box = page.get_by_role("textbox", name="Mobile number, username or")
@@ -144,15 +172,9 @@ def post_to_instagram(img_path, caption):
             context.storage_state(path=str(AUTH_FILE))
             print("   ✅ Logged in, session saved")
 
-        # Open create post flow
         print("   Opening create post...")
         page.screenshot(path="/tmp/ig-feed.png")
-        print("   Screenshot: open /tmp/ig-feed.png")
-        for selector in [
-            "link:New post Create",
-            "link:New post",
-            "link:Create",
-        ]:
+        for selector in ["link:New post Create", "link:New post", "link:Create"]:
             try:
                 role, name = selector.split(":")
                 el = page.get_by_role(role, name=name)
@@ -167,33 +189,26 @@ def post_to_instagram(img_path, caption):
         page.get_by_role("link", name="Post Post").click()
         time.sleep(1.5)
 
-        # Upload image
         print("   Uploading image...")
         with page.expect_file_chooser() as fc:
             page.get_by_role("button", name="Select From Computer").click()
         fc.value.set_files(img_path)
         time.sleep(2)
 
-        # Next (crop step)
+        page.get_by_role("button", name="Next").click()
+        time.sleep(1.5)
         page.get_by_role("button", name="Next").click()
         time.sleep(1.5)
 
-        # Next (filter step)
-        page.get_by_role("button", name="Next").click()
-        time.sleep(1.5)
-
-        # Caption
         print("   Adding caption...")
         caption_box = page.locator('[aria-label="Write a caption..."]')
         caption_box.click()
         caption_box.fill(caption)
         time.sleep(1)
 
-        # Share
         print("   Sharing...")
         page.get_by_role("button", name="Share").click()
 
-        # Wait for confirmation
         try:
             page.locator("text=Your post has been shared").wait_for(timeout=30000)
             print("   ✅ Post shared!")
@@ -209,8 +224,8 @@ def main():
         print("❌ IG_PASSWORD not set in .env")
         sys.exit(1)
 
-    posted  = load_posted()
-    item    = get_top_item(posted)
+    posted   = load_posted()
+    item     = get_top_item(posted)
 
     if not item:
         print("⚠️  No new items to post — all top items already posted.")
