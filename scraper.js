@@ -50,8 +50,9 @@ async function getWarmPage(domain = 'vinted.co.uk') {
     req.continue();
   });
 
-  await page.goto(`https://www.${domain}`, { waitUntil: 'networkidle2', timeout: 60000 });
-  await sleep(2000);
+  const waitUntil = domain === 'vinted.nl' ? 'networkidle2' : 'domcontentloaded';
+  await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
+  await sleep(domain === 'vinted.nl' ? 4000 : 2000);
   if (capturedAuthToken) console.log(`   🔑 Warm auth token captured (${domain})`);
 
   warmSessions.set(domain, { browser, page, timer, authToken: capturedAuthToken });
@@ -160,8 +161,9 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, 
       req.continue();
     });
 
-    await page.goto(`https://www.${domain}`, { waitUntil: 'networkidle2', timeout: 60000 });
-    await sleep(3000);
+    const waitUntil = domain === 'vinted.nl' ? 'networkidle2' : 'domcontentloaded';
+    await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
+    await sleep(domain === 'vinted.nl' ? 4000 : 2500);
     if (capturedAuthToken) console.log(`   🔑 Auth token captured (${domain})`);
 
     const items = [];
