@@ -130,8 +130,11 @@
     const status = document.getElementById('status-text');
     if (currentTerm) return;
 
-    grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
-    grid2.innerHTML = '';
+    // Only show skeletons on first load — keep existing listings visible during refresh
+    if (!homeItems.length) {
+      grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
+      grid2.innerHTML = '';
+    }
 
     try {
       const res = await fetch('/api/listings');
