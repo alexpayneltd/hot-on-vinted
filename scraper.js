@@ -70,12 +70,17 @@ async function closeWarmBrowser(domain = 'vinted.co.uk') {
 async function setupAuthCapture(page, domain) {
   if (domain !== 'vinted.nl') return { getToken: () => null };
   let capturedToken = null;
-  await page.setRequestInterception(true);
-  page.on('request', req => {
-    const auth = req.headers()['authorization'];
-    if (auth && auth.startsWith('Bearer ') && !capturedToken) capturedToken = auth;
-    req.continue();
-  });
+  // Use CDP to passively observe requests — does NOT disrupt the session like setRequestInterception
+  try {
+    const cdp = await page.createCDPSession();
+    await cdp.send('Network.enable');
+    cdp.on('Network.requestWillBeSent', ({ request }) => {
+      const auth = request.headers?.Authorization || request.headers?.authorization;
+      if (auth?.startsWith('Bearer ') && !capturedToken) capturedToken = auth;
+    });
+  } catch (e) {
+    console.log(`   ⚠️ CDP setup failed (${domain}): ${e.message}`);
+  }
   // Fallback: extract from page JS state after load
   const getToken = async () => {
     if (capturedToken) return capturedToken;
@@ -85,7 +90,6 @@ async function setupAuthCapture(page, domain) {
         const m = str.match(/"(?:token|access_token|apiToken)":"([A-Za-z0-9_\-\.]{20,})"/);
         if (m) return `Bearer ${m[1]}`;
       } catch {}
-      // Try script tags
       for (const s of document.querySelectorAll('script:not([src])')) {
         const m = s.textContent.match(/"token"\s*:\s*"([A-Za-z0-9_\-\.]{20,})"/);
         if (m) return `Bearer ${m[1]}`;
