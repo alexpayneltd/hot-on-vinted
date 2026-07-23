@@ -41,21 +41,15 @@ async function getWarmPage(domain = 'vinted.co.uk') {
   const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : domain === 'vinted.de' ? 'de-DE,de;q=0.9' : domain === 'vinted.nl' ? 'nl-NL,nl;q=0.9' : 'en-GB,en;q=0.9';
   await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
 
-  // Capture Bearer token for domains that require it (e.g. vinted.nl)
-  let capturedAuthToken = null;
-  await page.setRequestInterception(true);
-  page.on('request', req => {
-    const auth = req.headers()['authorization'];
-    if (auth && auth.startsWith('Bearer ') && !capturedAuthToken) capturedAuthToken = auth;
-    req.continue();
-  });
+  const { getToken } = await setupAuthCapture(page, domain);
 
   const waitUntil = domain === 'vinted.nl' ? 'networkidle2' : 'domcontentloaded';
   await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
   await sleep(domain === 'vinted.nl' ? 4000 : 2000);
-  if (capturedAuthToken) console.log(`   🔑 Warm auth token captured (${domain})`);
+  const authToken = await getToken();
+  if (authToken) console.log(`   🔑 Warm auth token captured (${domain})`);
 
-  warmSessions.set(domain, { browser, page, timer, authToken: capturedAuthToken });
+  warmSessions.set(domain, { browser, page, timer, authToken });
   console.log(`🌐 Warm page ready (${domain})`);
   return page;
 }
@@ -70,6 +64,37 @@ async function closeWarmBrowser(domain = 'vinted.co.uk') {
     }
     warmSessions.delete(domain);
   }
+}
+
+// ── Auth token helper (NL requires Bearer token; others use cookies) ──────────
+async function setupAuthCapture(page, domain) {
+  if (domain !== 'vinted.nl') return { getToken: () => null };
+  let capturedToken = null;
+  await page.setRequestInterception(true);
+  page.on('request', req => {
+    const auth = req.headers()['authorization'];
+    if (auth && auth.startsWith('Bearer ') && !capturedToken) capturedToken = auth;
+    req.continue();
+  });
+  // Fallback: extract from page JS state after load
+  const getToken = async () => {
+    if (capturedToken) return capturedToken;
+    capturedToken = await page.evaluate(() => {
+      try {
+        const str = JSON.stringify(window.__NUXT__ || window.__STORE_STATE__ || window.__INITIAL_STATE__ || {});
+        const m = str.match(/"(?:token|access_token|apiToken)":"([A-Za-z0-9_\-\.]{20,})"/);
+        if (m) return `Bearer ${m[1]}`;
+      } catch {}
+      // Try script tags
+      for (const s of document.querySelectorAll('script:not([src])')) {
+        const m = s.textContent.match(/"token"\s*:\s*"([A-Za-z0-9_\-\.]{20,})"/);
+        if (m) return `Bearer ${m[1]}`;
+      }
+      return null;
+    }).catch(() => null);
+    return capturedToken;
+  };
+  return { getToken };
 }
 
 // ── Per-domain scrape locks ───────────────────────────────────────────────────
@@ -110,18 +135,13 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
     await page.setViewport({ width: 1280, height: 900 });
     await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
 
-    let capturedAuthToken = null;
-    await page.setRequestInterception(true);
-    page.on('request', req => {
-      const auth = req.headers()['authorization'];
-      if (auth && auth.startsWith('Bearer ') && !capturedAuthToken) capturedAuthToken = auth;
-      req.continue();
-    });
+    const { getToken } = await setupAuthCapture(page, domain);
 
     const waitUntil = domain === 'vinted.nl' ? 'networkidle2' : 'domcontentloaded';
     await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
     await sleep(domain === 'vinted.nl' ? 4000 : 2500);
-    if (capturedAuthToken) console.log(`   🔑 Auth token captured (${domain})`);
+    const authToken = await getToken();
+    if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
 
     for (const cat of CATALOGS) {
       console.log(`📦 ${cat.label} (${domain})`);
@@ -135,7 +155,7 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
             const r = await fetch(u, { headers });
             const text = await r.text();
             return { status: r.status, ok: r.ok, text };
-          }, url, capturedAuthToken);
+          }, url, authToken);
           if (!result.ok) { console.log(`   ⚠️ API ${result.status} (${domain}) p${p}: ${result.text.slice(0, 150)}`); break; }
           let data; try { data = JSON.parse(result.text); } catch { break; }
           if (!data?.items?.length) break;
@@ -191,21 +211,13 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, 
     const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : domain === 'vinted.de' ? 'de-DE,de;q=0.9' : domain === 'vinted.nl' ? 'nl-NL,nl;q=0.9' : 'en-GB,en;q=0.9';
     await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
 
-    // Intercept requests to capture the Bearer auth token (required by some domains e.g. vinted.nl)
-    let capturedAuthToken = null;
-    await page.setRequestInterception(true);
-    page.on('request', req => {
-      const auth = req.headers()['authorization'];
-      if (auth && auth.startsWith('Bearer ') && !capturedAuthToken) {
-        capturedAuthToken = auth;
-      }
-      req.continue();
-    });
+    const { getToken } = await setupAuthCapture(page, domain);
 
     const waitUntil = domain === 'vinted.nl' ? 'networkidle2' : 'domcontentloaded';
     await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
     await sleep(domain === 'vinted.nl' ? 4000 : 2500);
-    if (capturedAuthToken) console.log(`   🔑 Auth token captured (${domain})`);
+    const authToken = await getToken();
+    if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
 
     const items = [];
     for (let p = 1; p <= pages; p++) {
@@ -218,7 +230,7 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, 
         const r = await fetch(u, { headers });
         const text = await r.text();
         return { status: r.status, ok: r.ok, text };
-      }, url, capturedAuthToken);
+      }, url, authToken);
 
       if (!result.ok) {
         console.log(`   ⚠️ API ${result.status} (${domain}) p${p}: ${result.text.slice(0, 150)}`);
@@ -291,18 +303,13 @@ export async function scrapeAllBrands(brands, domain = 'vinted.co.uk', cacheDir,
     await page.setViewport({ width: 1280, height: 900 });
     await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
 
-    let capturedAuthToken = null;
-    await page.setRequestInterception(true);
-    page.on('request', req => {
-      const auth = req.headers()['authorization'];
-      if (auth && auth.startsWith('Bearer ') && !capturedAuthToken) capturedAuthToken = auth;
-      req.continue();
-    });
+    const { getToken } = await setupAuthCapture(page, domain);
 
     const waitUntil = domain === 'vinted.nl' ? 'networkidle2' : 'domcontentloaded';
     await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
     await sleep(domain === 'vinted.nl' ? 4000 : 2500);
-    if (capturedAuthToken) console.log(`   🔑 Auth token captured (${domain})`);
+    const authToken = await getToken();
+    if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
 
     const results = {};
     for (const brand of brands) {
@@ -316,7 +323,7 @@ export async function scrapeAllBrands(brands, domain = 'vinted.co.uk', cacheDir,
             const r = await fetch(u, { headers });
             const text = await r.text();
             return { status: r.status, ok: r.ok, text };
-          }, url, capturedAuthToken);
+          }, url, authToken);
           if (!result.ok) { console.log(`   ⚠️ API ${result.status} (${domain}) ${brand.name} p${p}: ${result.text.slice(0, 100)}`); break; }
           let data; try { data = JSON.parse(result.text); } catch { break; }
           if (!data?.items?.length) break;
