@@ -184,7 +184,7 @@ function ukBrandPageHTML(brand, items) {
   <title>Most liked ${esc(brand.name)} on Vinted UK | Hot on Vinted</title>
   <meta name="description" content="Browse the most liked ${esc(brand.name)} listings on Vinted UK right now, sorted by popularity. Find the best ${esc(brand.name)} deals on Vinted.">
   <link rel="canonical" href="https://hotonvinted.com/${brand.slug}">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <link rel="icon" href="/logo.png" type="image/png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/${brand.slug}">
   <meta property="og:title" content="Most liked ${esc(brand.name)} on Vinted UK | Hot on Vinted">
@@ -255,16 +255,17 @@ function frHomeHTML() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hot on Vinted France — Les articles les plus likés</title>
+  <title>Hot on Vinted France — Les articles les plus likés 2026</title>
   <meta name="description" content="Découvrez les articles les plus likés sur Vinted France, triés par popularité. Recherchez une marque pour trouver ses articles les plus aimés.">
   <link rel="canonical" href="https://hotonvinted.com/fr">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <link rel="icon" href="/logo.png" type="image/png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/fr">
-  <meta property="og:title" content="Hot on Vinted France — Les articles les plus likés">
+  <meta property="og:title" content="Hot on Vinted France — Les articles les plus likés 2026">
   <meta property="og:description" content="Découvrez les articles les plus likés sur Vinted France, triés par popularité.">
   <meta property="og:site_name" content="Hot on Vinted">
   <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com/fr"}</script>
 </head>
 <body>
 <header>
@@ -507,7 +508,7 @@ function frBrandPageHTML(brand, items) {
   <title>${esc(brand.name)} les plus likés sur Vinted France | Hot on Vinted</title>
   <meta name="description" content="Découvrez les annonces ${esc(brand.name)} les plus likées sur Vinted France, triées par popularité.">
   <link rel="canonical" href="https://hotonvinted.com/fr/${brand.slug}">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <link rel="icon" href="/logo.png" type="image/png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/fr/${brand.slug}">
   <meta property="og:title" content="${esc(brand.name)} les plus likés sur Vinted France | Hot on Vinted">
@@ -577,16 +578,17 @@ function deHomeHTML() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hot on Vinted Deutschland — Die beliebtesten Artikel</title>
+  <title>Hot on Vinted Deutschland — Die beliebtesten Artikel 2026</title>
   <meta name="description" content="Entdecke die beliebtesten Artikel auf Vinted Deutschland, sortiert nach Popularität. Suche nach einer Marke, um ihre meistgemochten Artikel zu finden.">
   <link rel="canonical" href="https://hotonvinted.com/de">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <link rel="icon" href="/logo.png" type="image/png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/de">
-  <meta property="og:title" content="Hot on Vinted Deutschland — Die beliebtesten Artikel">
+  <meta property="og:title" content="Hot on Vinted Deutschland — Die beliebtesten Artikel 2026">
   <meta property="og:description" content="Entdecke die beliebtesten Artikel auf Vinted Deutschland, sortiert nach Popularität.">
   <meta property="og:site_name" content="Hot on Vinted">
   <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com/de"}</script>
 </head>
 <body>
 <header>
@@ -828,7 +830,7 @@ function deBrandPageHTML(brand, items) {
   <title>${esc(brand.name)} beliebteste Artikel auf Vinted Deutschland | Hot on Vinted</title>
   <meta name="description" content="Entdecke die beliebtesten ${esc(brand.name)}-Artikel auf Vinted Deutschland, sortiert nach Popularität.">
   <link rel="canonical" href="https://hotonvinted.com/de/${brand.slug}">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <link rel="icon" href="/logo.png" type="image/png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/de/${brand.slug}">
   <meta property="og:title" content="${esc(brand.name)} beliebteste Artikel auf Vinted Deutschland | Hot on Vinted">
@@ -899,16 +901,17 @@ function nlHomeHTML() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hot on Vinted Nederland — De populairste items</title>
+  <title>Hot on Vinted Nederland — De populairste items 2026</title>
   <meta name="description" content="Ontdek de meest gelikte items op Vinted Nederland, gesorteerd op populariteit. Zoek een merk om de meest favoriete items te vinden.">
   <link rel="canonical" href="https://hotonvinted.com/nl">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <link rel="icon" href="/logo.png" type="image/png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/nl">
-  <meta property="og:title" content="Hot on Vinted Nederland — De populairste items">
+  <meta property="og:title" content="Hot on Vinted Nederland — De populairste items 2026">
   <meta property="og:description" content="Ontdek de meest gelikte items op Vinted Nederland, gesorteerd op populariteit.">
   <meta property="og:site_name" content="Hot on Vinted">
   <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com/nl"}</script>
 </head>
 <body>
 <header>
@@ -1150,7 +1153,7 @@ function nlBrandPageHTML(brand, items) {
   <title>Meest gelikte ${esc(brand.name)} op Vinted Nederland | Hot on Vinted</title>
   <meta name="description" content="Bekijk de meest gelikte ${esc(brand.name)} items op Vinted Nederland, gesorteerd op populariteit.">
   <link rel="canonical" href="https://hotonvinted.com/nl/${brand.slug}">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <link rel="icon" href="/logo.png" type="image/png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/nl/${brand.slug}">
   <meta property="og:title" content="Meest gelikte ${esc(brand.name)} op Vinted Nederland | Hot on Vinted">
