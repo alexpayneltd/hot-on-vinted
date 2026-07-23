@@ -258,6 +258,11 @@ function frHomeHTML() {
   <title>Hot on Vinted France — Les articles les plus likés 2026</title>
   <meta name="description" content="Découvrez les articles les plus likés sur Vinted France, triés par popularité. Recherchez une marque pour trouver ses articles les plus aimés.">
   <link rel="canonical" href="https://hotonvinted.com/fr">
+  <link rel="alternate" hreflang="en-GB" href="https://hotonvinted.com/uk">
+  <link rel="alternate" hreflang="fr" href="https://hotonvinted.com/fr">
+  <link rel="alternate" hreflang="de" href="https://hotonvinted.com/de">
+  <link rel="alternate" hreflang="nl" href="https://hotonvinted.com/nl">
+  <link rel="alternate" hreflang="x-default" href="https://hotonvinted.com/uk">
   <link rel="icon" href="/logo.png" type="image/png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/fr">
@@ -581,6 +586,11 @@ function deHomeHTML() {
   <title>Hot on Vinted Deutschland — Die beliebtesten Artikel 2026</title>
   <meta name="description" content="Entdecke die beliebtesten Artikel auf Vinted Deutschland, sortiert nach Popularität. Suche nach einer Marke, um ihre meistgemochten Artikel zu finden.">
   <link rel="canonical" href="https://hotonvinted.com/de">
+  <link rel="alternate" hreflang="en-GB" href="https://hotonvinted.com/uk">
+  <link rel="alternate" hreflang="fr" href="https://hotonvinted.com/fr">
+  <link rel="alternate" hreflang="de" href="https://hotonvinted.com/de">
+  <link rel="alternate" hreflang="nl" href="https://hotonvinted.com/nl">
+  <link rel="alternate" hreflang="x-default" href="https://hotonvinted.com/uk">
   <link rel="icon" href="/logo.png" type="image/png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/de">
@@ -904,6 +914,11 @@ function nlHomeHTML() {
   <title>Hot on Vinted Nederland — De populairste items 2026</title>
   <meta name="description" content="Ontdek de meest gelikte items op Vinted Nederland, gesorteerd op populariteit. Zoek een merk om de meest favoriete items te vinden.">
   <link rel="canonical" href="https://hotonvinted.com/nl">
+  <link rel="alternate" hreflang="en-GB" href="https://hotonvinted.com/uk">
+  <link rel="alternate" hreflang="fr" href="https://hotonvinted.com/fr">
+  <link rel="alternate" hreflang="de" href="https://hotonvinted.com/de">
+  <link rel="alternate" hreflang="nl" href="https://hotonvinted.com/nl">
+  <link rel="alternate" hreflang="x-default" href="https://hotonvinted.com/uk">
   <link rel="icon" href="/logo.png" type="image/png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/nl">
