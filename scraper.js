@@ -126,7 +126,7 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
   const browser = await puppeteer.launch({
     headless: 'new',
     executablePath: CHROME_EXEC,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--no-zygote'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     protocolTimeout: 60000,
   });
 
@@ -202,7 +202,7 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, 
   const browser = await puppeteer.launch({
     headless: 'new',
     executablePath: CHROME_EXEC,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--no-zygote'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     protocolTimeout: 60000,
   });
   try {
@@ -295,7 +295,7 @@ export async function scrapeAllBrands(brands, domain = 'vinted.co.uk', cacheDir,
   const browser = await puppeteer.launch({
     headless: 'new',
     executablePath: CHROME_EXEC,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--no-zygote'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     protocolTimeout: 60000,
   });
   try {
