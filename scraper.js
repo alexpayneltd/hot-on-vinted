@@ -78,7 +78,7 @@ const scrapingDomains = new Set();
 // ── Per-domain search queues ──────────────────────────────────────────────────
 const searchQueues = new Map(); // domain → Promise
 
-// ── Main catalog scrape ───────────────────────────────────────────────────────
+// ── Main catalog scrape (single browser for all catalogs) ────────────────────
 export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(CACHE_DIR, 'all.json')) {
   if (scrapingDomains.has(domain)) { console.log(`Scrape already in progress (${domain}), skipping.`); return; }
   scrapingDomains.add(domain);
@@ -86,22 +86,62 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
 
   const globalItems = new Map();
 
+  const CATALOGS = [
+    { label: 'Women',                  id: '1904' },
+    { label: 'Men',                    id: '5'    },
+    { label: 'Kids',                   id: '1193' },
+    { label: 'Home',                   id: '1918' },
+    { label: 'Electronics',            id: '2994' },
+    { label: 'Sports',                 id: '4332' },
+    { label: 'Entertainment',          id: '2309' },
+    { label: 'Hobbies & Collectables', id: '4824' },
+  ];
+
+  const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : domain === 'vinted.de' ? 'de-DE,de;q=0.9' : domain === 'vinted.nl' ? 'nl-NL,nl;q=0.9' : 'en-GB,en;q=0.9';
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    executablePath: CHROME_EXEC,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--no-zygote'],
+    protocolTimeout: 60000,
+  });
+
   try {
-    const CATALOGS = [
-      { label: 'Women',                  id: '1904' },
-      { label: 'Men',                    id: '5'    },
-      { label: 'Kids',                   id: '1193' },
-      { label: 'Home',                   id: '1918' },
-      { label: 'Electronics',            id: '2994' },
-      { label: 'Sports',                 id: '4332' },
-      { label: 'Entertainment',          id: '2309' },
-      { label: 'Hobbies & Collectables', id: '4824' },
-    ];
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 900 });
+    await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
+
+    let capturedAuthToken = null;
+    await page.setRequestInterception(true);
+    page.on('request', req => {
+      const auth = req.headers()['authorization'];
+      if (auth && auth.startsWith('Bearer ') && !capturedAuthToken) capturedAuthToken = auth;
+      req.continue();
+    });
+
+    const waitUntil = domain === 'vinted.nl' ? 'networkidle2' : 'domcontentloaded';
+    await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
+    await sleep(domain === 'vinted.nl' ? 4000 : 2500);
+    if (capturedAuthToken) console.log(`   🔑 Auth token captured (${domain})`);
 
     for (const cat of CATALOGS) {
       console.log(`📦 ${cat.label} (${domain})`);
       try {
-        const items = await scrapeWithFreshBrowser(cat.id, 20, null, domain);
+        const items = [];
+        for (let p = 1; p <= 20; p++) {
+          const url = `https://www.${domain}/api/v2/catalog/items?page=${p}&per_page=96&catalog[]=${cat.id}`;
+          const result = await page.evaluate(async (u, token) => {
+            const headers = { Accept: 'application/json' };
+            if (token) headers['Authorization'] = token;
+            const r = await fetch(u, { headers });
+            const text = await r.text();
+            return { status: r.status, ok: r.ok, text };
+          }, url, capturedAuthToken);
+          if (!result.ok) { console.log(`   ⚠️ API ${result.status} (${domain}) p${p}: ${result.text.slice(0, 150)}`); break; }
+          let data; try { data = JSON.parse(result.text); } catch { break; }
+          if (!data?.items?.length) break;
+          items.push(...data.items);
+          await sleep(300);
+        }
         let added = 0;
         for (const item of items) {
           if (!globalItems.has(item.id)) {
@@ -114,7 +154,7 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
       } catch (err) {
         console.error(`  ⚠️ ${cat.label} failed, skipping: ${err.message}`);
       }
-      await sleep(3000);
+      await sleep(2000);
     }
 
     const sorted = [...globalItems.values()]
@@ -131,6 +171,7 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
   } catch (err) {
     console.error(`Scrape error (${domain}):`, err.message);
   } finally {
+    await browser.close().catch(() => {});
     scrapingDomains.delete(domain);
     console.log(`[${new Date().toISOString()}] Done (${domain})\n`);
   }
@@ -141,7 +182,7 @@ async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, 
   const browser = await puppeteer.launch({
     headless: 'new',
     executablePath: CHROME_EXEC,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--no-zygote'],
     protocolTimeout: 60000,
   });
   try {
