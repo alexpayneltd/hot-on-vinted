@@ -245,7 +245,9 @@
   }
 
   function cardHTML(item) {
-    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url
+      || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url
+      || item.photo?.url || '';
     const price = item.price ? `£${parseFloat(item.price.amount).toFixed(2)}` : '';
     const totalPrice = item.total_item_price ? `£${parseFloat(item.total_item_price.amount).toFixed(2)} inc. fees` : '';
     const pills = [item.size_title, item.status].filter(Boolean).map(p => `<span class="pill">${esc(p)}</span>`).join('');

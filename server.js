@@ -108,7 +108,9 @@ function esc(s) {
 }
 
 function cardHTML(item, currency = '£') {
-  const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+  const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url
+    || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url
+    || item.photo?.url || '';
   const price = item.price ? `${currency}${parseFloat(item.price.amount).toFixed(2)}` : '';
   const totalPrice = item.total_item_price ? `${currency}${parseFloat(item.total_item_price.amount).toFixed(2)} inc. fees` : '';
   const pills = [item.size_title, item.status].filter(Boolean).map(p => `<span class="pill">${esc(p)}</span>`).join('');
@@ -161,7 +163,7 @@ function ukBrandPageHTML(brand, items) {
     description: `The most favourited ${brand.name} listings on Vinted UK right now, sorted by popularity.`,
     url: `https://hotonvinted.com/${brand.slug}`,
     itemListElement: items.slice(0, 20).map((item, i) => {
-      const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+      const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
       const price = item.price ? parseFloat(item.price.amount).toFixed(2) : null;
       return {
         '@type': 'ListItem', position: i + 1,
@@ -423,7 +425,7 @@ function frHomeHTML() {
   }
 
   function cardHTML(item) {
-    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
     const price = item.price ? '€' + parseFloat(item.price.amount).toFixed(2) : '';
     const totalPrice = item.total_item_price ? '€' + parseFloat(item.total_item_price.amount).toFixed(2) + ' frais inclus' : '';
     const pills = [item.size_title, item.status].filter(Boolean).map(p => '<span class="pill">' + esc(p) + '</span>').join('');
@@ -484,7 +486,7 @@ function frBrandPageHTML(brand, items) {
     description: `Les annonces ${brand.name} les plus likées sur Vinted France, triées par popularité.`,
     url: `https://hotonvinted.com/fr/${brand.slug}`,
     itemListElement: items.slice(0, 20).map((item, i) => {
-      const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+      const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
       const price = item.price ? parseFloat(item.price.amount).toFixed(2) : null;
       return {
         '@type': 'ListItem', position: i + 1,
@@ -749,7 +751,7 @@ function deHomeHTML() {
   }
 
   function cardHTML(item) {
-    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
     const price = item.price ? '€' + parseFloat(item.price.amount).toFixed(2) : '';
     const totalPrice = item.total_item_price ? '€' + parseFloat(item.total_item_price.amount).toFixed(2) + ' inkl. Gebühren' : '';
     const pills = [item.size_title, item.status].filter(Boolean).map(p => '<span class="pill">' + esc(p) + '</span>').join('');
@@ -805,7 +807,7 @@ function deBrandPageHTML(brand, items) {
     description: `Die beliebtesten ${brand.name}-Artikel auf Vinted Deutschland, sortiert nach Popularität.`,
     url: `https://hotonvinted.com/de/${brand.slug}`,
     itemListElement: items.slice(0, 20).map((item, i) => {
-      const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+      const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
       const price = item.price ? parseFloat(item.price.amount).toFixed(2) : null;
       return {
         '@type': 'ListItem', position: i + 1,
@@ -1071,7 +1073,7 @@ function nlHomeHTML() {
   }
 
   function cardHTML(item) {
-    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
     const price = item.price ? '€' + parseFloat(item.price.amount).toFixed(2) : '';
     const totalPrice = item.total_item_price ? '€' + parseFloat(item.total_item_price.amount).toFixed(2) + ' incl. kosten' : '';
     const pills = [item.size_title, item.status].filter(Boolean).map(p => '<span class="pill">' + esc(p) + '</span>').join('');
@@ -1127,7 +1129,7 @@ function nlBrandPageHTML(brand, items) {
     description: `De meest gelikte ${brand.name} items op Vinted Nederland, gesorteerd op populariteit.`,
     url: `https://hotonvinted.com/nl/${brand.slug}`,
     itemListElement: items.slice(0, 20).map((item, i) => {
-      const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+      const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
       const price = item.price ? parseFloat(item.price.amount).toFixed(2) : null;
       return {
         '@type': 'ListItem', position: i + 1,
