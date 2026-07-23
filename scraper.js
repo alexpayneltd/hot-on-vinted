@@ -197,56 +197,6 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
   }
 }
 
-// ── Fresh browser scrape (catalog or search) ──────────────────────────────────
-async function scrapeWithFreshBrowser(catalogId, pages = 10, searchTerm = null, domain = 'vinted.co.uk') {
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    executablePath: CHROME_EXEC,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-    protocolTimeout: 60000,
-  });
-  try {
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1280, height: 900 });
-    const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : domain === 'vinted.de' ? 'de-DE,de;q=0.9' : domain === 'vinted.nl' ? 'nl-NL,nl;q=0.9' : 'en-GB,en;q=0.9';
-    await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
-
-    const { getToken } = await setupAuthCapture(page, domain);
-
-    const waitUntil = domain === 'vinted.nl' ? 'networkidle2' : 'domcontentloaded';
-    await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
-    await sleep(domain === 'vinted.nl' ? 4000 : 2500);
-    const authToken = await getToken();
-    if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
-
-    const items = [];
-    for (let p = 1; p <= pages; p++) {
-      let url = `https://www.${domain}/api/v2/catalog/items?page=${p}&per_page=96`;
-      if (catalogId) url += `&catalog[]=${catalogId}`;
-      if (searchTerm) url += `&search_text=${encodeURIComponent(searchTerm)}`;
-      const result = await page.evaluate(async (u, token) => {
-        const headers = { Accept: 'application/json' };
-        if (token) headers['Authorization'] = token;
-        const r = await fetch(u, { headers });
-        const text = await r.text();
-        return { status: r.status, ok: r.ok, text };
-      }, url, authToken);
-
-      if (!result.ok) {
-        console.log(`   ⚠️ API ${result.status} (${domain}) p${p}: ${result.text.slice(0, 150)}`);
-        break;
-      }
-      let data;
-      try { data = JSON.parse(result.text); } catch { break; }
-      if (!data?.items?.length) break;
-      items.push(...data.items);
-      await sleep(300);
-    }
-    return items;
-  } finally {
-    await browser.close();
-  }
-}
 
 // ── Search (warm browser, serialised per domain) ──────────────────────────────
 export async function scrapeSearch(term, pages = 5, domain = 'vinted.co.uk') {

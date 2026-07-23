@@ -108,15 +108,16 @@ function esc(s) {
 }
 
 function cardHTML(item, currency = '£') {
-  const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url
-    || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url
-    || item.photo?.url || '';
+  const thumb150 = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || '';
+  const thumb310 = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || '';
+  const photo = thumb150 || thumb310 || item.photo?.url || '';
+  const srcset = thumb150 && thumb310 ? `${esc(thumb150)} 150w, ${esc(thumb310)} 310w` : '';
   const price = item.price ? `${currency}${parseFloat(item.price.amount).toFixed(2)}` : '';
   const totalPrice = item.total_item_price ? `${currency}${parseFloat(item.total_item_price.amount).toFixed(2)} inc. fees` : '';
   const pills = [item.size_title, item.status].filter(Boolean).map(p => `<span class="pill">${esc(p)}</span>`).join('');
   return `<a class="card" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">
     <div class="card-img-wrap">
-      ${photo ? `<img class="card-img" src="${esc(photo)}" alt="${esc(item.title || '')}" loading="lazy">` : ''}
+      ${photo ? `<img class="card-img" src="${esc(photo)}" ${srcset ? `srcset="${srcset}" sizes="(max-width: 600px) 150px, 310px"` : ''} alt="${esc(item.title || '')}" loading="lazy">` : ''}
       <span class="like-badge">❤️ ${item.favourite_count}</span>
     </div>
     <div class="card-body">
@@ -431,13 +432,16 @@ function frHomeHTML() {
   }
 
   function cardHTML(item) {
-    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+    const thumb150 = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || '';
+    const thumb310 = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || '';
+    const photo = thumb150 || thumb310 || item.photo?.url || '';
+    const srcset = thumb150 && thumb310 ? thumb150 + ' 150w, ' + thumb310 + ' 310w' : '';
     const price = item.price ? '€' + parseFloat(item.price.amount).toFixed(2) : '';
     const totalPrice = item.total_item_price ? '€' + parseFloat(item.total_item_price.amount).toFixed(2) + ' frais inclus' : '';
     const pills = [item.size_title, item.status].filter(Boolean).map(p => '<span class="pill">' + esc(p) + '</span>').join('');
     return '<a class="card" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">'
       + '<div class="card-img-wrap">'
-      + (photo ? '<img class="card-img" src="' + esc(photo) + '" alt="' + esc(item.title || '') + '" loading="lazy">' : '')
+      + (photo ? '<img class="card-img" src="' + esc(photo) + '"' + (srcset ? ' srcset="' + srcset + '" sizes="(max-width: 600px) 150px, 310px"' : '') + ' alt="' + esc(item.title || '') + '" loading="lazy">' : '')
       + '<span class="like-badge">❤️ ' + item.favourite_count + '</span>'
       + '</div><div class="card-body">'
       + (item.brand_title ? '<div class="card-brand">' + esc(item.brand_title) + '</div>' : '')
@@ -763,13 +767,16 @@ function deHomeHTML() {
   }
 
   function cardHTML(item) {
-    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+    const thumb150 = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || '';
+    const thumb310 = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || '';
+    const photo = thumb150 || thumb310 || item.photo?.url || '';
+    const srcset = thumb150 && thumb310 ? thumb150 + ' 150w, ' + thumb310 + ' 310w' : '';
     const price = item.price ? '€' + parseFloat(item.price.amount).toFixed(2) : '';
     const totalPrice = item.total_item_price ? '€' + parseFloat(item.total_item_price.amount).toFixed(2) + ' inkl. Gebühren' : '';
     const pills = [item.size_title, item.status].filter(Boolean).map(p => '<span class="pill">' + esc(p) + '</span>').join('');
     return '<a class="card" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">'
       + '<div class="card-img-wrap">'
-      + (photo ? '<img class="card-img" src="' + esc(photo) + '" alt="' + esc(item.title || '') + '" loading="lazy">' : '')
+      + (photo ? '<img class="card-img" src="' + esc(photo) + '"' + (srcset ? ' srcset="' + srcset + '" sizes="(max-width: 600px) 150px, 310px"' : '') + ' alt="' + esc(item.title || '') + '" loading="lazy">' : '')
       + '<span class="like-badge">❤️ ' + item.favourite_count + '</span>'
       + '</div><div class="card-body">'
       + (item.brand_title ? '<div class="card-brand">' + esc(item.brand_title) + '</div>' : '')
@@ -1091,13 +1098,16 @@ function nlHomeHTML() {
   }
 
   function cardHTML(item) {
-    const photo = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || item.photo?.url || '';
+    const thumb150 = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || '';
+    const thumb310 = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || '';
+    const photo = thumb150 || thumb310 || item.photo?.url || '';
+    const srcset = thumb150 && thumb310 ? thumb150 + ' 150w, ' + thumb310 + ' 310w' : '';
     const price = item.price ? '€' + parseFloat(item.price.amount).toFixed(2) : '';
     const totalPrice = item.total_item_price ? '€' + parseFloat(item.total_item_price.amount).toFixed(2) + ' incl. kosten' : '';
     const pills = [item.size_title, item.status].filter(Boolean).map(p => '<span class="pill">' + esc(p) + '</span>').join('');
     return '<a class="card" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">'
       + '<div class="card-img-wrap">'
-      + (photo ? '<img class="card-img" src="' + esc(photo) + '" alt="' + esc(item.title || '') + '" loading="lazy">' : '')
+      + (photo ? '<img class="card-img" src="' + esc(photo) + '"' + (srcset ? ' srcset="' + srcset + '" sizes="(max-width: 600px) 150px, 310px"' : '') + ' alt="' + esc(item.title || '') + '" loading="lazy">' : '')
       + '<span class="like-badge">❤️ ' + item.favourite_count + '</span>'
       + '</div><div class="card-body">'
       + (item.brand_title ? '<div class="card-brand">' + esc(item.brand_title) + '</div>' : '')
