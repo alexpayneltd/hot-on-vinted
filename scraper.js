@@ -106,19 +106,16 @@ async function setupAuthCapture(page, domain) {
   }
   const getToken = async () => {
     if (capturedToken) return capturedToken;
-    // Check cookies for auth token
+    // Check cookies for auth token (exact names only — avoid false-positive CSRF/session cookies)
     try {
       const cookies = await page.cookies();
-      const tokenCookie = cookies.find(c =>
-        c.name === 'access_token' || c.name === 'anon_token' ||
-        (c.name.toLowerCase().includes('token') && c.value.length > 20)
-      );
+      if (cookies.length) console.log(`   🍪 Cookies (${domain}): ${cookies.map(c => c.name).join(', ')}`);
+      const tokenCookie = cookies.find(c => c.name === 'access_token' || c.name === 'anon_token');
       if (tokenCookie) {
         console.log(`   🍪 Token from cookie: ${tokenCookie.name} (${domain})`);
         capturedToken = `Bearer ${tokenCookie.value}`;
         return capturedToken;
       }
-      if (cookies.length) console.log(`   🍪 Cookies (${domain}): ${cookies.map(c => c.name).join(', ')}`);
     } catch {}
     // Check localStorage / sessionStorage for token
     capturedToken = await page.evaluate(() => {
