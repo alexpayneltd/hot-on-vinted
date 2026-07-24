@@ -191,9 +191,22 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
 
     const { getToken } = await setupAuthCapture(page, domain);
 
-    const waitUntil = domain === 'vinted.nl' ? 'networkidle2' : 'domcontentloaded';
+    const needsAuthCatalog = domain === 'vinted.nl' || domain === 'vinted.de';
+    const waitUntil = needsAuthCatalog ? 'networkidle2' : 'domcontentloaded';
     await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
-    await sleep(domain === 'vinted.nl' ? 4000 : 2500);
+    await sleep(needsAuthCatalog ? 3000 : 2500);
+    // For DE/NL: wait until Vinted's JS sets access_token_web (proves full app init)
+    if (needsAuthCatalog) {
+      try {
+        await page.waitForFunction(
+          () => document.cookie.split(';').some(c => c.trim().startsWith('access_token_web=')),
+          { timeout: 15000 }
+        );
+        console.log(`   ✅ Vinted auth cookie ready (${domain})`);
+      } catch {
+        console.log(`   ⚠️ Vinted auth cookie not detected within 15s (${domain})`);
+      }
+    }
     const authToken = await getToken();
     if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
 
@@ -317,13 +330,34 @@ export async function scrapeAllBrands(brands, domain = 'vinted.co.uk', cacheDir,
     await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
     await sleep(needsAuth ? 3000 : 2500);
 
+    // For DE/NL: wait for Vinted's JS to initialize on the homepage first
+    if (needsAuth) {
+      try {
+        await page.waitForFunction(
+          () => document.cookie.split(';').some(c => c.trim().startsWith('access_token_web=')),
+          { timeout: 15000 }
+        );
+        console.log(`   ✅ Vinted auth cookie ready on homepage (${domain})`);
+      } catch {
+        console.log(`   ⚠️ Vinted auth cookie not detected on homepage (${domain}) — trying search page`);
+      }
+    }
+
     let authToken = null;
     if (needsAuth) {
-      // Navigate to a real search page — triggers vinted's JS auth flow
-      // so CDP can intercept the Bearer token from the page's own requests
+      // Navigate to a real search page — ensures full SPA init and token capture
       console.log(`   🔍 Warming auth via search page (${domain})...`);
       await page.goto(`https://www.${domain}/catalog?search_text=nike&order=newest_first`, { waitUntil: 'networkidle2', timeout: 60000 });
-      await sleep(4000);
+      // Wait until access_token_web cookie appears (proves Vinted's JS is ready)
+      try {
+        await page.waitForFunction(
+          () => document.cookie.split(';').some(c => c.trim().startsWith('access_token_web=')),
+          { timeout: 12000 }
+        );
+        console.log(`   ✅ Vinted auth cookie ready on search page (${domain})`);
+      } catch {
+        console.log(`   ⚠️ Vinted auth cookie not detected on search page (${domain})`);
+      }
       authToken = await getToken();
       if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
       else console.log(`   ⚠️ No auth token captured (${domain}) — proceeding without`);
