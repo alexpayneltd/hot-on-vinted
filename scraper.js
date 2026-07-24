@@ -237,10 +237,13 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
 
     const dir = path.dirname(cacheFile);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(cacheFile, JSON.stringify({ items: sorted, lastUpdated: new Date().toISOString(), total: sorted.length }));
-
-    const top5 = sorted.slice(0, 5).map(i => `${i.favourite_count} ❤️  ${i.title}`);
-    console.log(`\n✅ (${domain}) Saved ${sorted.length} items. Top 5:\n  ${top5.join('\n  ')}`);
+    if (sorted.length > 0) {
+      fs.writeFileSync(cacheFile, JSON.stringify({ items: sorted, lastUpdated: new Date().toISOString(), total: sorted.length }));
+      const top5 = sorted.slice(0, 5).map(i => `${i.favourite_count} ❤️  ${i.title}`);
+      console.log(`\n✅ (${domain}) Saved ${sorted.length} items. Top 5:\n  ${top5.join('\n  ')}`);
+    } else {
+      console.log(`\n⚠️ (${domain}) 0 items returned — keeping existing cache (likely Cloudflare block)`);
+    }
 
   } catch (err) {
     console.error(`Scrape error (${domain}):`, err.message);
@@ -353,8 +356,12 @@ export async function scrapeAllBrands(brands, domain = 'vinted.co.uk', cacheDir,
           .map(i => { if (i.favourite_count == null) i.favourite_count = 0; return i; })
           .sort((a, b) => b.favourite_count - a.favourite_count);
         const cacheFile = path.join(cacheDir, `${brand.slug}.json`);
-        fs.writeFileSync(cacheFile, JSON.stringify({ items: sorted, lastUpdated: new Date().toISOString() }));
-        console.log(`  ✅ ${brand.name} (${domain.replace('vinted.', '')}): ${sorted.length} items`);
+        if (sorted.length > 0) {
+          fs.writeFileSync(cacheFile, JSON.stringify({ items: sorted, lastUpdated: new Date().toISOString() }));
+          console.log(`  ✅ ${brand.name} (${domain.replace('vinted.', '')}): ${sorted.length} items`);
+        } else {
+          console.log(`  ⚠️ ${brand.name} (${domain.replace('vinted.', '')}): 0 items — keeping existing cache`);
+        }
         results[brand.slug] = sorted;
       } catch (err) {
         console.error(`  ⚠️ ${brand.name} (${domain}) failed: ${err.message}`);
