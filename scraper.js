@@ -50,12 +50,17 @@ async function getWarmPage(domain = 'vinted.co.uk') {
 
   let authToken = null;
   if (needsAuth) {
-    // Navigate to a real search page — this triggers vinted's JS auth flow
-    // and CDP can capture the Bearer token from those authenticated requests
     console.log(`   🔍 Warming auth via search page (${domain})...`);
     await page.goto(`https://www.${domain}/catalog?search_text=nike&order=newest_first`, { waitUntil: 'networkidle2', timeout: 60000 });
     await sleep(4000);
     authToken = await getToken();
+    if (!authToken) {
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await sleep(3000);
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await sleep(2000);
+      authToken = await getToken();
+    }
     if (authToken) console.log(`   🔑 Warm auth token captured (${domain})`);
     else console.log(`   ⚠️ No auth token captured (${domain}) — proceeding without`);
   } else {
@@ -109,11 +114,34 @@ async function setupAuthCapture(page, domain) {
         (c.name.toLowerCase().includes('token') && c.value.length > 20)
       );
       if (tokenCookie) {
-        console.log(`   🍪 Token from cookie: ${tokenCookie.name}`);
+        console.log(`   🍪 Token from cookie: ${tokenCookie.name} (${domain})`);
         capturedToken = `Bearer ${tokenCookie.value}`;
         return capturedToken;
       }
+      if (cookies.length) console.log(`   🍪 Cookies (${domain}): ${cookies.map(c => c.name).join(', ')}`);
     } catch {}
+    // Check localStorage / sessionStorage for token
+    capturedToken = await page.evaluate(() => {
+      const stores = [];
+      try { stores.push(localStorage); } catch {}
+      try { stores.push(sessionStorage); } catch {}
+      for (const store of stores) {
+        try {
+          for (let i = 0; i < store.length; i++) {
+            const key = store.key(i) || '';
+            if (!key.match(/token|auth|bearer/i)) continue;
+            const raw = store.getItem(key) || '';
+            try {
+              const parsed = JSON.parse(raw);
+              const t = parsed?.access_token || parsed?.token || parsed?.bearer;
+              if (t && t.length > 20) return `Bearer ${t}`;
+            } catch { if (raw.length > 20 && raw.length < 500) return `Bearer ${raw}`; }
+          }
+        } catch {}
+      }
+      return null;
+    }).catch(() => null);
+    if (capturedToken) { console.log(`   🔑 Token from storage (${domain})`); return capturedToken; }
     // Fallback: extract from page JS state
     capturedToken = await page.evaluate(() => {
       try {
@@ -127,6 +155,7 @@ async function setupAuthCapture(page, domain) {
       }
       return null;
     }).catch(() => null);
+    if (capturedToken) console.log(`   🔑 Token from page state (${domain})`);
     return capturedToken;
   };
   return { getToken };
@@ -297,12 +326,21 @@ export async function scrapeAllBrands(brands, domain = 'vinted.co.uk', cacheDir,
 
     let authToken = null;
     if (needsAuth) {
-      // Navigate to a real search page — this triggers vinted's JS auth flow so
-      // CDP can capture the Bearer token from the page's own authenticated requests
+      // Navigate to a real search page — triggers vinted's JS auth flow
+      // so CDP can intercept the Bearer token from the page's own requests
       console.log(`   🔍 Warming auth via search page (${domain})...`);
       await page.goto(`https://www.${domain}/catalog?search_text=nike&order=newest_first`, { waitUntil: 'networkidle2', timeout: 60000 });
       await sleep(4000);
       authToken = await getToken();
+      if (!authToken) {
+        // Scroll to bottom to trigger lazy-loading / client-side pagination requests
+        console.log(`   🔄 Scrolling to trigger client-side requests (${domain})...`);
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+        await sleep(3000);
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+        await sleep(2000);
+        authToken = await getToken();
+      }
       if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
       else console.log(`   ⚠️ No auth token captured (${domain}) — proceeding without`);
     } else {
