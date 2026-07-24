@@ -43,7 +43,7 @@ async function getWarmPage(domain = 'vinted.co.uk') {
 
   const { getToken } = await setupAuthCapture(page, domain);
 
-  const needsAuth = domain === 'vinted.nl' || domain === 'vinted.de';
+  const needsAuth = domain !== 'vinted.co.uk';
   const waitUntil = needsAuth ? 'networkidle2' : 'domcontentloaded';
   await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
   await sleep(needsAuth ? 4000 : 2000);
@@ -67,9 +67,9 @@ async function closeWarmBrowser(domain = 'vinted.co.uk') {
   }
 }
 
-// ── Auth token helper (DE/NL set access_token_web cookie on page load; UK/FR don't need it) ──
+// ── Auth token helper (FR/DE/NL set access_token_web cookie on page load; UK doesn't need it) ──
 async function setupAuthCapture(page, domain) {
-  if (domain !== 'vinted.nl' && domain !== 'vinted.de') return { getToken: () => null };
+  if (domain === 'vinted.co.uk') return { getToken: () => null };
   const getToken = async () => {
     try {
       const cookies = await page.cookies();
