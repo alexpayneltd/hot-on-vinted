@@ -46,20 +46,9 @@ async function getWarmPage(domain = 'vinted.co.uk') {
   const needsAuth = domain === 'vinted.nl' || domain === 'vinted.de';
   const waitUntil = needsAuth ? 'networkidle2' : 'domcontentloaded';
   await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
-  await sleep(needsAuth ? 3000 : 2000);
-
-  let authToken = null;
-  if (needsAuth) {
-    console.log(`   🔍 Warming auth via search page (${domain})...`);
-    await page.goto(`https://www.${domain}/catalog?search_text=nike&order=newest_first`, { waitUntil: 'networkidle2', timeout: 60000 });
-    await sleep(4000);
-    authToken = await getToken();
-    if (authToken) console.log(`   🔑 Warm auth token captured (${domain})`);
-    else console.log(`   ⚠️ No auth token captured (${domain}) — proceeding without`);
-  } else {
-    authToken = await getToken();
-    if (authToken) console.log(`   🔑 Warm auth token captured (${domain})`);
-  }
+  await sleep(needsAuth ? 4000 : 2000);
+  const authToken = await getToken();
+  if (authToken) console.log(`   🔑 Warm auth token ready (${domain})`);
 
   warmSessions.set(domain, { browser, page, timer, authToken });
   console.log(`🌐 Warm page ready (${domain})`);
@@ -78,75 +67,16 @@ async function closeWarmBrowser(domain = 'vinted.co.uk') {
   }
 }
 
-// ── Auth token helper (NL + DE require Bearer token for search; UK/FR use cookies) ──
+// ── Auth token helper (DE/NL set access_token_web cookie on page load; UK/FR don't need it) ──
 async function setupAuthCapture(page, domain) {
-  const needsAuth = domain === 'vinted.nl' || domain === 'vinted.de';
-  if (!needsAuth) return { getToken: () => null };
-  let capturedToken = null;
-  // Use CDP to passively observe requests — does NOT disrupt the session
-  try {
-    const cdp = await page.createCDPSession();
-    await cdp.send('Network.enable');
-    cdp.on('Network.requestWillBeSent', ({ request }) => {
-      const auth = request.headers?.Authorization || request.headers?.authorization;
-      if (auth?.startsWith('Bearer ') && !capturedToken) {
-        capturedToken = auth;
-        console.log(`   🔑 Token intercepted via CDP (${domain})`);
-      }
-    });
-  } catch (e) {
-    console.log(`   ⚠️ CDP setup failed (${domain}): ${e.message}`);
-  }
+  if (domain !== 'vinted.nl' && domain !== 'vinted.de') return { getToken: () => null };
   const getToken = async () => {
-    if (capturedToken) return capturedToken;
-    // Check cookies for auth token (exact names only — avoid false-positive CSRF/session cookies)
     try {
       const cookies = await page.cookies();
-      if (cookies.length) console.log(`   🍪 Cookies (${domain}): ${cookies.map(c => c.name).join(', ')}`);
-      const tokenCookie = cookies.find(c => c.name === 'access_token' || c.name === 'anon_token' || c.name === 'access_token_web');
-      if (tokenCookie) {
-        console.log(`   🍪 Token from cookie: ${tokenCookie.name} (${domain})`);
-        capturedToken = `Bearer ${tokenCookie.value}`;
-        return capturedToken;
-      }
+      const tok = cookies.find(c => c.name === 'access_token_web' || c.name === 'access_token' || c.name === 'anon_token');
+      if (tok) return `Bearer ${tok.value}`;
     } catch {}
-    // Check localStorage / sessionStorage for token
-    capturedToken = await page.evaluate(() => {
-      const stores = [];
-      try { stores.push(localStorage); } catch {}
-      try { stores.push(sessionStorage); } catch {}
-      for (const store of stores) {
-        try {
-          for (let i = 0; i < store.length; i++) {
-            const key = store.key(i) || '';
-            if (!key.match(/token|auth|bearer/i)) continue;
-            const raw = store.getItem(key) || '';
-            try {
-              const parsed = JSON.parse(raw);
-              const t = parsed?.access_token || parsed?.token || parsed?.bearer;
-              if (t && t.length > 20) return `Bearer ${t}`;
-            } catch { if (raw.length > 20 && raw.length < 500) return `Bearer ${raw}`; }
-          }
-        } catch {}
-      }
-      return null;
-    }).catch(() => null);
-    if (capturedToken) { console.log(`   🔑 Token from storage (${domain})`); return capturedToken; }
-    // Fallback: extract from page JS state
-    capturedToken = await page.evaluate(() => {
-      try {
-        const str = JSON.stringify(window.__NUXT__ || window.__STORE_STATE__ || window.__INITIAL_STATE__ || {});
-        const m = str.match(/"(?:token|access_token|apiToken)":"([A-Za-z0-9_\-\.]{20,})"/);
-        if (m) return `Bearer ${m[1]}`;
-      } catch {}
-      for (const s of document.querySelectorAll('script:not([src])')) {
-        const m = s.textContent.match(/"token"\s*:\s*"([A-Za-z0-9_\-\.]{20,})"/);
-        if (m) return `Bearer ${m[1]}`;
-      }
-      return null;
-    }).catch(() => null);
-    if (capturedToken) console.log(`   🔑 Token from page state (${domain})`);
-    return capturedToken;
+    return null;
   };
   return { getToken };
 }
@@ -191,24 +121,12 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
 
     const { getToken } = await setupAuthCapture(page, domain);
 
-    const needsAuthCatalog = domain === 'vinted.nl' || domain === 'vinted.de';
-    const waitUntil = needsAuthCatalog ? 'networkidle2' : 'domcontentloaded';
+    const needsAuth = domain === 'vinted.nl' || domain === 'vinted.de';
+    const waitUntil = needsAuth ? 'networkidle2' : 'domcontentloaded';
     await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
-    await sleep(needsAuthCatalog ? 3000 : 2500);
-    // For DE/NL: wait until Vinted's JS sets access_token_web (proves full app init)
-    if (needsAuthCatalog) {
-      try {
-        await page.waitForFunction(
-          () => document.cookie.split(';').some(c => c.trim().startsWith('access_token_web=')),
-          { timeout: 15000 }
-        );
-        console.log(`   ✅ Vinted auth cookie ready (${domain})`);
-      } catch {
-        console.log(`   ⚠️ Vinted auth cookie not detected within 15s (${domain})`);
-      }
-    }
+    await sleep(needsAuth ? 4000 : 2500);
     const authToken = await getToken();
-    if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
+    if (authToken) console.log(`   🔑 Auth token ready (${domain})`);
 
     for (const cat of CATALOGS) {
       console.log(`📦 ${cat.label} (${domain})`);
@@ -328,43 +246,10 @@ export async function scrapeAllBrands(brands, domain = 'vinted.co.uk', cacheDir,
     const needsAuth = domain === 'vinted.nl' || domain === 'vinted.de';
     const waitUntil = needsAuth ? 'networkidle2' : 'domcontentloaded';
     await page.goto(`https://www.${domain}`, { waitUntil, timeout: 60000 });
-    await sleep(needsAuth ? 3000 : 2500);
-
-    // For DE/NL: wait for Vinted's JS to initialize on the homepage first
-    if (needsAuth) {
-      try {
-        await page.waitForFunction(
-          () => document.cookie.split(';').some(c => c.trim().startsWith('access_token_web=')),
-          { timeout: 15000 }
-        );
-        console.log(`   ✅ Vinted auth cookie ready on homepage (${domain})`);
-      } catch {
-        console.log(`   ⚠️ Vinted auth cookie not detected on homepage (${domain}) — trying search page`);
-      }
-    }
-
-    let authToken = null;
-    if (needsAuth) {
-      // Navigate to a real search page — ensures full SPA init and token capture
-      console.log(`   🔍 Warming auth via search page (${domain})...`);
-      await page.goto(`https://www.${domain}/catalog?search_text=nike&order=newest_first`, { waitUntil: 'networkidle2', timeout: 60000 });
-      // Wait until access_token_web cookie appears (proves Vinted's JS is ready)
-      try {
-        await page.waitForFunction(
-          () => document.cookie.split(';').some(c => c.trim().startsWith('access_token_web=')),
-          { timeout: 12000 }
-        );
-        console.log(`   ✅ Vinted auth cookie ready on search page (${domain})`);
-      } catch {
-        console.log(`   ⚠️ Vinted auth cookie not detected on search page (${domain})`);
-      }
-      authToken = await getToken();
-      if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
-      else console.log(`   ⚠️ No auth token captured (${domain}) — proceeding without`);
-    } else {
-      authToken = await getToken();
-      if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
-    }
+    await sleep(needsAuth ? 4000 : 2500);
+    const authToken = await getToken();
+    if (authToken) console.log(`   🔑 Auth token ready (${domain})`);
+    else if (needsAuth) console.log(`   ⚠️ No auth token (${domain}) — cache preserved if scrape fails`);
 
     const results = {};
     for (const brand of brands) {
