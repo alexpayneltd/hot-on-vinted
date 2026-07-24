@@ -32,7 +32,7 @@ async function getWarmPage(domain = 'vinted.co.uk') {
   if (session.browser) await session.browser.close().catch(() => {});
 
   const browser = await puppeteer.launch({
-    headless: 'new',
+    headless: true,
     executablePath: CHROME_EXEC,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
   });
@@ -178,7 +178,7 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
 
   const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : domain === 'vinted.de' ? 'de-DE,de;q=0.9' : domain === 'vinted.nl' ? 'nl-NL,nl;q=0.9' : 'en-GB,en;q=0.9';
   const browser = await puppeteer.launch({
-    headless: 'new',
+    headless: true,
     executablePath: CHROME_EXEC,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     protocolTimeout: 60000,
@@ -313,7 +313,7 @@ async function _doSearch(term, pages, domain) {
 export async function scrapeAllBrands(brands, domain = 'vinted.co.uk', cacheDir, fs, path) {
   const lang = domain === 'vinted.fr' ? 'fr-FR,fr;q=0.9' : domain === 'vinted.de' ? 'de-DE,de;q=0.9' : domain === 'vinted.nl' ? 'nl-NL,nl;q=0.9' : 'en-GB,en;q=0.9';
   const browser = await puppeteer.launch({
-    headless: 'new',
+    headless: true,
     executablePath: CHROME_EXEC,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     protocolTimeout: 60000,
