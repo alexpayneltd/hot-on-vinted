@@ -54,13 +54,6 @@ async function getWarmPage(domain = 'vinted.co.uk') {
     await page.goto(`https://www.${domain}/catalog?search_text=nike&order=newest_first`, { waitUntil: 'networkidle2', timeout: 60000 });
     await sleep(4000);
     authToken = await getToken();
-    if (!authToken) {
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await sleep(3000);
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await sleep(2000);
-      authToken = await getToken();
-    }
     if (authToken) console.log(`   🔑 Warm auth token captured (${domain})`);
     else console.log(`   ⚠️ No auth token captured (${domain}) — proceeding without`);
   } else {
@@ -110,7 +103,7 @@ async function setupAuthCapture(page, domain) {
     try {
       const cookies = await page.cookies();
       if (cookies.length) console.log(`   🍪 Cookies (${domain}): ${cookies.map(c => c.name).join(', ')}`);
-      const tokenCookie = cookies.find(c => c.name === 'access_token' || c.name === 'anon_token');
+      const tokenCookie = cookies.find(c => c.name === 'access_token' || c.name === 'anon_token' || c.name === 'access_token_web');
       if (tokenCookie) {
         console.log(`   🍪 Token from cookie: ${tokenCookie.name} (${domain})`);
         capturedToken = `Bearer ${tokenCookie.value}`;
@@ -329,15 +322,6 @@ export async function scrapeAllBrands(brands, domain = 'vinted.co.uk', cacheDir,
       await page.goto(`https://www.${domain}/catalog?search_text=nike&order=newest_first`, { waitUntil: 'networkidle2', timeout: 60000 });
       await sleep(4000);
       authToken = await getToken();
-      if (!authToken) {
-        // Scroll to bottom to trigger lazy-loading / client-side pagination requests
-        console.log(`   🔄 Scrolling to trigger client-side requests (${domain})...`);
-        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-        await sleep(3000);
-        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-        await sleep(2000);
-        authToken = await getToken();
-      }
       if (authToken) console.log(`   🔑 Auth token captured (${domain})`);
       else console.log(`   ⚠️ No auth token captured (${domain}) — proceeding without`);
     } else {
