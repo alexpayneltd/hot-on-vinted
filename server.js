@@ -1298,8 +1298,12 @@ app.get('/api/listings', (req, res) => {
 app.get('/api/search', async (req, res) => {
   const term = (req.query.q || '').trim().toLowerCase().slice(0, 100);
   if (!term) return res.json({ items: [], term });
-  const cached = searchCaches.uk.get(term);
-  if (cached && Date.now() - cached.cachedAt < SEARCH_CACHE_TTL) return res.json({ items: cached.items, term, fromCache: true });
+  // Cache-first: brand caches + catalog, sorted by likes
+  const cacheItems = searchCountryCache('uk', term);
+  if (cacheItems.length > 0) return res.json({ items: cacheItems, term });
+  // Fall back to live scrape for niche terms not in cache
+  const memCached = searchCaches.uk.get(term);
+  if (memCached && Date.now() - memCached.cachedAt < SEARCH_CACHE_TTL) return res.json({ items: memCached.items, term, fromCache: true });
   if (pendingSearches.uk.has(term)) {
     try { return res.json({ items: await pendingSearches.uk.get(term), term }); } catch { return res.status(500).json({ error: 'Search failed' }); }
   }
@@ -1365,11 +1369,26 @@ app.get('/de/api/listings', (req, res) => {
   try { res.json(JSON.parse(fs.readFileSync(CACHE.de.all, 'utf8'))); } catch { res.status(500).json({ error: 'Cache read error' }); }
 });
 
-app.get('/de/api/search', (req, res) => {
+app.get('/de/api/search', async (req, res) => {
   const term = (req.query.q || '').trim().toLowerCase().slice(0, 100);
   if (!term) return res.json({ items: [], term });
-  const items = searchCountryCache('de', term);
-  res.json({ items, term });
+  // Cache-first: brand caches + catalog, sorted by likes
+  const cacheItems = searchCountryCache('de', term);
+  if (cacheItems.length > 0) return res.json({ items: cacheItems, term });
+  // Fall back to live scrape for niche terms not in cache
+  const memCached = searchCaches.de.get(term);
+  if (memCached && Date.now() - memCached.cachedAt < SEARCH_CACHE_TTL) return res.json({ items: memCached.items, term, fromCache: true });
+  if (pendingSearches.de.has(term)) {
+    try { return res.json({ items: await pendingSearches.de.get(term), term }); } catch { return res.status(500).json({ error: 'Search failed' }); }
+  }
+  const promise = scrapeSearch(term, 5, 'vinted.de');
+  pendingSearches.de.set(term, promise);
+  try {
+    const items = await promise;
+    searchCaches.de.set(term, { items, cachedAt: Date.now() });
+    res.json({ items, term });
+  } catch { res.status(500).json({ error: 'Search failed' }); }
+  finally { pendingSearches.de.delete(term); }
 });
 
 app.get('/de/api/status', (req, res) => {
@@ -1397,11 +1416,26 @@ app.get('/nl/api/listings', (req, res) => {
   try { res.json(JSON.parse(fs.readFileSync(CACHE.nl.all, 'utf8'))); } catch { res.status(500).json({ error: 'Cache read error' }); }
 });
 
-app.get('/nl/api/search', (req, res) => {
+app.get('/nl/api/search', async (req, res) => {
   const term = (req.query.q || '').trim().toLowerCase().slice(0, 100);
   if (!term) return res.json({ items: [], term });
-  const items = searchCountryCache('nl', term);
-  res.json({ items, term });
+  // Cache-first: brand caches + catalog, sorted by likes
+  const cacheItems = searchCountryCache('nl', term);
+  if (cacheItems.length > 0) return res.json({ items: cacheItems, term });
+  // Fall back to live scrape for niche terms not in cache
+  const memCached = searchCaches.nl.get(term);
+  if (memCached && Date.now() - memCached.cachedAt < SEARCH_CACHE_TTL) return res.json({ items: memCached.items, term, fromCache: true });
+  if (pendingSearches.nl.has(term)) {
+    try { return res.json({ items: await pendingSearches.nl.get(term), term }); } catch { return res.status(500).json({ error: 'Search failed' }); }
+  }
+  const promise = scrapeSearch(term, 5, 'vinted.nl');
+  pendingSearches.nl.set(term, promise);
+  try {
+    const items = await promise;
+    searchCaches.nl.set(term, { items, cachedAt: Date.now() });
+    res.json({ items, term });
+  } catch { res.status(500).json({ error: 'Search failed' }); }
+  finally { pendingSearches.nl.delete(term); }
 });
 
 app.get('/nl/api/status', (req, res) => {
@@ -1432,8 +1466,12 @@ app.get('/fr/api/listings', (req, res) => {
 app.get('/fr/api/search', async (req, res) => {
   const term = (req.query.q || '').trim().toLowerCase().slice(0, 100);
   if (!term) return res.json({ items: [], term });
-  const cached = searchCaches.fr.get(term);
-  if (cached && Date.now() - cached.cachedAt < SEARCH_CACHE_TTL) return res.json({ items: cached.items, term, fromCache: true });
+  // Cache-first: brand caches + catalog, sorted by likes
+  const cacheItems = searchCountryCache('fr', term);
+  if (cacheItems.length > 0) return res.json({ items: cacheItems, term });
+  // Fall back to live scrape for niche terms not in cache
+  const memCached = searchCaches.fr.get(term);
+  if (memCached && Date.now() - memCached.cachedAt < SEARCH_CACHE_TTL) return res.json({ items: memCached.items, term, fromCache: true });
   if (pendingSearches.fr.has(term)) {
     try { return res.json({ items: await pendingSearches.fr.get(term), term }); } catch { return res.status(500).json({ error: 'Search failed' }); }
   }
