@@ -1330,6 +1330,32 @@ for (const brand of UK_BRANDS) {
   });
 }
 
+// ── Cache search helper (brand caches + catalog, deduped, sorted by likes) ────
+function searchCountryCache(countryKey, term) {
+  const ctx = CACHE[countryKey];
+  const pool = new Map();
+  // Brand caches first — these are the most-liked items per brand
+  if (fs.existsSync(ctx.brands)) {
+    for (const file of fs.readdirSync(ctx.brands)) {
+      if (!file.endsWith('.json')) continue;
+      try {
+        const { items } = JSON.parse(fs.readFileSync(path.join(ctx.brands, file), 'utf8'));
+        for (const item of (items || [])) pool.set(item.id, item);
+      } catch {}
+    }
+  }
+  // General catalog cache — fills in anything not already in brand caches
+  if (fs.existsSync(ctx.all)) {
+    try {
+      const { items } = JSON.parse(fs.readFileSync(ctx.all, 'utf8'));
+      for (const item of (items || [])) if (!pool.has(item.id)) pool.set(item.id, item);
+    } catch {}
+  }
+  return [...pool.values()]
+    .filter(i => `${i.title} ${i.brand_title} ${i.description || ''}`.toLowerCase().includes(term))
+    .sort((a, b) => (b.favourite_count || 0) - (a.favourite_count || 0));
+}
+
 // ── Germany homepage ───────────────────────────────────────────────────────────
 app.get('/de', (req, res) => res.send(deHomeHTML()));
 
@@ -1339,22 +1365,11 @@ app.get('/de/api/listings', (req, res) => {
   try { res.json(JSON.parse(fs.readFileSync(CACHE.de.all, 'utf8'))); } catch { res.status(500).json({ error: 'Cache read error' }); }
 });
 
-app.get('/de/api/search', async (req, res) => {
+app.get('/de/api/search', (req, res) => {
   const term = (req.query.q || '').trim().toLowerCase().slice(0, 100);
   if (!term) return res.json({ items: [], term });
-  const cached = searchCaches.de.get(term);
-  if (cached && Date.now() - cached.cachedAt < SEARCH_CACHE_TTL) return res.json({ items: cached.items, term, fromCache: true });
-  if (pendingSearches.de.has(term)) {
-    try { return res.json({ items: await pendingSearches.de.get(term), term }); } catch { return res.status(500).json({ error: 'Search failed' }); }
-  }
-  const promise = scrapeSearch(term, 5, 'vinted.de');
-  pendingSearches.de.set(term, promise);
-  try {
-    const items = await promise;
-    searchCaches.de.set(term, { items, cachedAt: Date.now() });
-    res.json({ items, term });
-  } catch { res.status(500).json({ error: 'Search failed' }); }
-  finally { pendingSearches.de.delete(term); }
+  const items = searchCountryCache('de', term);
+  res.json({ items, term });
 });
 
 app.get('/de/api/status', (req, res) => {
@@ -1382,22 +1397,11 @@ app.get('/nl/api/listings', (req, res) => {
   try { res.json(JSON.parse(fs.readFileSync(CACHE.nl.all, 'utf8'))); } catch { res.status(500).json({ error: 'Cache read error' }); }
 });
 
-app.get('/nl/api/search', async (req, res) => {
+app.get('/nl/api/search', (req, res) => {
   const term = (req.query.q || '').trim().toLowerCase().slice(0, 100);
   if (!term) return res.json({ items: [], term });
-  const cached = searchCaches.nl.get(term);
-  if (cached && Date.now() - cached.cachedAt < SEARCH_CACHE_TTL) return res.json({ items: cached.items, term, fromCache: true });
-  if (pendingSearches.nl.has(term)) {
-    try { return res.json({ items: await pendingSearches.nl.get(term), term }); } catch { return res.status(500).json({ error: 'Search failed' }); }
-  }
-  const promise = scrapeSearch(term, 5, 'vinted.nl');
-  pendingSearches.nl.set(term, promise);
-  try {
-    const items = await promise;
-    searchCaches.nl.set(term, { items, cachedAt: Date.now() });
-    res.json({ items, term });
-  } catch { res.status(500).json({ error: 'Search failed' }); }
-  finally { pendingSearches.nl.delete(term); }
+  const items = searchCountryCache('nl', term);
+  res.json({ items, term });
 });
 
 app.get('/nl/api/status', (req, res) => {
