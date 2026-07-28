@@ -20,7 +20,8 @@ aptPkgs = [
   "libpango-1.0-0",
   "libcairo2",
   "libx11-xcb1",
-  "libxcb-dri3-0"
+  "libxcb-dri3-0",
+  "ffmpeg"
 ]
 
 [phases.install]
