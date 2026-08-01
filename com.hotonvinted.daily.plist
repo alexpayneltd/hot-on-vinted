@@ -9,6 +9,11 @@
         <string>/usr/bin/python3</string>
         <string>/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py</string>
     </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
     <key>WorkingDirectory</key>
     <string>/Users/alexpayne/Downloads/hot-on-vinted</string>
     <key>StartCalendarInterval</key>

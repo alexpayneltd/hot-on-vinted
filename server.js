@@ -13,6 +13,9 @@ const PORT = process.env.PORT || 3000;
 
 const REFRESH_INTERVAL_MS = 30 * 60 * 1000;
 
+const GA = `<script async src="https://www.googletagmanager.com/gtag/js?id=G-TCRE0CE8QY"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-TCRE0CE8QY');</script>`;
+
 // ── Cache paths ────────────────────────────────────────────────────────────────
 const CACHE = {
   uk: {
@@ -192,6 +195,7 @@ function ukBrandPageHTML(brand, items) {
   <meta property="og:description" content="Browse the most liked ${esc(brand.name)} listings on Vinted UK right now, sorted by popularity.">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+${GA}
 </head>
 <body>
 <header>
@@ -272,6 +276,7 @@ function frHomeHTML() {
   <meta property="og:site_name" content="Hot on Vinted">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com/fr"}</script>
+${GA}
 </head>
 <body>
 <header>
@@ -523,6 +528,7 @@ function frBrandPageHTML(brand, items) {
   <meta property="og:title" content="${esc(brand.name)} les plus likés sur Vinted France | Hot on Vinted">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+${GA}
 </head>
 <body>
 <header>
@@ -603,6 +609,7 @@ function deHomeHTML() {
   <meta property="og:site_name" content="Hot on Vinted">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com/de"}</script>
+${GA}
 </head>
 <body>
 <header>
@@ -853,6 +860,7 @@ function deBrandPageHTML(brand, items) {
   <meta property="og:title" content="${esc(brand.name)} beliebteste Artikel auf Vinted Deutschland | Hot on Vinted">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+${GA}
 </head>
 <body>
 <header>
@@ -934,6 +942,7 @@ function nlHomeHTML() {
   <meta property="og:site_name" content="Hot on Vinted">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com/nl"}</script>
+${GA}
 </head>
 <body>
 <header>
@@ -1184,6 +1193,7 @@ function nlBrandPageHTML(brand, items) {
   <meta property="og:title" content="Meest gelikte ${esc(brand.name)} op Vinted Nederland | Hot on Vinted">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+${GA}
 </head>
 <body>
 <header>

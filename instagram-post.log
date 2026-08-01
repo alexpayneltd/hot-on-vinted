@@ -46,3 +46,375 @@ Call log:
 📡 Fetching listings...
    0 items available
 ⚠️  No new items to post — all top items already posted.
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🌍 Country: UK | API: https://hotonvinted.com/api/listings
+📡 Fetching listings...
+   1376 items available
+
+📸 Item: Acne Studios 1996 Streetwear Oversized Fit (❤️ 75)
+   Downloading image...
+   Image ready: (504, 504)
+
+📝 Caption preview:
+🔥 Acne Studios 1996 Streetwear Oversized Fit
+
+💰 £56.88  ❤️ 75 favourites on Vinted
+
+Find it at hotonvinted.com 🔥 (link in bio)
+
+#vinted #vinteduk #secondhand #preloved #sustainablefashion
+#thrifted #v...
+
+   Loaded saved session
+Traceback (most recent call last):
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 270, in <module>
+    main()
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 263, in main
+    post_to_instagram(img_path, caption)
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 166, in post_to_instagram
+    page.goto("https://www.instagram.com/", wait_until="networkidle", timeout=30000)
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/sync_api/_generated.py", line 9612, in goto
+    self._sync(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_page.py", line 557, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_frame.py", line 156, in goto
+    await self._channel.send(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "https://www.instagram.com/", waiting until "networkidle"
+
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🌍 Country: UK | API: https://hotonvinted.com/api/listings
+📡 Fetching listings...
+   1222 items available
+
+📸 Item: Bydee Swim (❤️ 60)
+   Downloading image...
+   Image ready: (600, 600)
+
+📝 Caption preview:
+🔥 Bydee Swim
+
+💰 £18.57  ❤️ 60 favourites on Vinted
+
+Find it at hotonvinted.com 🔥 (link in bio)
+
+#vinted #vinteduk #secondhand #preloved #sustainablefashion
+#thrifted #vintedfind #ukvinted #hotonvinted...
+
+   Loaded saved session
+Traceback (most recent call last):
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 270, in <module>
+    main()
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 263, in main
+    post_to_instagram(img_path, caption)
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 166, in post_to_instagram
+    page.goto("https://www.instagram.com/", wait_until="networkidle", timeout=30000)
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/sync_api/_generated.py", line 9612, in goto
+    self._sync(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_page.py", line 557, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_frame.py", line 156, in goto
+    await self._channel.send(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "https://www.instagram.com/", waiting until "networkidle"
+
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🌍 Country: UK | API: https://hotonvinted.com/api/listings
+📡 Fetching listings...
+Traceback (most recent call last):
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socket.py", line 953, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/connection.py", line 211, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: HTTPSConnection(host='hotonvinted.com', port=443): Failed to resolve 'hotonvinted.com' ([Errno 8] nodename nor servname provided, or not known)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hotonvinted.com', port=443): Max retries exceeded with url: /api/listings (Caused by NameResolutionError("HTTPSConnection(host='hotonvinted.com', port=443): Failed to resolve 'hotonvinted.com' ([Errno 8] nodename nor servname provided, or not known)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 270, in <module>
+    main()
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 252, in main
+    item     = get_top_item(posted)
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 59, in get_top_item
+    r = requests.get(API_URL, timeout=30)
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='hotonvinted.com', port=443): Max retries exceeded with url: /api/listings (Caused by NameResolutionError("HTTPSConnection(host='hotonvinted.com', port=443): Failed to resolve 'hotonvinted.com' ([Errno 8] nodename nor servname provided, or not known)"))
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🌍 Country: UK | API: https://hotonvinted.com/api/listings
+📡 Fetching listings...
+   1282 items available
+
+📸 Item: Vintage low rise suit pants (❤️ 78)
+   Downloading image...
+   Image ready: (600, 600)
+
+📝 Caption preview:
+🔥 Vintage low rise suit pants
+
+💰 £13.25  ❤️ 78 favourites on Vinted
+
+Find it at hotonvinted.com 🔥 (link in bio)
+
+#vinted #vinteduk #secondhand #preloved #sustainablefashion
+#thrifted #vintedfind #ukvi...
+
+   Loaded saved session
+   Opening create post...
+   Uploading image...
+   Adding caption...
+   Sharing...
+   ✅ Post shared!
+
+✅ Done at 2026-07-27 09:00
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🌍 Country: UK | API: https://hotonvinted.com/api/listings
+📡 Fetching listings...
+   1250 items available
+
+📸 Item: Wooden jewelry cabinet mirror drawers ring roll necklace Hook vintage look (❤️ 90)
+   Downloading image...
+   Image ready: (600, 600)
+
+📝 Caption preview:
+🔥 Wooden jewelry cabinet mirror drawers ring roll necklace Hook vintage look
+
+💰 £23.0  ❤️ 90 favourites on Vinted
+
+Find it at hotonvinted.com 🔥 (link in bio)
+
+#vinted #vinteduk #secondhand #preloved #...
+
+   Loaded saved session
+   Opening create post...
+   Uploading image...
+   Adding caption...
+   Sharing...
+   ✅ Post shared!
+
+✅ Done at 2026-07-28 09:08
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🌍 Country: UK | API: https://hotonvinted.com/api/listings
+📡 Fetching listings...
+   1235 items available
+   6 unposted items selected
+
+🖼  Building 7 slides (intro + 6 products)...
+   ✅ Slide 1: Marvel Spider Man Hooded Windbreaker Jacket- 6 yea
+   ✅ Slide 2: Midi skirt
+   ✅ Slide 3: Grey Pleated Wool Skirt
+   ✅ Slide 4: Green striped linen shorts
+   ✅ Slide 5: Guess bag
+   ✅ Slide 6: red sleeveless top
+
+🎬 Creating video (6 slides, ~10s)...
+Traceback (most recent call last):
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 573, in <module>
+    main()
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 554, in main
+    video_path = create_video(slide_paths, TMP_VIDEO)
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 306, in create_video
+    result = subprocess.run(cmd, capture_output=True, text=True)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 505, in run
+    with Popen(*popenargs, **kwargs) as process:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 951, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 1821, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'ffmpeg'
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🌍 Country: UK | API: https://hotonvinted.com/api/listings
+📡 Fetching listings...
+   1511 items available
+   6 unposted items selected
+
+🖼  Building 7 slides (intro + 6 products)...
+   ✅ Slide 1: Large Mirror
+   ✅ Slide 2: Viral Beige Suede Shark Fold Over Boots Size 39
+   ✅ Slide 3: Superman jacket
+   ✅ Slide 4: Jaded London LDN Baggy Jeans
+   ✅ Slide 5: Peppermayo Lucinda dress
+   ✅ Slide 6: Stradivarius light blue striped windbreaker jacket
+
+🎬 Creating video (6 slides, ~10s)...
+   ✅ Video ready: /var/folders/fr/ktypx8fj46z1v4726fhfn1gc0000gp/T/vinted_reel_47yxbmex/reel.mp4
+
+📝 Caption preview:
+🔥 Most liked on Vinted UK right now
+
+✨ Large Mirror — £15.00 (231 likes)
+✨ Viral Beige Suede Shark Fold Over Boots  — £20.00 (198 likes)
+✨ Superman jacket — £40.00 (191 likes)
+(+ 3 more in the reel)
+
+Find them all at hotonvinted.com 🔥 (link in bio)
+
+#vinted #vinteduk #secondhand #preloved #sustainablefashion
+#thrifted #vintedfind #ukvinted #hotonvinted #vintedseller
+
+   💾 Video saved to /Users/alexpayne/Downloads/hot-on-vinted/last-reel.mp4
+   Loaded saved session
+   Opening create dialog...
+   Posting as: Post
+   Uploading video...
+   Setting crop to Original...
+   Adding caption...
+   Sharing...
+   ✅ Share clicked (confirm on Instagram)
+
+✅ Done at 2026-07-30 09:05
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🌍 Country: UK | API: https://hotonvinted.com/api/listings
+📡 Fetching listings...
+   1547 items available
+   6 unposted items selected
+
+🖼  Building 7 slides (intro + 6 products)...
+   ✅ Slide 1: Shoulder bag
+   ✅ Slide 2: Baby Phat Pink Camo Mini Shorts Size M
+   ✅ Slide 3: Oakley Sweatshirt | Navy | Medium
+   ✅ Slide 4: Leopard print slip on heels
+   ✅ Slide 5: y2k kenneth cole flower mules
+   ✅ Slide 6: Two gingham frill cushions - black and white
+
+🎬 Creating video (6 slides, ~10s)...
+   ✅ Video ready: /var/folders/fr/ktypx8fj46z1v4726fhfn1gc0000gp/T/vinted_reel_u6k6exqn/reel.mp4
+
+📝 Caption preview:
+🔥 Most liked on Vinted UK right now
+
+✨ Shoulder bag — £15.00 (194 likes)
+✨ Baby Phat Pink Camo Mini Shorts Size M — £10.00 (177 likes)
+✨ Oakley Sweatshirt | Navy | Medium — £34.95 (152 likes)
+(+ 3 more in the reel)
+
+Find them all at hotonvinted.com 🔥 (link in bio)
+
+#vinted #vinteduk #secondhand #preloved #sustainablefashion
+#thrifted #vintedfind #ukvinted #hotonvinted #vintedseller
+
+   💾 Video saved to /Users/alexpayne/Downloads/hot-on-vinted/last-reel.mp4
+   Loaded saved session
+   Opening create dialog...
+   Posting as: Post
+   Uploading video...
+   Setting crop to Original...
+   Adding caption...
+   Sharing...
+   ✅ Share clicked (confirm on Instagram)
+
+✅ Done at 2026-07-31 09:16
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🌍 Country: UK | API: https://hotonvinted.com/api/listings
+📡 Fetching listings...
+   1428 items available
+   6 unposted items selected
+
+🖼  Building 7 slides (intro + 6 products)...
+   ✅ Slide 1: Sky Blue Cut-Out Mini Dress
+   ✅ Slide 2: tie together going out shirt
+   ✅ Slide 3: Vintage Floral Lacy Tank
+   ✅ Slide 4: New Balance 530s - Size 5 UK - Grey and White
+   ✅ Slide 5: Sun bag charm Amusables jellycat
+   ✅ Slide 6: X by NBD dress
+
+🎬 Creating video (6 slides, ~10s)...
+   ✅ Video ready: /var/folders/fr/ktypx8fj46z1v4726fhfn1gc0000gp/T/vinted_reel_oytps3w4/reel.mp4
+
+📝 Caption preview:
+🔥 Most liked on Vinted UK right now
+
+✨ Sky Blue Cut-Out Mini Dress — £45.00 (176 likes)
+✨ tie together going out shirt — £5.28 (86 likes)
+✨ Vintage Floral Lacy Tank — £7.92 (85 likes)
+(+ 3 more in the reel)
+
+Find them all at hotonvinted.com 🔥 (link in bio)
+
+#vinted #vinteduk #secondhand #preloved #sustainablefashion
+#thrifted #vintedfind #ukvinted #hotonvinted #vintedseller
+
+   💾 Video saved to /Users/alexpayne/Downloads/hot-on-vinted/last-reel.mp4
+Traceback (most recent call last):
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 574, in <module>
+    main()
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 564, in main
+    post_to_instagram(video_path, caption)
+  File "/Users/alexpayne/Downloads/hot-on-vinted/post-to-instagram.py", line 363, in post_to_instagram
+    browser = p.chromium.launch(headless=True)
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/sync_api/_generated.py", line 16269, in launch
+    self._sync(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_browser_type.py", line 98, in launch
+    await self._channel.send(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+  File "/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: BrowserType.launch: Timeout 180000ms exceeded.
+Call log:
+  - <launching> /Users/alexpayne/Library/Caches/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/var/folders/fr/ktypx8fj46z1v4726fhfn1gc0000gp/T/playwright_chromiumdev_profile-6OkjLM --remote-debugging-pipe --no-startup-window
+  - <launched> pid=78349
+
