@@ -795,16 +795,12 @@ ${GA}
 
 // ── Netherlands homepage HTML ──────────────────────────────────────────────────
 function nlHomeHTML() {
-  const desktopOrder = NL_BRANDS.filter(b => b.name !== 'Scotch & Soda');
-  const chipsHTML = desktopOrder.map(b =>
-    `<a href="/nl/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>`
-  ).join('\n        ');
-
-  const mobileOrder = ['Nike','Adidas','Zara','H&M',"Levi's",'Vintage','Vans','New Balance','G-Star Raw','Jack & Jones'];
-  const mobileChipsHTML = mobileOrder.map(name => {
+  const brandOrder = ['Nike','Adidas','Zara','H&M',"Levi's",'Vintage','Vans','New Balance','G-Star Raw','Jack & Jones','North Face','Gymshark'];
+  const heroBrandsHTML = brandOrder.map(name => {
     const b = NL_BRANDS.find(x => x.name === name);
     return b ? `<a href="/nl/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
   }).filter(Boolean).join('\n    ');
+  const mobileChipsHTML = heroBrandsHTML;
 
   return homePageHTML({
     country: 'nl', lang: 'nl', logoLabel: 'NL',
