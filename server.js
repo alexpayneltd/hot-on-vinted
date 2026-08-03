@@ -465,7 +465,7 @@ function homePageHTML({ country, lang, flag, logoLabel, title, description, cano
   <meta property="og:site_name" content="Hot on Vinted">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"${jsonLdUrl}"}<\/script>
-\${GA}
+${GA}
 </head>
 <body>
 <header>
@@ -480,7 +480,7 @@ function homePageHTML({ country, lang, flag, logoLabel, title, description, cano
         <div class="ticker-track" id="ticker-track"></div>
       </div>
     </div>
-    \${countrySwitcher('${country}')}
+    ${countrySwitcher(country)}
     <button class="burger-btn" id="burger-btn" aria-label="Browse brands">☰</button>
   </div>
   <div class="chips-mobile" id="chips-mobile">
