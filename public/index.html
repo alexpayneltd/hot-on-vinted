@@ -79,7 +79,7 @@
     }
     .ticker-item:hover .ticker-title { color: #09b1ba; text-decoration: underline; }
     .ticker-img { width: 26px; height: 26px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
-    .ticker-title { font-weight: 600; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+    .ticker-title { font-weight: 600; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .ticker-price { color: #09b1ba; font-weight: 700; }
     .ticker-likes { color: #999; font-size: 0.75rem; }
     .ticker-sep { color: #ddd; }
@@ -121,7 +121,6 @@
       color: #1a1a1a;
     }
     .hero-search input::placeholder { color: #aaa; }
-    .hero-search .search-icon { font-size: 1.1rem; color: #09b1ba; }
     .popular-brands {
       display: flex;
       flex-wrap: wrap;
@@ -171,8 +170,7 @@
   <h1 class="hero-title">Find the most liked<br><span>Vinted UK</span> listings</h1>
   <p class="hero-sub">Search any brand, item or category — sorted by most liked</p>
   <div class="hero-search">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="search-input" placeholder="e.g. Nike, Zara, vintage dress…" autocomplete="off" autofocus>
+    <input type="text" id="search-input" placeholder="🔍  Search brands, items, categories…" autocomplete="off" autofocus>
   </div>
   <div class="popular-brands" id="popular-brands">
     <a href="#" class="chip chip-trending" id="trending-chip">🔥 Trending</a>
@@ -219,6 +217,7 @@
     try {
       const res = await fetch('/api/listings');
       const data = await res.json();
+      console.log('[ticker] /api/listings →', data.loading ? 'loading…' : `${(data.items||[]).length} items`);
       if (data.loading) { setTimeout(loadListings, 30000); return; }
       homeItems = data.items || [];
       if (data.lastUpdated) {
@@ -226,7 +225,7 @@
         document.getElementById('footer-updated').textContent = `Last refreshed: ${d.toLocaleTimeString()}`;
       }
       renderTicker();
-    } catch {}
+    } catch (e) { console.error('[ticker] loadListings failed:', e); }
   }
 
   // ── Ticker ────────────────────────────────────────────────────────────────
@@ -261,8 +260,8 @@
     document.getElementById('results-wrap').style.display = 'block';
     if (homeItems.length) {
       status.innerHTML = `🔥 Most liked on Vinted UK right now`;
-      grid.innerHTML  = homeItems.slice(0, 100).map(cardHTML).join('');
-      grid2.innerHTML = homeItems.slice(100).map(cardHTML).join('');
+      grid.innerHTML  = homeItems.slice(0, 50).map(cardHTML).join('');
+      grid2.innerHTML = '';
     } else {
       grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
     }
@@ -314,8 +313,8 @@
       status.innerHTML = items.length
         ? `<strong>${items.length}</strong> results for <strong>${esc(term)}</strong> — sorted by most liked`
         : `No liked results for <strong>${esc(term)}</strong>. Try another brand or keyword.`;
-      grid.innerHTML  = items.slice(0, 100).map(cardHTML).join('');
-      grid2.innerHTML = items.slice(100).map(cardHTML).join('');
+      grid.innerHTML  = items.slice(0, 50).map(cardHTML).join('');
+      grid2.innerHTML = '';
     } catch (err) {
       if (err.name === 'AbortError') return;
       status.innerHTML = `Search failed — try again in a moment.`;
