@@ -78,34 +78,75 @@
       gap: 8px;
       margin-top: 20px;
     }
-    .trending-section {
-      padding: 8px 16px 0;
-      max-width: 1400px;
-      margin: 0 auto;
+    /* ── Ticker ── */
+    .ticker-wrap {
+      width: 100%;
+      background: #f0fafa;
+      border-top: 1.5px solid #d0f0f2;
+      border-bottom: 1.5px solid #d0f0f2;
+      overflow: hidden;
+      padding: 0;
+      margin-bottom: 8px;
     }
-    .trending-header {
+    .ticker-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #09b1ba;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0 14px;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 2;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .ticker-track-wrap {
       display: flex;
       align-items: center;
+      height: 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ticker-track {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      animation: ticker-scroll 60s linear infinite;
+      white-space: nowrap;
+      padding-left: 120px; /* space for label */
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
       gap: 8px;
-      margin-bottom: 4px;
-    }
-    .trending-header h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #1a1a1a;
-      margin: 0;
-    }
-    .nav-trending {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #09b1ba;
+      padding: 0 24px 0 0;
       text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1.5px solid #09b1ba;
-      transition: background 0.15s, color 0.15s;
+      color: #1a1a1a;
+      font-size: 0.85rem;
+      flex-shrink: 0;
     }
-    .nav-trending:hover { background: #09b1ba; color: #fff; }
+    .ticker-item:hover .ticker-title { text-decoration: underline; color: #09b1ba; }
+    .ticker-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .ticker-title { font-weight: 600; max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+    .ticker-price { color: #09b1ba; font-weight: 700; }
+    .ticker-likes { color: #888; font-size: 0.78rem; }
+    .ticker-sep { color: #ccc; margin: 0 8px; }
     @media (max-width: 600px) {
       .hero-title { font-size: 1.5rem; }
       .hero { padding: 32px 16px 24px; }
@@ -120,7 +161,6 @@
       <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
       <span style="font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;">Hot on <span style="color:#09b1ba;">Vinted</span> UK</span>
     </a>
-    <a href="#trending" class="nav-trending" id="trending-nav-btn">🔥 Trending</a>
     <div class="country-switcher">
       <button class="country-current" id="country-btn" aria-label="Select country">🇬🇧</button>
       <div class="country-dropdown" id="country-dropdown">
@@ -142,6 +182,7 @@
     <input type="text" id="search-input" placeholder="e.g. Nike, Zara, vintage dress…" autocomplete="off" autofocus>
   </div>
   <div class="popular-brands">
+    <a href="#ticker" class="chip chip-trending" id="trending-chip" data-trending="true">🔥 Trending</a>
     <a href="/most-liked-nike-vinted-uk" class="chip" data-q="Nike">Nike</a>
     <a href="/most-liked-zara-vinted-uk" class="chip" data-q="Zara">Zara</a>
     <a href="/most-liked-lululemon-vinted-uk" class="chip" data-q="Lululemon">Lululemon</a>
@@ -167,14 +208,13 @@
   <div class="grid" id="grid2"></div>
 </main>
 
-<!-- Trending section (shown by default) -->
-<section class="trending-section" id="trending">
-  <div class="trending-header">
-    <h2>🔥 Trending now</h2>
-    <span class="status-text" id="trending-status" style="font-size:0.85rem;color:#888;"></span>
+<!-- Trending ticker -->
+<div class="ticker-wrap" id="ticker">
+  <div class="ticker-track-wrap">
+    <div class="ticker-label">🔥 TRENDING</div>
+    <div class="ticker-track" id="ticker-track"></div>
   </div>
-  <div class="grid" id="trending-grid"></div>
-</section>
+</div>
 
 <footer>
   <span>🔥 Hot on Vinted — not affiliated with Vinted UAB</span>
@@ -190,13 +230,10 @@
   let searchTimer;
   let activeSearch = null;
 
-  // Trending nav btn — smooth scroll and highlight
-  document.getElementById('trending-nav-btn').addEventListener('click', e => {
+  // Trending chip — scroll to ticker
+  document.getElementById('trending-chip').addEventListener('click', e => {
     e.preventDefault();
-    document.getElementById('trending').scrollIntoView({ behavior: 'smooth' });
-    if (!currentTerm) return;
-    // Clear search and show trending
-    clearSearch();
+    document.getElementById('ticker').scrollIntoView({ behavior: 'smooth' });
   });
 
   async function loadListings() {
@@ -218,14 +255,30 @@
         const d = new Date(data.lastUpdated);
         document.getElementById('footer-updated').textContent = `Last refreshed: ${d.toLocaleTimeString()}`;
       }
-      renderTrending();
+      renderTicker();
     } catch {
-      grid.innerHTML = `<div class="empty"><h2>😬</h2><p>Could not load listings.</p></div>`;
+      // ticker just stays empty on error
     }
   }
 
-  function renderTrending() {
-    document.getElementById('trending-grid').innerHTML = homeItems.slice(0, 100).map(cardHTML).join('');
+  function renderTicker() {
+    const items = homeItems.slice(0, 30);
+    if (!items.length) return;
+    const html = items.map(item => {
+      const thumb = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.url || '';
+      const price = item.price ? `£${parseFloat(item.price.amount).toFixed(2)}` : '';
+      const likes = item.favourite_count || 0;
+      return `<a class="ticker-item" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">
+        ${thumb ? `<img class="ticker-img" src="${esc(thumb)}" alt="" loading="lazy">` : ''}
+        <span class="ticker-title">${esc(item.title || '')}</span>
+        ${price ? `<span class="ticker-price">${price}</span>` : ''}
+        <span class="ticker-likes">❤️ ${likes}</span>
+        <span class="ticker-sep">·</span>
+      </a>`;
+    }).join('');
+    // Duplicate for seamless loop
+    const track = document.getElementById('ticker-track');
+    track.innerHTML = html + html;
   }
 
   function setActiveChip(q) {
@@ -249,7 +302,6 @@
     const grid = document.getElementById('grid');
     const grid2 = document.getElementById('grid2');
     const resultsWrap = document.getElementById('results-wrap');
-    const trendingSection = document.getElementById('trending');
 
     if (activeSearch) activeSearch.abort();
     const ctrl = new AbortController();
@@ -258,7 +310,6 @@
     if (typeof gtag !== 'undefined') gtag('event', 'search', { search_term: term });
 
     resultsWrap.style.display = 'block';
-    trendingSection.style.display = 'none';
     status.innerHTML = `🔍 Finding most-liked <strong>${esc(term)}</strong> listings on Vinted…`;
     grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
     grid2.innerHTML = '';
@@ -288,7 +339,6 @@
     setActiveChip(null);
     document.getElementById('status-text').innerHTML = '';
     document.getElementById('results-wrap').style.display = 'none';
-    document.getElementById('trending').style.display = 'block';
   }
 
   function cardHTML(item) {
