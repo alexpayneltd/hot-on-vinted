@@ -418,3 +418,45 @@ Call log:
   - <launching> /Users/alexpayne/Library/Caches/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/var/folders/fr/ktypx8fj46z1v4726fhfn1gc0000gp/T/playwright_chromiumdev_profile-6OkjLM --remote-debugging-pipe --no-startup-window
   - <launched> pid=78349
 
+/Users/alexpayne/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🌍 Country: UK | API: https://hotonvinted.com/api/listings
+📡 Fetching listings...
+   1505 items available
+   6 unposted items selected
+
+🖼  Building 7 slides (intro + 6 products)...
+   ✅ Slide 1: Desktop LED Light Bars
+   ✅ Slide 2: Boohoo Plus Tie Front Skater Dress Size 22
+   ✅ Slide 3: Ladies uggs
+   ✅ Slide 4: Duck egg blue mini grab bag
+   ✅ Slide 5: named collective jacket
+   ✅ Slide 6: mocha trenchcoat
+
+🎬 Creating video (6 slides, ~10s)...
+   ✅ Video ready: /var/folders/fr/ktypx8fj46z1v4726fhfn1gc0000gp/T/vinted_reel_1shi3o2_/reel.mp4
+
+📝 Caption preview:
+🔥 Most liked on Vinted UK right now
+
+✨ Desktop LED Light Bars — £15.00 (199 likes)
+✨ Boohoo Plus Tie Front Skater Dress Size  — £11.50 (158 likes)
+✨ Ladies uggs — £23.00 (146 likes)
+(+ 3 more in the reel)
+
+Find them all at hotonvinted.com 🔥 (link in bio)
+
+#vinted #vinteduk #secondhand #preloved #sustainablefashion
+#thrifted #vintedfind #ukvinted #hotonvinted #vintedseller
+
+   💾 Video saved to /Users/alexpayne/Downloads/hot-on-vinted/last-reel.mp4
+   Loaded saved session
+   Opening create dialog...
+   Posting as: Post
+   Uploading video...
+   Setting crop to Original...
+   Adding caption...
+   Sharing...
+   ✅ Share clicked (confirm on Instagram)
+
+✅ Done at 2026-08-02 10:40

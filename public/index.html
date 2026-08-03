@@ -12,20 +12,14 @@
   <link rel="alternate" hreflang="nl" href="https://hotonvinted.com/nl">
   <link rel="alternate" hreflang="x-default" href="https://hotonvinted.com/uk">
   <link rel="icon" href="/logo.png" type="image/png">
-
-  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hotonvinted.com/uk">
   <meta property="og:title" content="Hot on Vinted UK — Most Liked Listings Right Now 2026">
   <meta property="og:description" content="See which Vinted UK listings have the most likes right now. Search any brand to find its most-loved items.">
   <meta property="og:site_name" content="Hot on Vinted">
-
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Hot on Vinted UK — Most Liked Listings Right Now 2026">
   <meta name="twitter:description" content="See which Vinted UK listings have the most likes right now.">
-
-  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TCRE0CE8QY"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -33,12 +27,90 @@
     gtag('js', new Date());
     gtag('config', 'G-TCRE0CE8QY');
   </script>
-
-  <!-- Google AdSense — replace ca-pub-XXXXXXXXXXXXXXXX with your publisher ID -->
-  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
-
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com"}</script>
+  <style>
+    .hero {
+      text-align: center;
+      padding: 48px 16px 32px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .hero-title {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: #1a1a1a;
+      margin: 0 0 8px;
+      line-height: 1.15;
+    }
+    .hero-title span { color: #09b1ba; }
+    .hero-sub {
+      font-size: 1rem;
+      color: #666;
+      margin: 0 0 24px;
+    }
+    .hero-search {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 2px solid #09b1ba;
+      border-radius: 50px;
+      padding: 0 20px;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(9,177,186,0.15);
+    }
+    .hero-search input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1.05rem;
+      padding: 16px 0;
+      background: transparent;
+      color: #1a1a1a;
+    }
+    .hero-search input::placeholder { color: #aaa; }
+    .hero-search .search-icon { font-size: 1.1rem; color: #09b1ba; }
+    .popular-brands {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .trending-section {
+      padding: 8px 16px 0;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .trending-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .trending-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0;
+    }
+    .nav-trending {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #09b1ba;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid #09b1ba;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-trending:hover { background: #09b1ba; color: #fff; }
+    @media (max-width: 600px) {
+      .hero-title { font-size: 1.5rem; }
+      .hero { padding: 32px 16px 24px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -48,22 +120,7 @@
       <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
       <span style="font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;">Hot on <span style="color:#09b1ba;">Vinted</span> UK</span>
     </a>
-    <div class="chips-header">
-      <div class="chips" id="chips">
-        <a href="/most-liked-nike-vinted-uk" class="chip" data-q="Nike">Nike</a>
-        <a href="/most-liked-zara-vinted-uk" class="chip" data-q="Zara">Zara</a>
-        <a href="/most-liked-lululemon-vinted-uk" class="chip" data-q="Lululemon">Lululemon</a>
-        <a href="/most-liked-north-face-vinted-uk" class="chip" data-q="North Face">North Face</a>
-        <a href="/most-liked-asos-vinted-uk" class="chip" data-q="ASOS">ASOS</a>
-        <a href="/most-liked-hm-vinted-uk" class="chip" data-q="H&M">H&amp;M</a>
-        <a href="/most-liked-adidas-vinted-uk" class="chip" data-q="Adidas">Adidas</a>
-        <a href="/most-liked-vintage-vinted-uk" class="chip" data-q="Vintage">Vintage</a>
-        <a href="/most-liked-levis-vinted-uk" class="chip" data-q="Levi's">Levi's</a>
-        <a href="/most-liked-topshop-vinted-uk" class="chip" data-q="Topshop">Topshop</a>
-        <a href="/most-liked-new-balance-vinted-uk" class="chip" data-q="New Balance">New Balance</a>
-        <a href="/most-liked-gymshark-vinted-uk" class="chip" data-q="Gymshark">Gymshark</a>
-      </div>
-    </div>
+    <a href="#trending" class="nav-trending" id="trending-nav-btn">🔥 Trending</a>
     <div class="country-switcher">
       <button class="country-current" id="country-btn" aria-label="Select country">🇬🇧</button>
       <div class="country-dropdown" id="country-dropdown">
@@ -73,43 +130,51 @@
         <a href="/nl" class="country-option">🇳🇱 Nederland</a>
       </div>
     </div>
-    <button class="burger-btn" id="burger-btn" aria-label="Browse brands">☰</button>
-  </div>
-  <div class="chips-mobile" id="chips-mobile">
-    <a href="/most-liked-zara-vinted-uk" class="chip" data-q="Zara">Zara</a>
-    <a href="/most-liked-hm-vinted-uk" class="chip" data-q="H&M">H&amp;M</a>
-    <a href="/most-liked-nike-vinted-uk" class="chip" data-q="Nike">Nike</a>
-    <a href="/most-liked-asos-vinted-uk" class="chip" data-q="ASOS">ASOS</a>
-    <a href="/most-liked-levis-vinted-uk" class="chip" data-q="Levi's">Levi's</a>
-    <a href="/most-liked-adidas-vinted-uk" class="chip" data-q="Adidas">Adidas</a>
-    <a href="/most-liked-vintage-vinted-uk" class="chip" data-q="Vintage">Vintage</a>
-    <a href="/most-liked-topshop-vinted-uk" class="chip" data-q="Topshop">Topshop</a>
-    <a href="/most-liked-gymshark-vinted-uk" class="chip" data-q="Gymshark">Gymshark</a>
-    <a href="/most-liked-lululemon-vinted-uk" class="chip" data-q="Lululemon">Lululemon</a>
-    <a href="/most-liked-north-face-vinted-uk" class="chip" data-q="North Face">North Face</a>
-    <a href="/most-liked-new-balance-vinted-uk" class="chip" data-q="New Balance">New Balance</a>
   </div>
 </header>
 
-<div class="search-section">
-  <div class="search-wrap">
+<!-- Hero search -->
+<section class="hero">
+  <h1 class="hero-title">Find the most liked<br><span>Vinted UK</span> listings</h1>
+  <p class="hero-sub">Search any brand, item or category — sorted by most liked</p>
+  <div class="hero-search">
     <span class="search-icon">🔍</span>
-    <input type="text" id="search-input" placeholder="Search any brand, item or category…" autocomplete="off">
+    <input type="text" id="search-input" placeholder="e.g. Nike, Zara, vintage dress…" autocomplete="off" autofocus>
   </div>
-</div>
+  <div class="popular-brands">
+    <a href="/most-liked-nike-vinted-uk" class="chip" data-q="Nike">Nike</a>
+    <a href="/most-liked-zara-vinted-uk" class="chip" data-q="Zara">Zara</a>
+    <a href="/most-liked-lululemon-vinted-uk" class="chip" data-q="Lululemon">Lululemon</a>
+    <a href="/most-liked-north-face-vinted-uk" class="chip" data-q="North Face">North Face</a>
+    <a href="/most-liked-asos-vinted-uk" class="chip" data-q="ASOS">ASOS</a>
+    <a href="/most-liked-hm-vinted-uk" class="chip" data-q="H&M">H&amp;M</a>
+    <a href="/most-liked-adidas-vinted-uk" class="chip" data-q="Adidas">Adidas</a>
+    <a href="/most-liked-vintage-vinted-uk" class="chip" data-q="Vintage">Vintage</a>
+    <a href="/most-liked-levis-vinted-uk" class="chip" data-q="Levi's">Levi's</a>
+    <a href="/most-liked-topshop-vinted-uk" class="chip" data-q="Topshop">Topshop</a>
+    <a href="/most-liked-new-balance-vinted-uk" class="chip" data-q="New Balance">New Balance</a>
+    <a href="/most-liked-gymshark-vinted-uk" class="chip" data-q="Gymshark">Gymshark</a>
+  </div>
+</section>
 
 <div class="status-bar">
-  <span class="status-text" id="status-text">Loading…</span>
+  <span class="status-text" id="status-text"></span>
 </div>
 
-<main class="grid-wrap">
+<!-- Search results (shown when searching) -->
+<main class="grid-wrap" id="results-wrap" style="display:none;">
   <div class="grid" id="grid"></div>
+  <div class="grid" id="grid2"></div>
 </main>
 
-<div class="grid-wrap" style="margin-top:0">
-  <div class="grid" id="grid2"></div>
-</div>
-
+<!-- Trending section (shown by default) -->
+<section class="trending-section" id="trending">
+  <div class="trending-header">
+    <h2>🔥 Trending now</h2>
+    <span class="status-text" id="trending-status" style="font-size:0.85rem;color:#888;"></span>
+  </div>
+  <div class="grid" id="trending-grid"></div>
+</section>
 
 <footer>
   <span>🔥 Hot on Vinted — not affiliated with Vinted UAB</span>
@@ -120,104 +185,80 @@
 </footer>
 
 <script>
-  // Burger menu toggle
-  const burgerBtn = document.getElementById('burger-btn');
-  const chipsMobile = document.getElementById('chips-mobile');
-  burgerBtn.addEventListener('click', () => chipsMobile.classList.toggle('open'));
-  chipsMobile.addEventListener('click', e => {
-    if (e.target.classList.contains('chip')) chipsMobile.classList.remove('open');
-  });
-  document.addEventListener('click', e => {
-    if (!burgerBtn.contains(e.target) && !chipsMobile.contains(e.target)) {
-      chipsMobile.classList.remove('open');
-    }
-  });
-
   let homeItems = [];
   let currentTerm = '';
   let searchTimer;
   let activeSearch = null;
 
-  async function loadListings() {
-    const grid = document.getElementById('grid');
-    const grid2 = document.getElementById('grid2');
-    const status = document.getElementById('status-text');
-    if (currentTerm) return;
+  // Trending nav btn — smooth scroll and highlight
+  document.getElementById('trending-nav-btn').addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('trending').scrollIntoView({ behavior: 'smooth' });
+    if (!currentTerm) return;
+    // Clear search and show trending
+    clearSearch();
+  });
 
-    // Only show skeletons on first load — keep existing listings visible during refresh
+  async function loadListings() {
+    const status = document.getElementById('trending-status');
+    const grid = document.getElementById('trending-grid');
     if (!homeItems.length) {
       grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
-      grid2.innerHTML = '';
     }
-
     try {
       const res = await fetch('/api/listings');
       const data = await res.json();
-
       if (data.loading) {
-        status.innerHTML = '';
         grid.innerHTML = `<div class="empty"><h2>⏳</h2><p>${data.message}</p></div>`;
         setTimeout(loadListings, 30000);
         return;
       }
-
       homeItems = data.items || [];
-
       if (data.lastUpdated) {
         const d = new Date(data.lastUpdated);
         document.getElementById('footer-updated').textContent = `Last refreshed: ${d.toLocaleTimeString()}`;
       }
-
-      renderHome();
+      renderTrending();
     } catch {
-      status.innerHTML = 'Error loading listings.';
-      grid.innerHTML = `<div class="empty"><h2>😬</h2><p>Could not load listings. Is the server running?</p></div>`;
+      grid.innerHTML = `<div class="empty"><h2>😬</h2><p>Could not load listings.</p></div>`;
     }
   }
 
-  function renderHome() {
-    const status = document.getElementById('status-text');
-    status.innerHTML = `A selection of the <strong>most liked</strong> listings on Vinted UK — 🔍 search a brand, item or category to find more`;
-    if (!homeItems.length) {
-      document.getElementById('grid').innerHTML = `<div class="empty"><h2>🤷</h2><p>No listings yet.</p></div>`;
-      document.getElementById('grid2').innerHTML = '';
-      return;
-    }
-    document.getElementById('grid').innerHTML = homeItems.slice(0, 100).map(cardHTML).join('');
-    document.getElementById('grid2').innerHTML = '';
+  function renderTrending() {
+    document.getElementById('trending-grid').innerHTML = homeItems.slice(0, 100).map(cardHTML).join('');
   }
 
   function setActiveChip(q) {
     document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.q === q));
   }
 
-  function handleChipClick(e) {
+  document.querySelector('.popular-brands').addEventListener('click', e => {
     const chip = e.target.closest('.chip');
     if (!chip || !chip.dataset.q) return;
     e.preventDefault();
     const q = chip.dataset.q;
-    const input = document.getElementById('search-input');
-    input.value = q;
+    document.getElementById('search-input').value = q;
     clearTimeout(searchTimer);
     currentTerm = q;
     setActiveChip(q);
     runSearch(q);
-  }
-  document.getElementById('chips').addEventListener('click', handleChipClick);
-  document.getElementById('chips-mobile').addEventListener('click', handleChipClick);
+  });
 
   async function runSearch(term) {
     const status = document.getElementById('status-text');
     const grid = document.getElementById('grid');
     const grid2 = document.getElementById('grid2');
+    const resultsWrap = document.getElementById('results-wrap');
+    const trendingSection = document.getElementById('trending');
 
     if (activeSearch) activeSearch.abort();
     const ctrl = new AbortController();
     activeSearch = ctrl;
 
-    // GA search event
     if (typeof gtag !== 'undefined') gtag('event', 'search', { search_term: term });
 
+    resultsWrap.style.display = 'block';
+    trendingSection.style.display = 'none';
     status.innerHTML = `🔍 Finding most-liked <strong>${esc(term)}</strong> listings on Vinted…`;
     grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
     grid2.innerHTML = '';
@@ -226,12 +267,10 @@
       const res = await fetch(`/api/search?q=${encodeURIComponent(term)}`, { signal: ctrl.signal });
       const data = await res.json();
       if (ctrl.signal.aborted) return;
-
       const items = data.items || [];
       status.innerHTML = items.length
         ? `<strong>${items.length}</strong> results for <strong>${esc(term)}</strong> — sorted by most liked`
         : `No liked results for <strong>${esc(term)}</strong>. Try another brand or keyword.`;
-
       grid.innerHTML = items.slice(0, 100).map(cardHTML).join('');
       grid2.innerHTML = items.slice(100).map(cardHTML).join('');
     } catch (err) {
@@ -247,7 +286,9 @@
     currentTerm = '';
     if (activeSearch) { activeSearch.abort(); activeSearch = null; }
     setActiveChip(null);
-    renderHome();
+    document.getElementById('status-text').innerHTML = '';
+    document.getElementById('results-wrap').style.display = 'none';
+    document.getElementById('trending').style.display = 'block';
   }
 
   function cardHTML(item) {
