@@ -263,7 +263,7 @@
       const res = await fetch('/api/listings');
       const data = await res.json();
       console.log('[ticker] /api/listings →', data.loading ? 'loading…' : `${(data.items||[]).length} items`);
-      if (data.loading) { setTimeout(loadListings, 30000); return; }
+      if (data.loading) { setTimeout(loadListings, 10000); return; }
       homeItems = data.items || [];
       if (data.lastUpdated) {
         const d = new Date(data.lastUpdated);
@@ -436,6 +436,9 @@
   // ── Init ──────────────────────────────────────────────────────────────────
   loadListings();
   setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && !homeItems.length) loadListings();
+  });
 </script>
 </body>
 </html>
