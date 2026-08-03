@@ -30,6 +30,61 @@
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com"}</script>
   <style>
+    /* ── Header ticker ── */
+    .header-ticker {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      margin: 0 16px;
+      min-width: 0;
+    }
+    .ticker-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #fff;
+      background: #09b1ba;
+      padding: 3px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+      margin-right: 10px;
+    }
+    .ticker-overflow {
+      overflow: hidden;
+      flex: 1;
+      min-width: 0;
+    }
+    .ticker-track {
+      display: flex;
+      align-items: center;
+      animation: ticker-scroll 60s linear infinite;
+      white-space: nowrap;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 28px 0 0;
+      text-decoration: none;
+      color: #1a1a1a;
+      font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+    .ticker-item:hover .ticker-title { color: #09b1ba; text-decoration: underline; }
+    .ticker-img { width: 26px; height: 26px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
+    .ticker-title { font-weight: 600; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+    .ticker-price { color: #09b1ba; font-weight: 700; }
+    .ticker-likes { color: #999; font-size: 0.75rem; }
+    .ticker-sep { color: #ddd; }
+
+    /* ── Hero ── */
     .hero {
       text-align: center;
       padding: 48px 16px 32px;
@@ -45,11 +100,7 @@
       line-height: 1.15;
     }
     .hero-title span { color: #09b1ba; }
-    .hero-sub {
-      font-size: 1rem;
-      color: #666;
-      margin: 0 0 24px;
-    }
+    .hero-sub { font-size: 1rem; color: #666; margin: 0 0 24px; }
     .hero-search {
       display: flex;
       align-items: center;
@@ -78,78 +129,10 @@
       gap: 8px;
       margin-top: 20px;
     }
-    /* ── Ticker ── */
-    .ticker-wrap {
-      width: 100%;
-      background: #f0fafa;
-      border-top: 1.5px solid #d0f0f2;
-      border-bottom: 1.5px solid #d0f0f2;
-      overflow: hidden;
-      padding: 0;
-      margin-bottom: 8px;
-    }
-    .ticker-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #09b1ba;
-      color: #fff;
-      font-size: 0.78rem;
-      font-weight: 700;
-      padding: 0 14px;
-      height: 100%;
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-index: 2;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-    }
-    .ticker-track-wrap {
-      display: flex;
-      align-items: center;
-      height: 44px;
-      position: relative;
-      overflow: hidden;
-    }
-    .ticker-track {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      animation: ticker-scroll 60s linear infinite;
-      white-space: nowrap;
-      padding-left: 120px; /* space for label */
-    }
-    .ticker-track:hover { animation-play-state: paused; }
-    @keyframes ticker-scroll {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    .ticker-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 24px 0 0;
-      text-decoration: none;
-      color: #1a1a1a;
-      font-size: 0.85rem;
-      flex-shrink: 0;
-    }
-    .ticker-item:hover .ticker-title { text-decoration: underline; color: #09b1ba; }
-    .ticker-img {
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
-      object-fit: cover;
-      flex-shrink: 0;
-    }
-    .ticker-title { font-weight: 600; max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
-    .ticker-price { color: #09b1ba; font-weight: 700; }
-    .ticker-likes { color: #888; font-size: 0.78rem; }
-    .ticker-sep { color: #ccc; margin: 0 8px; }
     @media (max-width: 600px) {
       .hero-title { font-size: 1.5rem; }
       .hero { padding: 32px 16px 24px; }
+      .header-ticker { display: none; }
     }
   </style>
 </head>
@@ -157,11 +140,21 @@
 
 <header>
   <div class="header-inner">
-    <a class="logo" href="/uk" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
-      <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
-      <span style="font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;">Hot on <span style="color:#09b1ba;">Vinted</span> UK</span>
+    <a class="logo" href="/uk" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
+      <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;">
+      <span style="font-size:1.1rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;white-space:nowrap;">Hot on <span style="color:#09b1ba;">Vinted</span> UK</span>
     </a>
-    <div class="country-switcher">
+
+    <!-- Ticker in header centre -->
+    <div class="header-ticker">
+      <span class="ticker-label">🔥 LIVE</span>
+      <div class="ticker-overflow">
+        <div class="ticker-track" id="ticker-track"></div>
+      </div>
+    </div>
+
+    <!-- Country flag right -->
+    <div class="country-switcher" style="flex-shrink:0;">
       <button class="country-current" id="country-btn" aria-label="Select country">🇬🇧</button>
       <div class="country-dropdown" id="country-dropdown">
         <a href="/uk" class="country-option active">🇬🇧 United Kingdom</a>
@@ -181,8 +174,8 @@
     <span class="search-icon">🔍</span>
     <input type="text" id="search-input" placeholder="e.g. Nike, Zara, vintage dress…" autocomplete="off" autofocus>
   </div>
-  <div class="popular-brands">
-    <a href="#ticker" class="chip chip-trending" id="trending-chip" data-trending="true">🔥 Trending</a>
+  <div class="popular-brands" id="popular-brands">
+    <a href="#" class="chip chip-trending" id="trending-chip">🔥 Trending</a>
     <a href="/most-liked-nike-vinted-uk" class="chip" data-q="Nike">Nike</a>
     <a href="/most-liked-zara-vinted-uk" class="chip" data-q="Zara">Zara</a>
     <a href="/most-liked-lululemon-vinted-uk" class="chip" data-q="Lululemon">Lululemon</a>
@@ -202,19 +195,10 @@
   <span class="status-text" id="status-text"></span>
 </div>
 
-<!-- Search results (shown when searching) -->
 <main class="grid-wrap" id="results-wrap" style="display:none;">
   <div class="grid" id="grid"></div>
   <div class="grid" id="grid2"></div>
 </main>
-
-<!-- Trending ticker -->
-<div class="ticker-wrap" id="ticker">
-  <div class="ticker-track-wrap">
-    <div class="ticker-label">🔥 TRENDING</div>
-    <div class="ticker-track" id="ticker-track"></div>
-  </div>
-</div>
 
 <footer>
   <span>🔥 Hot on Vinted — not affiliated with Vinted UAB</span>
@@ -230,62 +214,69 @@
   let searchTimer;
   let activeSearch = null;
 
-  // Trending chip — scroll to ticker
-  document.getElementById('trending-chip').addEventListener('click', e => {
-    e.preventDefault();
-    document.getElementById('ticker').scrollIntoView({ behavior: 'smooth' });
-  });
-
+  // ── Data ──────────────────────────────────────────────────────────────────
   async function loadListings() {
-    const status = document.getElementById('trending-status');
-    const grid = document.getElementById('trending-grid');
-    if (!homeItems.length) {
-      grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
-    }
     try {
       const res = await fetch('/api/listings');
       const data = await res.json();
-      if (data.loading) {
-        grid.innerHTML = `<div class="empty"><h2>⏳</h2><p>${data.message}</p></div>`;
-        setTimeout(loadListings, 30000);
-        return;
-      }
+      if (data.loading) { setTimeout(loadListings, 30000); return; }
       homeItems = data.items || [];
       if (data.lastUpdated) {
         const d = new Date(data.lastUpdated);
         document.getElementById('footer-updated').textContent = `Last refreshed: ${d.toLocaleTimeString()}`;
       }
       renderTicker();
-    } catch {
-      // ticker just stays empty on error
-    }
+    } catch {}
   }
 
+  // ── Ticker ────────────────────────────────────────────────────────────────
   function renderTicker() {
     const items = homeItems.slice(0, 30);
     if (!items.length) return;
     const html = items.map(item => {
       const thumb = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.url || '';
       const price = item.price ? `£${parseFloat(item.price.amount).toFixed(2)}` : '';
-      const likes = item.favourite_count || 0;
       return `<a class="ticker-item" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">
         ${thumb ? `<img class="ticker-img" src="${esc(thumb)}" alt="" loading="lazy">` : ''}
         <span class="ticker-title">${esc(item.title || '')}</span>
         ${price ? `<span class="ticker-price">${price}</span>` : ''}
-        <span class="ticker-likes">❤️ ${likes}</span>
-        <span class="ticker-sep">·</span>
+        <span class="ticker-likes">❤️ ${item.favourite_count || 0}</span>
+        <span class="ticker-sep"> &nbsp;·&nbsp; </span>
       </a>`;
     }).join('');
-    // Duplicate for seamless loop
-    const track = document.getElementById('ticker-track');
-    track.innerHTML = html + html;
+    document.getElementById('ticker-track').innerHTML = html + html;
   }
 
+  // ── Trending chip → show full grid ───────────────────────────────────────
+  document.getElementById('trending-chip').addEventListener('click', e => {
+    e.preventDefault();
+    clearTimeout(searchTimer);
+    if (activeSearch) { activeSearch.abort(); activeSearch = null; }
+    document.getElementById('search-input').value = '';
+    currentTerm = '';
+    setActiveChip('trending');
+    const status = document.getElementById('status-text');
+    const grid    = document.getElementById('grid');
+    const grid2   = document.getElementById('grid2');
+    document.getElementById('results-wrap').style.display = 'block';
+    if (homeItems.length) {
+      status.innerHTML = `🔥 Most liked on Vinted UK right now`;
+      grid.innerHTML  = homeItems.slice(0, 100).map(cardHTML).join('');
+      grid2.innerHTML = homeItems.slice(100).map(cardHTML).join('');
+    } else {
+      grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
+    }
+  });
+
+  // ── Brand chips ───────────────────────────────────────────────────────────
   function setActiveChip(q) {
-    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.q === q));
+    document.querySelectorAll('.chip').forEach(c => {
+      const match = q === 'trending' ? c.id === 'trending-chip' : c.dataset.q === q;
+      c.classList.toggle('active', match);
+    });
   }
 
-  document.querySelector('.popular-brands').addEventListener('click', e => {
+  document.getElementById('popular-brands').addEventListener('click', e => {
     const chip = e.target.closest('.chip');
     if (!chip || !chip.dataset.q) return;
     e.preventDefault();
@@ -297,10 +288,11 @@
     runSearch(q);
   });
 
+  // ── Search ────────────────────────────────────────────────────────────────
   async function runSearch(term) {
-    const status = document.getElementById('status-text');
-    const grid = document.getElementById('grid');
-    const grid2 = document.getElementById('grid2');
+    const status     = document.getElementById('status-text');
+    const grid       = document.getElementById('grid');
+    const grid2      = document.getElementById('grid2');
     const resultsWrap = document.getElementById('results-wrap');
 
     if (activeSearch) activeSearch.abort();
@@ -311,23 +303,23 @@
 
     resultsWrap.style.display = 'block';
     status.innerHTML = `🔍 Finding most-liked <strong>${esc(term)}</strong> listings on Vinted…`;
-    grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
-    grid2.innerHTML = '';
+    grid.innerHTML   = Array(20).fill('<div class="skeleton"></div>').join('');
+    grid2.innerHTML  = '';
 
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(term)}`, { signal: ctrl.signal });
+      const res  = await fetch(`/api/search?q=${encodeURIComponent(term)}`, { signal: ctrl.signal });
       const data = await res.json();
       if (ctrl.signal.aborted) return;
       const items = data.items || [];
       status.innerHTML = items.length
         ? `<strong>${items.length}</strong> results for <strong>${esc(term)}</strong> — sorted by most liked`
         : `No liked results for <strong>${esc(term)}</strong>. Try another brand or keyword.`;
-      grid.innerHTML = items.slice(0, 100).map(cardHTML).join('');
+      grid.innerHTML  = items.slice(0, 100).map(cardHTML).join('');
       grid2.innerHTML = items.slice(100).map(cardHTML).join('');
     } catch (err) {
       if (err.name === 'AbortError') return;
       status.innerHTML = `Search failed — try again in a moment.`;
-      grid.innerHTML = `<div class="empty"><h2>😬</h2><p>Search failed.</p></div>`;
+      grid.innerHTML   = `<div class="empty"><h2>😬</h2><p>Search failed.</p></div>`;
     } finally {
       if (activeSearch === ctrl) activeSearch = null;
     }
@@ -341,17 +333,26 @@
     document.getElementById('results-wrap').style.display = 'none';
   }
 
+  document.getElementById('search-input').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    const val = e.target.value.trim();
+    setActiveChip(null);
+    if (!val) { clearSearch(); return; }
+    searchTimer = setTimeout(() => { currentTerm = val; runSearch(currentTerm); }, 600);
+  });
+
+  // ── Card HTML ─────────────────────────────────────────────────────────────
   function cardHTML(item) {
-    const thumb150 = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || '';
-    const thumb310 = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || '';
-    const photo = thumb150 || thumb310 || item.photo?.url || '';
-    const srcset = thumb150 && thumb310 ? `${esc(thumb150)} 150w, ${esc(thumb310)} 310w` : '';
-    const price = item.price ? `£${parseFloat(item.price.amount).toFixed(2)}` : '';
+    const thumb150   = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || '';
+    const thumb310   = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || '';
+    const photo      = thumb150 || thumb310 || item.photo?.url || '';
+    const srcset     = thumb150 && thumb310 ? `${esc(thumb150)} 150w, ${esc(thumb310)} 310w` : '';
+    const price      = item.price ? `£${parseFloat(item.price.amount).toFixed(2)}` : '';
     const totalPrice = item.total_item_price ? `£${parseFloat(item.total_item_price.amount).toFixed(2)} inc. fees` : '';
-    const pills = [item.size_title, item.status].filter(Boolean).map(p => `<span class="pill">${esc(p)}</span>`).join('');
+    const pills      = [item.size_title, item.status].filter(Boolean).map(p => `<span class="pill">${esc(p)}</span>`).join('');
     return `<a class="card" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">
       <div class="card-img-wrap">
-        ${photo ? `<img class="card-img" src="${esc(photo)}" ${srcset ? `srcset="${srcset}" sizes="(max-width: 600px) 150px, 310px"` : ''} alt="${esc(item.title || '')}" loading="lazy">` : ''}
+        ${photo ? `<img class="card-img" src="${esc(photo)}" ${srcset ? `srcset="${srcset}" sizes="(max-width:600px) 150px, 310px"` : ''} alt="${esc(item.title || '')}" loading="lazy">` : ''}
         <span class="like-badge">❤️ ${item.favourite_count}</span>
       </div>
       <div class="card-body">
@@ -370,24 +371,15 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  document.getElementById('search-input').addEventListener('input', e => {
-    clearTimeout(searchTimer);
-    const val = e.target.value.trim();
-    setActiveChip(null);
-    if (!val) { clearSearch(); return; }
-    searchTimer = setTimeout(() => {
-      currentTerm = val;
-      runSearch(currentTerm);
-    }, 600);
-  });
-
-  loadListings();
-  setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
-
-  const countryBtn = document.getElementById('country-btn');
+  // ── Country switcher ──────────────────────────────────────────────────────
+  const countryBtn      = document.getElementById('country-btn');
   const countryDropdown = document.getElementById('country-dropdown');
   countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
   document.addEventListener('click', () => countryDropdown.classList.remove('open'));
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  loadListings();
+  setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
 </script>
 </body>
 </html>
