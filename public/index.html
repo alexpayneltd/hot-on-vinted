@@ -128,6 +128,11 @@
       gap: 8px;
       margin-top: 20px;
     }
+    /* ── Load more ── */
+    .load-more-wrap { text-align: center; padding: 32px 0 8px; }
+    .load-more-btn { background: #fff; border: 2px solid #09b1ba; color: #09b1ba; font-size: 0.95rem; font-weight: 700; padding: 12px 36px; border-radius: 999px; cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .load-more-btn:hover { background: #09b1ba; color: #fff; }
+
     /* ── Mobile ticker banner (below header) ── */
     .mobile-ticker-banner {
       display: none;
@@ -240,7 +245,9 @@
 
 <main class="grid-wrap" id="results-wrap" style="display:none;">
   <div class="grid" id="grid"></div>
-  <div class="grid" id="grid2"></div>
+  <div class="load-more-wrap" id="load-more-wrap" style="display:none;">
+    <button class="load-more-btn" id="load-more-btn">Load more</button>
+  </div>
 </main>
 
 <footer>
@@ -256,6 +263,9 @@
   let currentTerm = '';
   let searchTimer;
   let activeSearch = null;
+  let currentItems = [];  // full result set for current view
+  let currentOffset = 0;
+  const PAGE_SIZE = 50;
 
   // ── Data ──────────────────────────────────────────────────────────────────
   async function loadListings() {
@@ -295,6 +305,24 @@
     });
   }
 
+  // ── Pagination helpers ────────────────────────────────────────────────────
+  function renderPage(items, offset, append = false) {
+    const grid = document.getElementById('grid');
+    const batch = items.slice(offset, offset + PAGE_SIZE);
+    if (append) {
+      batch.forEach(item => { const el = document.createElement('a'); el.outerHTML; grid.insertAdjacentHTML('beforeend', cardHTML(item)); });
+    } else {
+      grid.innerHTML = batch.map(cardHTML).join('');
+    }
+    const hasMore = items.length > offset + PAGE_SIZE;
+    document.getElementById('load-more-wrap').style.display = hasMore ? 'block' : 'none';
+  }
+
+  document.getElementById('load-more-btn').addEventListener('click', () => {
+    currentOffset += PAGE_SIZE;
+    renderPage(currentItems, currentOffset, true);
+  });
+
   // ── Trending: shared action ───────────────────────────────────────────────
   function showTrending() {
     clearTimeout(searchTimer);
@@ -303,14 +331,14 @@
     currentTerm = '';
     setActiveChip('trending');
     document.getElementById('chips-mobile').classList.remove('open');
-    const grid = document.getElementById('grid');
     document.getElementById('results-wrap').style.display = 'block';
     if (homeItems.length) {
       document.getElementById('status-text').innerHTML = `🔥 Most liked on Vinted UK right now`;
-      grid.innerHTML = homeItems.slice(0, 50).map(cardHTML).join('');
-      document.getElementById('grid2').innerHTML = '';
+      currentItems = homeItems;
+      currentOffset = 0;
+      renderPage(currentItems, 0);
     } else {
-      grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
+      document.getElementById('grid').innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
     }
   }
 
@@ -341,7 +369,6 @@
   async function runSearch(term) {
     const status     = document.getElementById('status-text');
     const grid       = document.getElementById('grid');
-    const grid2      = document.getElementById('grid2');
     const resultsWrap = document.getElementById('results-wrap');
 
     if (activeSearch) activeSearch.abort();
@@ -351,9 +378,9 @@
     if (typeof gtag !== 'undefined') gtag('event', 'search', { search_term: term });
 
     resultsWrap.style.display = 'block';
+    document.getElementById('load-more-wrap').style.display = 'none';
     status.innerHTML = `🔍 Finding most-liked <strong>${esc(term)}</strong> listings on Vinted…`;
     grid.innerHTML   = Array(20).fill('<div class="skeleton"></div>').join('');
-    grid2.innerHTML  = '';
 
     try {
       const res  = await fetch(`/api/search?q=${encodeURIComponent(term)}`, { signal: ctrl.signal });
@@ -363,8 +390,9 @@
       status.innerHTML = items.length
         ? `<strong>${items.length}</strong> results for <strong>${esc(term)}</strong> — sorted by most liked`
         : `No liked results for <strong>${esc(term)}</strong>. Try another brand or keyword.`;
-      grid.innerHTML  = items.slice(0, 50).map(cardHTML).join('');
-      grid2.innerHTML = '';
+      currentItems = items;
+      currentOffset = 0;
+      renderPage(currentItems, 0);
     } catch (err) {
       if (err.name === 'AbortError') return;
       status.innerHTML = `Search failed — try again in a moment.`;
