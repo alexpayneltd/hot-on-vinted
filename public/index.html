@@ -128,10 +128,31 @@
       gap: 8px;
       margin-top: 20px;
     }
+    /* ── Mobile ticker banner (below header) ── */
+    .mobile-ticker-banner {
+      display: none;
+    }
     @media (max-width: 600px) {
       .hero-title { font-size: 1.5rem; }
       .hero { padding: 32px 16px 24px; }
       .header-ticker { display: none; }
+      .mobile-ticker-banner {
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 6px 16px;
+        overflow: hidden;
+        gap: 8px;
+        position: sticky;
+        top: 64px;
+        z-index: 98;
+      }
+      .mobile-ticker-banner .ticker-overflow {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+      }
     }
   </style>
 </head>
@@ -162,8 +183,32 @@
         <a href="/nl" class="country-option">🇳🇱 Nederland</a>
       </div>
     </div>
+    <!-- Hamburger (mobile only) -->
+    <button class="burger-btn" id="burger-btn" aria-label="Browse brands">☰</button>
+  </div>
+  <!-- Mobile chips dropdown -->
+  <div class="chips-mobile" id="chips-mobile">
+    <a href="#" class="chip chip-trending" id="trending-chip-mobile">🔥 Trending</a>
+    <a href="/most-liked-nike-vinted-uk" class="chip" data-q="Nike">Nike</a>
+    <a href="/most-liked-zara-vinted-uk" class="chip" data-q="Zara">Zara</a>
+    <a href="/most-liked-hm-vinted-uk" class="chip" data-q="H&M">H&amp;M</a>
+    <a href="/most-liked-lululemon-vinted-uk" class="chip" data-q="Lululemon">Lululemon</a>
+    <a href="/most-liked-levis-vinted-uk" class="chip" data-q="Levi's">Levi's</a>
+    <a href="/most-liked-adidas-vinted-uk" class="chip" data-q="Adidas">Adidas</a>
+    <a href="/most-liked-vintage-vinted-uk" class="chip" data-q="Vintage">Vintage</a>
+    <a href="/most-liked-north-face-vinted-uk" class="chip" data-q="North Face">North Face</a>
+    <a href="/most-liked-new-balance-vinted-uk" class="chip" data-q="New Balance">New Balance</a>
+    <a href="/most-liked-gymshark-vinted-uk" class="chip" data-q="Gymshark">Gymshark</a>
   </div>
 </header>
+
+<!-- Mobile ticker (below header, sticky) -->
+<div class="mobile-ticker-banner">
+  <span class="ticker-label">🔥 LIVE</span>
+  <div class="ticker-overflow">
+    <div class="ticker-track" id="ticker-track-mobile"></div>
+  </div>
+</div>
 
 <!-- Hero search -->
 <section class="hero">
@@ -243,29 +288,34 @@
         <span class="ticker-sep"> &nbsp;·&nbsp; </span>
       </a>`;
     }).join('');
-    document.getElementById('ticker-track').innerHTML = html + html;
+    const doubled = html + html;
+    ['ticker-track', 'ticker-track-mobile'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = doubled;
+    });
   }
 
-  // ── Trending chip → show full grid ───────────────────────────────────────
-  document.getElementById('trending-chip').addEventListener('click', e => {
-    e.preventDefault();
+  // ── Trending: shared action ───────────────────────────────────────────────
+  function showTrending() {
     clearTimeout(searchTimer);
     if (activeSearch) { activeSearch.abort(); activeSearch = null; }
     document.getElementById('search-input').value = '';
     currentTerm = '';
     setActiveChip('trending');
-    const status = document.getElementById('status-text');
-    const grid    = document.getElementById('grid');
-    const grid2   = document.getElementById('grid2');
+    document.getElementById('chips-mobile').classList.remove('open');
+    const grid = document.getElementById('grid');
     document.getElementById('results-wrap').style.display = 'block';
     if (homeItems.length) {
-      status.innerHTML = `🔥 Most liked on Vinted UK right now`;
-      grid.innerHTML  = homeItems.slice(0, 50).map(cardHTML).join('');
-      grid2.innerHTML = '';
+      document.getElementById('status-text').innerHTML = `🔥 Most liked on Vinted UK right now`;
+      grid.innerHTML = homeItems.slice(0, 50).map(cardHTML).join('');
+      document.getElementById('grid2').innerHTML = '';
     } else {
       grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
     }
-  });
+  }
+
+  document.getElementById('trending-chip').addEventListener('click', e => { e.preventDefault(); showTrending(); });
+  document.getElementById('trending-chip-mobile').addEventListener('click', e => { e.preventDefault(); showTrending(); });
 
   // ── Brand chips ───────────────────────────────────────────────────────────
   function setActiveChip(q) {
@@ -370,11 +420,18 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // ── Country switcher ──────────────────────────────────────────────────────
+  // ── Burger + country switcher ─────────────────────────────────────────────
+  const burgerBtn    = document.getElementById('burger-btn');
+  const chipsMobile  = document.getElementById('chips-mobile');
+  burgerBtn.addEventListener('click', e => { e.stopPropagation(); chipsMobile.classList.toggle('open'); });
+
   const countryBtn      = document.getElementById('country-btn');
   const countryDropdown = document.getElementById('country-dropdown');
   countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
-  document.addEventListener('click', () => countryDropdown.classList.remove('open'));
+  document.addEventListener('click', () => {
+    countryDropdown.classList.remove('open');
+    chipsMobile.classList.remove('open');
+  });
 
   // ── Init ──────────────────────────────────────────────────────────────────
   loadListings();
