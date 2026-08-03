@@ -243,152 +243,98 @@ ${GA}
 </html>`;
 }
 
-// ── France homepage HTML ───────────────────────────────────────────────────────
-function frHomeHTML() {
-  const chipsHTML = FR_BRANDS.map(b =>
-    `<a href="/fr/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>`
-  ).join('\n        ');
-
-  const mobileOrder = ['Nike','Zara','H&M','Maje',"Levi's",'Adidas','Vintage','Sézane','Lacoste','Lululemon','North Face','New Balance'];
-  const mobileChipsHTML = mobileOrder.map(name => {
-    const b = FR_BRANDS.find(x => x.name === name);
-    return b ? `<a href="/fr/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
-  }).filter(Boolean).join('\n    ');
-
-  return `<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hot on Vinted France — Les articles les plus likés 2026</title>
-  <meta name="description" content="Découvrez les articles les plus likés sur Vinted France, triés par popularité. Recherchez une marque pour trouver ses articles les plus aimés.">
-  <link rel="canonical" href="https://hotonvinted.com/fr">
-  <link rel="alternate" hreflang="en-GB" href="https://hotonvinted.com/uk">
-  <link rel="alternate" hreflang="fr" href="https://hotonvinted.com/fr">
-  <link rel="alternate" hreflang="de" href="https://hotonvinted.com/de">
-  <link rel="alternate" hreflang="nl" href="https://hotonvinted.com/nl">
-  <link rel="alternate" hreflang="x-default" href="https://hotonvinted.com/uk">
-  <link rel="icon" href="/logo.png" type="image/png">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://hotonvinted.com/fr">
-  <meta property="og:title" content="Hot on Vinted France — Les articles les plus likés 2026">
-  <meta property="og:description" content="Découvrez les articles les plus likés sur Vinted France, triés par popularité.">
-  <meta property="og:site_name" content="Hot on Vinted">
-  <link rel="stylesheet" href="/styles.css">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com/fr"}</script>
-${GA}
-</head>
-<body>
-<header>
-  <div class="header-inner">
-    <a class="logo" href="/fr" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
-      <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
-      <span style="font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;">Hot on <span style="color:#09b1ba;">Vinted</span> FR</span>
-    </a>
-    <div class="chips-header">
-      <div class="chips" id="chips">
-        ${chipsHTML}
-      </div>
-    </div>
-    ${countrySwitcher('fr')}
-    <button class="burger-btn" id="burger-btn" aria-label="Parcourir les marques">☰</button>
-  </div>
-  <div class="chips-mobile" id="chips-mobile">
-    ${mobileChipsHTML}
-  </div>
-</header>
-
-<div class="search-section">
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="search-input" placeholder="Rechercher une marque ou article…" autocomplete="off">
-  </div>
-</div>
-
-<div class="status-bar">
-  <span class="status-text" id="status-text">Chargement…</span>
-</div>
-
-<main class="grid-wrap">
-  <div class="grid" id="grid"></div>
-</main>
-<div class="grid-wrap" style="margin-top:0">
-  <div class="grid" id="grid2"></div>
-</div>
-
-<footer>
-  <span>🔥 Hot on Vinted — non affilié à Vinted UAB</span>
-  <span style="display:flex;gap:16px;align-items:center;">
-    <a href="/privacy" style="color:inherit;text-decoration:underline;">Politique de confidentialité</a>
-    <span id="footer-updated"></span>
-  </span>
-</footer>
-
-<script>
-  const burgerBtn = document.getElementById('burger-btn');
-  const chipsMobile = document.getElementById('chips-mobile');
-  burgerBtn.addEventListener('click', () => chipsMobile.classList.toggle('open'));
-  chipsMobile.addEventListener('click', e => {
-    if (e.target.classList.contains('chip')) chipsMobile.classList.remove('open');
-  });
-  document.addEventListener('click', e => {
-    if (!burgerBtn.contains(e.target) && !chipsMobile.contains(e.target)) chipsMobile.classList.remove('open');
-  });
-
+// ── Shared homepage script ─────────────────────────────────────────────────────
+function homePageScript({ apiPath, searchPath, currency, locale, updatedPrefix, trendingStatus, loadMoreLabel, feesLabel, searchingMsg, resultsMsg, noResultsMsg, searchFailMsg }) {
+  return `
   let homeItems = [];
   let currentTerm = '';
   let searchTimer;
   let activeSearch = null;
+  let currentItems = [];
+  let currentOffset = 0;
+  const PAGE_SIZE = 50;
 
   async function loadListings() {
-    const grid = document.getElementById('grid');
-    const grid2 = document.getElementById('grid2');
-    const status = document.getElementById('status-text');
-    if (currentTerm) return;
-    if (!homeItems.length) {
-      grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
-      grid2.innerHTML = '';
-    }
     try {
-      const res = await fetch('/fr/api/listings');
+      const res = await fetch('${apiPath}');
       const data = await res.json();
-      if (data.loading) {
-        status.innerHTML = '';
-        grid.innerHTML = '<div class="empty"><h2>⏳</h2><p>' + data.message + '</p></div>';
-        setTimeout(loadListings, 30000);
-        return;
-      }
+      if (data.loading) { setTimeout(loadListings, 10000); return; }
       homeItems = data.items || [];
       if (data.lastUpdated) {
         const d = new Date(data.lastUpdated);
-        document.getElementById('footer-updated').textContent = 'Mis à jour : ' + d.toLocaleTimeString('fr-FR');
+        document.getElementById('footer-updated').textContent = '${updatedPrefix} ' + d.toLocaleTimeString('${locale}');
       }
-      renderHome();
-    } catch {
-      status.innerHTML = 'Erreur de chargement.';
-      grid.innerHTML = '<div class="empty"><h2>😬</h2><p>Impossible de charger les annonces.</p></div>';
+      renderTicker();
+    } catch (e) { console.error('loadListings failed:', e); }
+  }
+
+  function renderTicker() {
+    const items = homeItems.slice(0, 30);
+    if (!items.length) return;
+    const html = items.map(item => {
+      const thumb = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || item.photo?.url || '';
+      const price = item.price ? '${currency}' + parseFloat(item.price.amount).toFixed(2) : '';
+      return '<a class="ticker-item" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">'
+        + (thumb ? '<img class="ticker-img" src="' + esc(thumb) + '" alt="" loading="lazy">' : '')
+        + '<span class="ticker-title">' + esc(item.title || '') + '</span>'
+        + (price ? '<span class="ticker-price">' + price + '</span>' : '')
+        + '<span class="ticker-likes">❤️ ' + (item.favourite_count || 0) + '</span>'
+        + '<span class="ticker-sep"> &nbsp;·&nbsp; </span></a>';
+    }).join('');
+    const doubled = html + html;
+    ['ticker-track', 'ticker-track-mobile'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = doubled;
+    });
+  }
+
+  function renderPage(items, offset, append) {
+    const grid = document.getElementById('grid');
+    const batch = items.slice(offset, offset + PAGE_SIZE);
+    if (append) {
+      batch.forEach(item => grid.insertAdjacentHTML('beforeend', cardHTML(item)));
+    } else {
+      grid.innerHTML = batch.map(cardHTML).join('');
+    }
+    document.getElementById('load-more-wrap').style.display = items.length > offset + PAGE_SIZE ? 'block' : 'none';
+  }
+
+  document.getElementById('load-more-btn').addEventListener('click', () => {
+    currentOffset += PAGE_SIZE;
+    renderPage(currentItems, currentOffset, true);
+  });
+
+  function showTrending() {
+    clearTimeout(searchTimer);
+    if (activeSearch) { activeSearch.abort(); activeSearch = null; }
+    document.getElementById('search-input').value = '';
+    currentTerm = '';
+    setActiveChip('trending');
+    document.getElementById('chips-mobile').classList.remove('open');
+    document.getElementById('results-wrap').style.display = 'block';
+    if (homeItems.length) {
+      document.getElementById('status-text').innerHTML = '${trendingStatus}';
+      currentItems = homeItems;
+      currentOffset = 0;
+      renderPage(currentItems, 0);
+    } else {
+      document.getElementById('grid').innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
     }
   }
 
-  function renderHome() {
-    const status = document.getElementById('status-text');
-    status.innerHTML = 'Une sélection des articles les <strong>plus likés</strong> sur Vinted France — 🔍 recherchez une marque pour en trouver plus';
-    if (!homeItems.length) {
-      document.getElementById('grid').innerHTML = '<div class="empty"><h2>🤷</h2><p>Aucune annonce pour l\\'instant.</p></div>';
-      document.getElementById('grid2').innerHTML = '';
-      return;
-    }
-    document.getElementById('grid').innerHTML = homeItems.slice(0, 100).map(cardHTML).join('');
-    document.getElementById('grid2').innerHTML = '';
-  }
+  document.getElementById('trending-chip').addEventListener('click', e => { e.preventDefault(); showTrending(); });
+  document.getElementById('trending-chip-mobile').addEventListener('click', e => { e.preventDefault(); showTrending(); });
 
   function setActiveChip(q) {
-    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.q === q));
+    document.querySelectorAll('.chip').forEach(c => {
+      const isTrending = q === 'trending' && (c.id === 'trending-chip' || c.id === 'trending-chip-mobile');
+      c.classList.toggle('active', isTrending || c.dataset.q === q);
+    });
   }
 
-  function handleChipClick(e) {
-    const chip = e.target.closest('.chip');
-    if (!chip || !chip.dataset.q) return;
+  document.getElementById('popular-brands').addEventListener('click', e => {
+    const chip = e.target.closest('.chip[data-q]');
+    if (!chip) return;
     e.preventDefault();
     const q = chip.dataset.q;
     document.getElementById('search-input').value = q;
@@ -396,34 +342,46 @@ ${GA}
     currentTerm = q;
     setActiveChip(q);
     runSearch(q);
-  }
-  document.getElementById('chips').addEventListener('click', handleChipClick);
-  document.getElementById('chips-mobile').addEventListener('click', handleChipClick);
+  });
+
+  document.getElementById('chips-mobile').addEventListener('click', e => {
+    const chip = e.target.closest('.chip[data-q]');
+    if (!chip) return;
+    e.preventDefault();
+    const q = chip.dataset.q;
+    document.getElementById('search-input').value = q;
+    clearTimeout(searchTimer);
+    currentTerm = q;
+    setActiveChip(q);
+    document.getElementById('chips-mobile').classList.remove('open');
+    runSearch(q);
+  });
 
   async function runSearch(term) {
     const status = document.getElementById('status-text');
-    const grid = document.getElementById('grid');
-    const grid2 = document.getElementById('grid2');
+    const grid   = document.getElementById('grid');
     if (activeSearch) activeSearch.abort();
     const ctrl = new AbortController();
     activeSearch = ctrl;
-    status.innerHTML = '🔍 Recherche des articles <strong>' + esc(term) + '</strong> les plus likés sur Vinted…';
+    document.getElementById('results-wrap').style.display = 'block';
+    document.getElementById('load-more-wrap').style.display = 'none';
+    status.innerHTML = '${searchingMsg}'.replace('{term}', esc(term));
     grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
-    grid2.innerHTML = '';
     try {
-      const res = await fetch('/fr/api/search?q=' + encodeURIComponent(term), { signal: ctrl.signal });
+      const res  = await fetch('${searchPath}?q=' + encodeURIComponent(term), { signal: ctrl.signal });
       const data = await res.json();
       if (ctrl.signal.aborted) return;
       const items = data.items || [];
       status.innerHTML = items.length
-        ? '<strong>' + items.length + '</strong> résultats pour <strong>' + esc(term) + '</strong> — triés par les plus likés'
-        : 'Aucun résultat pour <strong>' + esc(term) + '</strong>. Essayez une autre marque.';
-      grid.innerHTML = items.slice(0, 100).map(cardHTML).join('');
-      grid2.innerHTML = items.slice(100).map(cardHTML).join('');
+        ? '${resultsMsg}'.replace('{n}', '<strong>' + items.length + '</strong>').replace('{term}', '<strong>' + esc(term) + '</strong>')
+        : '${noResultsMsg}'.replace('{term}', '<strong>' + esc(term) + '</strong>');
+      currentItems = items;
+      currentOffset = 0;
+      renderPage(currentItems, 0);
     } catch (err) {
       if (err.name === 'AbortError') return;
-      status.innerHTML = 'Recherche échouée — réessayez dans un instant.';
-      grid.innerHTML = '<div class="empty"><h2>😬</h2><p>Recherche échouée.</p></div>';
+      status.innerHTML = '${searchFailMsg}';
+      grid.innerHTML = '<div class="empty"><h2>😬</h2><p>${searchFailMsg}</p></div>';
     } finally {
       if (activeSearch === ctrl) activeSearch = null;
     }
@@ -433,20 +391,30 @@ ${GA}
     currentTerm = '';
     if (activeSearch) { activeSearch.abort(); activeSearch = null; }
     setActiveChip(null);
-    renderHome();
+    document.getElementById('status-text').innerHTML = '';
+    document.getElementById('results-wrap').style.display = 'none';
+    document.getElementById('load-more-wrap').style.display = 'none';
   }
+
+  document.getElementById('search-input').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    const val = e.target.value.trim();
+    setActiveChip(null);
+    if (!val) { clearSearch(); return; }
+    searchTimer = setTimeout(() => { currentTerm = val; runSearch(currentTerm); }, 600);
+  });
 
   function cardHTML(item) {
     const thumb150 = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || '';
     const thumb310 = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || '';
     const photo = thumb150 || thumb310 || item.photo?.url || '';
     const srcset = thumb150 && thumb310 ? thumb150 + ' 150w, ' + thumb310 + ' 310w' : '';
-    const price = item.price ? '€' + parseFloat(item.price.amount).toFixed(2) : '';
-    const totalPrice = item.total_item_price ? '€' + parseFloat(item.total_item_price.amount).toFixed(2) + ' frais inclus' : '';
+    const price = item.price ? '${currency}' + parseFloat(item.price.amount).toFixed(2) : '';
+    const totalPrice = item.total_item_price ? '${currency}' + parseFloat(item.total_item_price.amount).toFixed(2) + ' ${feesLabel}' : '';
     const pills = [item.size_title, item.status].filter(Boolean).map(p => '<span class="pill">' + esc(p) + '</span>').join('');
     return '<a class="card" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">'
       + '<div class="card-img-wrap">'
-      + (photo ? '<img class="card-img" src="' + esc(photo) + '"' + (srcset ? ' srcset="' + srcset + '" sizes="(max-width: 600px) 150px, 310px"' : '') + ' alt="' + esc(item.title || '') + '" loading="lazy">' : '')
+      + (photo ? '<img class="card-img" src="' + esc(photo) + '"' + (srcset ? ' srcset="' + srcset + '" sizes="(max-width:600px) 150px,310px"' : '') + ' alt="' + esc(item.title || '') + '" loading="lazy">' : '')
       + '<span class="like-badge">❤️ ' + item.favourite_count + '</span>'
       + '</div><div class="card-body">'
       + (item.brand_title ? '<div class="card-brand">' + esc(item.brand_title) + '</div>' : '')
@@ -458,28 +426,145 @@ ${GA}
       + '</div></a>';
   }
 
-  function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-  document.getElementById('search-input').addEventListener('input', e => {
-    clearTimeout(searchTimer);
-    const val = e.target.value.trim();
-    setActiveChip(null);
-    if (!val) { clearSearch(); return; }
-    searchTimer = setTimeout(() => { currentTerm = val; runSearch(currentTerm); }, 600);
-  });
-
-  loadListings();
-  setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
-
+  const burgerBtn = document.getElementById('burger-btn');
+  const chipsMobile = document.getElementById('chips-mobile');
+  burgerBtn.addEventListener('click', e => { e.stopPropagation(); chipsMobile.classList.toggle('open'); });
   const countryBtn = document.getElementById('country-btn');
   const countryDropdown = document.getElementById('country-dropdown');
   countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
-  document.addEventListener('click', () => countryDropdown.classList.remove('open'));
-</script>
+  document.addEventListener('click', () => { countryDropdown.classList.remove('open'); chipsMobile.classList.remove('open'); });
+
+  loadListings();
+  setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !homeItems.length) loadListings(); });
+  `;
+}
+
+// ── Shared homepage HTML shell ─────────────────────────────────────────────────
+function homePageHTML({ country, lang, flag, logoLabel, title, description, canonical, ogUrl, jsonLdUrl, heroTitle, heroSpan, heroSub, searchPlaceholder, trendingLabel, loadMoreLabel, footerText, privacyLabel, heroBrandsHTML, mobileChipsHTML, script }) {
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <meta name="description" content="${description}">
+  <link rel="canonical" href="${canonical}">
+  <link rel="alternate" hreflang="en-GB" href="https://hotonvinted.com/uk">
+  <link rel="alternate" hreflang="fr" href="https://hotonvinted.com/fr">
+  <link rel="alternate" hreflang="de" href="https://hotonvinted.com/de">
+  <link rel="alternate" hreflang="nl" href="https://hotonvinted.com/nl">
+  <link rel="alternate" hreflang="x-default" href="https://hotonvinted.com/uk">
+  <link rel="icon" href="/logo.png" type="image/png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="${ogUrl}">
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${description}">
+  <meta property="og:site_name" content="Hot on Vinted">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"${jsonLdUrl}"}<\/script>
+\${GA}
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/${country}" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
+      <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;">
+      <span style="font-size:1.1rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;white-space:nowrap;">Hot on <span style="color:#09b1ba;">Vinted</span> ${logoLabel}</span>
+    </a>
+    <div class="header-ticker">
+      <span class="ticker-label">🔥 LIVE</span>
+      <div class="ticker-overflow">
+        <div class="ticker-track" id="ticker-track"></div>
+      </div>
+    </div>
+    \${countrySwitcher('${country}')}
+    <button class="burger-btn" id="burger-btn" aria-label="Browse brands">☰</button>
+  </div>
+  <div class="chips-mobile" id="chips-mobile">
+    <a href="#" class="chip chip-trending" id="trending-chip-mobile">${trendingLabel}</a>
+    ${mobileChipsHTML}
+  </div>
+</header>
+
+<div class="mobile-ticker-banner">
+  <span class="ticker-label">🔥 LIVE</span>
+  <div class="ticker-overflow">
+    <div class="ticker-track" id="ticker-track-mobile"></div>
+  </div>
+</div>
+
+<section class="hero">
+  <h1 class="hero-title">${heroTitle}<br><span>${heroSpan}</span></h1>
+  <p class="hero-sub">${heroSub}</p>
+  <div class="hero-search">
+    <input type="text" id="search-input" placeholder="${searchPlaceholder}" autocomplete="off">
+  </div>
+  <div class="popular-brands" id="popular-brands">
+    <a href="#" class="chip chip-trending" id="trending-chip">${trendingLabel}</a>
+    ${heroBrandsHTML}
+  </div>
+</section>
+
+<div class="status-bar"><span class="status-text" id="status-text"></span></div>
+
+<main class="grid-wrap" id="results-wrap" style="display:none;">
+  <div class="grid" id="grid"></div>
+  <div class="load-more-wrap" id="load-more-wrap" style="display:none;">
+    <button class="load-more-btn" id="load-more-btn">${loadMoreLabel}</button>
+  </div>
+</main>
+
+<footer>
+  <span>${footerText}</span>
+  <span style="display:flex;gap:16px;align-items:center;">
+    <a href="/privacy" style="color:inherit;text-decoration:underline;">${privacyLabel}</a>
+    <span id="footer-updated"></span>
+  </span>
+</footer>
+
+<script>${script}<\/script>
 </body>
 </html>`;
+}
+
+// ── France homepage HTML ───────────────────────────────────────────────────────
+function frHomeHTML() {
+  const brandOrder = ['Nike','Zara','H&M','Maje',"Levi's",'Adidas','Vintage','Sézane','Lacoste','Lululemon','North Face','New Balance'];
+  const heroBrandsHTML = brandOrder.map(name => {
+    const b = FR_BRANDS.find(x => x.name === name);
+    return b ? `<a href="/fr/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
+  }).filter(Boolean).join('\n    ');
+  const mobileChipsHTML = brandOrder.map(name => {
+    const b = FR_BRANDS.find(x => x.name === name);
+    return b ? `<a href="/fr/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
+  }).filter(Boolean).join('\n    ');
+
+  return homePageHTML({
+    country: 'fr', lang: 'fr', logoLabel: 'FR',
+    title: 'Hot on Vinted France — Les articles les plus likés 2026',
+    description: 'Découvrez les articles les plus likés sur Vinted France, triés par popularité. Recherchez une marque pour trouver ses articles les plus aimés.',
+    canonical: 'https://hotonvinted.com/fr', ogUrl: 'https://hotonvinted.com/fr', jsonLdUrl: 'https://hotonvinted.com/fr',
+    heroTitle: 'Trouvez les articles', heroSpan: 'Vinted France les plus aimés',
+    heroSub: 'Recherchez une marque, article ou catégorie — triés par les plus likés',
+    searchPlaceholder: '🔍  Rechercher marques, articles, catégories…',
+    trendingLabel: '🔥 Tendances', loadMoreLabel: 'Voir plus',
+    footerText: '🔥 Hot on Vinted — non affilié à Vinted UAB',
+    privacyLabel: 'Politique de confidentialité',
+    heroBrandsHTML, mobileChipsHTML,
+    script: homePageScript({
+      apiPath: '/fr/api/listings', searchPath: '/fr/api/search',
+      currency: '€', locale: 'fr-FR', updatedPrefix: 'Mis à jour :',
+      trendingStatus: '🔥 Les articles les plus aimés sur Vinted France en ce moment',
+      loadMoreLabel: 'Voir plus', feesLabel: 'frais inclus',
+      searchingMsg: '🔍 Recherche des articles {term} les plus likés sur Vinted…',
+      resultsMsg: '{n} résultats pour {term} — triés par les plus likés',
+      noResultsMsg: 'Aucun résultat pour {term}. Essayez une autre marque.',
+      searchFailMsg: 'Recherche échouée — réessayez dans un instant.',
+    }),
+  });
 }
 
 // ── France brand page HTML ─────────────────────────────────────────────────────
@@ -578,241 +663,41 @@ ${GA}
 
 // ── Germany homepage HTML ──────────────────────────────────────────────────────
 function deHomeHTML() {
-  const chipsHTML = DE_BRANDS.map(b =>
-    `<a href="/de/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>`
-  ).join('\n        ');
-
-  const mobileOrder = ['Nike','Adidas','Zara','H&M',"Levi's",'Puma','Vintage','New Balance','Hugo Boss','s.Oliver'];
-  const mobileChipsHTML = mobileOrder.map(name => {
+  const brandOrder = ['Nike','Adidas','Zara','H&M',"Levi's",'Puma','Vintage','New Balance','Hugo Boss','s.Oliver','North Face','Gymshark'];
+  const heroBrandsHTML = brandOrder.map(name => {
+    const b = DE_BRANDS.find(x => x.name === name);
+    return b ? `<a href="/de/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
+  }).filter(Boolean).join('\n    ');
+  const mobileChipsHTML = brandOrder.map(name => {
     const b = DE_BRANDS.find(x => x.name === name);
     return b ? `<a href="/de/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
   }).filter(Boolean).join('\n    ');
 
-  return `<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hot on Vinted Deutschland — Die beliebtesten Artikel 2026</title>
-  <meta name="description" content="Entdecke die beliebtesten Artikel auf Vinted Deutschland, sortiert nach Popularität. Suche nach einer Marke, um ihre meistgemochten Artikel zu finden.">
-  <link rel="canonical" href="https://hotonvinted.com/de">
-  <link rel="alternate" hreflang="en-GB" href="https://hotonvinted.com/uk">
-  <link rel="alternate" hreflang="fr" href="https://hotonvinted.com/fr">
-  <link rel="alternate" hreflang="de" href="https://hotonvinted.com/de">
-  <link rel="alternate" hreflang="nl" href="https://hotonvinted.com/nl">
-  <link rel="alternate" hreflang="x-default" href="https://hotonvinted.com/uk">
-  <link rel="icon" href="/logo.png" type="image/png">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://hotonvinted.com/de">
-  <meta property="og:title" content="Hot on Vinted Deutschland — Die beliebtesten Artikel 2026">
-  <meta property="og:description" content="Entdecke die beliebtesten Artikel auf Vinted Deutschland, sortiert nach Popularität.">
-  <meta property="og:site_name" content="Hot on Vinted">
-  <link rel="stylesheet" href="/styles.css">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com/de"}</script>
-${GA}
-</head>
-<body>
-<header>
-  <div class="header-inner">
-    <a class="logo" href="/de" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
-      <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
-      <span style="font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;">Hot on <span style="color:#09b1ba;">Vinted</span> DE</span>
-    </a>
-    <div class="chips-header">
-      <div class="chips" id="chips">
-        ${chipsHTML}
-      </div>
-    </div>
-    ${countrySwitcher('de')}
-    <button class="burger-btn" id="burger-btn" aria-label="Marken durchsuchen">☰</button>
-  </div>
-  <div class="chips-mobile" id="chips-mobile">
-    ${mobileChipsHTML}
-  </div>
-</header>
-
-<div class="search-section">
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="search-input" placeholder="Marke, Artikel oder Kategorie suchen…" autocomplete="off">
-  </div>
-</div>
-
-<div class="status-bar">
-  <span class="status-text" id="status-text">Laden…</span>
-</div>
-
-<main class="grid-wrap">
-  <div class="grid" id="grid"></div>
-</main>
-<div class="grid-wrap" style="margin-top:0">
-  <div class="grid" id="grid2"></div>
-</div>
-
-<footer>
-  <span>🔥 Hot on Vinted — nicht verbunden mit Vinted UAB</span>
-  <span style="display:flex;gap:16px;align-items:center;">
-    <a href="/privacy" style="color:inherit;text-decoration:underline;">Datenschutz</a>
-    <span id="footer-updated"></span>
-  </span>
-</footer>
-
-<script>
-  const burgerBtn = document.getElementById('burger-btn');
-  const chipsMobile = document.getElementById('chips-mobile');
-  burgerBtn.addEventListener('click', () => chipsMobile.classList.toggle('open'));
-  chipsMobile.addEventListener('click', e => {
-    if (e.target.classList.contains('chip')) chipsMobile.classList.remove('open');
+  return homePageHTML({
+    country: 'de', lang: 'de', logoLabel: 'DE',
+    title: 'Hot on Vinted Deutschland — Die beliebtesten Artikel 2026',
+    description: 'Entdecke die beliebtesten Artikel auf Vinted Deutschland, sortiert nach Popularität. Suche nach einer Marke, um ihre meistgemochten Artikel zu finden.',
+    canonical: 'https://hotonvinted.com/de', ogUrl: 'https://hotonvinted.com/de', jsonLdUrl: 'https://hotonvinted.com/de',
+    heroTitle: 'Finde die beliebtesten', heroSpan: 'Vinted Deutschland Artikel',
+    heroSub: 'Suche nach einer Marke, Artikel oder Kategorie — sortiert nach beliebtesten',
+    searchPlaceholder: '🔍  Marke, Artikel oder Kategorie suchen…',
+    trendingLabel: '🔥 Trending', loadMoreLabel: 'Mehr laden',
+    footerText: '🔥 Hot on Vinted — nicht verbunden mit Vinted UAB',
+    privacyLabel: 'Datenschutz',
+    heroBrandsHTML, mobileChipsHTML,
+    script: homePageScript({
+      apiPath: '/de/api/listings', searchPath: '/de/api/search',
+      currency: '€', locale: 'de-DE', updatedPrefix: 'Aktualisiert:',
+      trendingStatus: '🔥 Die beliebtesten Artikel auf Vinted Deutschland gerade jetzt',
+      loadMoreLabel: 'Mehr laden', feesLabel: 'inkl. Gebühren',
+      searchingMsg: '🔍 Suche nach den beliebtesten {term}-Artikeln auf Vinted…',
+      resultsMsg: '{n} Ergebnisse für {term} — sortiert nach beliebtesten',
+      noResultsMsg: 'Keine Ergebnisse für {term}. Versuche eine andere Marke.',
+      searchFailMsg: 'Suche fehlgeschlagen — bitte erneut versuchen.',
+    }),
   });
-  document.addEventListener('click', e => {
-    if (!burgerBtn.contains(e.target) && !chipsMobile.contains(e.target)) chipsMobile.classList.remove('open');
-  });
-  const countryBtn = document.getElementById('country-btn');
-  const countryDropdown = document.getElementById('country-dropdown');
-  countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
-  document.addEventListener('click', () => countryDropdown.classList.remove('open'));
-
-  let homeItems = [];
-  let currentTerm = '';
-  let searchTimer;
-  let activeSearch = null;
-
-  async function loadListings() {
-    const grid = document.getElementById('grid');
-    const grid2 = document.getElementById('grid2');
-    const status = document.getElementById('status-text');
-    if (currentTerm) return;
-    if (!homeItems.length) {
-      grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
-      grid2.innerHTML = '';
-    }
-    try {
-      const res = await fetch('/de/api/listings');
-      const data = await res.json();
-      if (data.loading) {
-        status.innerHTML = '';
-        grid.innerHTML = '<div class="empty"><h2>⏳</h2><p>' + data.message + '</p></div>';
-        setTimeout(loadListings, 30000);
-        return;
-      }
-      homeItems = data.items || [];
-      if (data.lastUpdated) {
-        const d = new Date(data.lastUpdated);
-        document.getElementById('footer-updated').textContent = 'Aktualisiert: ' + d.toLocaleTimeString('de-DE');
-      }
-      renderHome();
-    } catch {
-      status.innerHTML = 'Fehler beim Laden.';
-      grid.innerHTML = '<div class="empty"><h2>😬</h2><p>Artikel konnten nicht geladen werden.</p></div>';
-    }
-  }
-
-  function renderHome() {
-    const status = document.getElementById('status-text');
-    status.innerHTML = 'Eine Auswahl der <strong>beliebtesten</strong> Artikel auf Vinted Deutschland — 🔍 suche nach einer Marke für mehr';
-    if (!homeItems.length) {
-      document.getElementById('grid').innerHTML = '<div class="empty"><h2>🤷</h2><p>Noch keine Artikel.</p></div>';
-      document.getElementById('grid2').innerHTML = '';
-      return;
-    }
-    document.getElementById('grid').innerHTML = homeItems.slice(0, 100).map(cardHTML).join('');
-    document.getElementById('grid2').innerHTML = '';
-  }
-
-  function setActiveChip(q) {
-    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.q === q));
-  }
-
-  function handleChipClick(e) {
-    const chip = e.target.closest('.chip');
-    if (!chip || !chip.dataset.q) return;
-    e.preventDefault();
-    const q = chip.dataset.q;
-    document.getElementById('search-input').value = q;
-    clearTimeout(searchTimer);
-    currentTerm = q;
-    setActiveChip(q);
-    runSearch(q);
-  }
-  document.getElementById('chips').addEventListener('click', handleChipClick);
-  document.getElementById('chips-mobile').addEventListener('click', handleChipClick);
-
-  async function runSearch(term) {
-    const status = document.getElementById('status-text');
-    const grid = document.getElementById('grid');
-    const grid2 = document.getElementById('grid2');
-    if (activeSearch) activeSearch.abort();
-    const ctrl = new AbortController();
-    activeSearch = ctrl;
-    status.innerHTML = '🔍 Suche nach den beliebtesten <strong>' + esc(term) + '</strong>-Artikeln auf Vinted…';
-    grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
-    grid2.innerHTML = '';
-    try {
-      const res = await fetch('/de/api/search?q=' + encodeURIComponent(term), { signal: ctrl.signal });
-      const data = await res.json();
-      if (ctrl.signal.aborted) return;
-      const items = data.items || [];
-      status.innerHTML = items.length
-        ? '<strong>' + items.length + '</strong> Ergebnisse für <strong>' + esc(term) + '</strong> — sortiert nach beliebtesten'
-        : 'Keine Ergebnisse für <strong>' + esc(term) + '</strong>. Versuche eine andere Marke.';
-      grid.innerHTML = items.slice(0, 100).map(cardHTML).join('');
-      grid2.innerHTML = items.slice(100).map(cardHTML).join('');
-    } catch (err) {
-      if (err.name === 'AbortError') return;
-      status.innerHTML = 'Suche fehlgeschlagen — bitte erneut versuchen.';
-      grid.innerHTML = '<div class="empty"><h2>😬</h2><p>Suche fehlgeschlagen.</p></div>';
-    } finally {
-      if (activeSearch === ctrl) activeSearch = null;
-    }
-  }
-
-  function clearSearch() {
-    currentTerm = '';
-    if (activeSearch) { activeSearch.abort(); activeSearch = null; }
-    setActiveChip(null);
-    renderHome();
-  }
-
-  function cardHTML(item) {
-    const thumb150 = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || '';
-    const thumb310 = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || '';
-    const photo = thumb150 || thumb310 || item.photo?.url || '';
-    const srcset = thumb150 && thumb310 ? thumb150 + ' 150w, ' + thumb310 + ' 310w' : '';
-    const price = item.price ? '€' + parseFloat(item.price.amount).toFixed(2) : '';
-    const totalPrice = item.total_item_price ? '€' + parseFloat(item.total_item_price.amount).toFixed(2) + ' inkl. Gebühren' : '';
-    const pills = [item.size_title, item.status].filter(Boolean).map(p => '<span class="pill">' + esc(p) + '</span>').join('');
-    return '<a class="card" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">'
-      + '<div class="card-img-wrap">'
-      + (photo ? '<img class="card-img" src="' + esc(photo) + '"' + (srcset ? ' srcset="' + srcset + '" sizes="(max-width: 600px) 150px, 310px"' : '') + ' alt="' + esc(item.title || '') + '" loading="lazy">' : '')
-      + '<span class="like-badge">❤️ ' + item.favourite_count + '</span>'
-      + '</div><div class="card-body">'
-      + (item.brand_title ? '<div class="card-brand">' + esc(item.brand_title) + '</div>' : '')
-      + '<div class="card-title">' + esc(item.title || '') + '</div>'
-      + (pills ? '<div class="card-meta">' + pills + '</div>' : '')
-      + '</div><div class="card-footer">'
-      + '<span class="price">' + price + '</span>'
-      + '<span class="total-price">' + totalPrice + '</span>'
-      + '</div></a>';
-  }
-
-  function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  document.getElementById('search-input').addEventListener('input', e => {
-    clearTimeout(searchTimer);
-    const val = e.target.value.trim();
-    setActiveChip(null);
-    if (!val) { clearSearch(); return; }
-    searchTimer = setTimeout(() => { currentTerm = val; runSearch(currentTerm); }, 600);
-  });
-
-  loadListings();
-  setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
-</script>
-</body>
-</html>`;
 }
+
 
 // ── Germany brand page HTML ────────────────────────────────────────────────────
 function deBrandPageHTML(brand, items) {
@@ -921,231 +806,31 @@ function nlHomeHTML() {
     return b ? `<a href="/nl/${b.slug}" class="chip" data-q="${esc(b.query)}">${esc(b.name)}</a>` : '';
   }).filter(Boolean).join('\n    ');
 
-  return `<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hot on Vinted Nederland — De populairste items 2026</title>
-  <meta name="description" content="Ontdek de meest gelikte items op Vinted Nederland, gesorteerd op populariteit. Zoek een merk om de meest favoriete items te vinden.">
-  <link rel="canonical" href="https://hotonvinted.com/nl">
-  <link rel="alternate" hreflang="en-GB" href="https://hotonvinted.com/uk">
-  <link rel="alternate" hreflang="fr" href="https://hotonvinted.com/fr">
-  <link rel="alternate" hreflang="de" href="https://hotonvinted.com/de">
-  <link rel="alternate" hreflang="nl" href="https://hotonvinted.com/nl">
-  <link rel="alternate" hreflang="x-default" href="https://hotonvinted.com/uk">
-  <link rel="icon" href="/logo.png" type="image/png">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://hotonvinted.com/nl">
-  <meta property="og:title" content="Hot on Vinted Nederland — De populairste items 2026">
-  <meta property="og:description" content="Ontdek de meest gelikte items op Vinted Nederland, gesorteerd op populariteit.">
-  <meta property="og:site_name" content="Hot on Vinted">
-  <link rel="stylesheet" href="/styles.css">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hot on Vinted","url":"https://hotonvinted.com/nl"}</script>
-${GA}
-</head>
-<body>
-<header>
-  <div class="header-inner">
-    <a class="logo" href="/nl" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
-      <img src="/logo.png" alt="Hot on Vinted" style="height:40px;width:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
-      <span style="font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a;">Hot on <span style="color:#09b1ba;">Vinted</span> NL</span>
-    </a>
-    <div class="chips-header">
-      <div class="chips" id="chips">
-        ${chipsHTML}
-      </div>
-    </div>
-    ${countrySwitcher('nl')}
-    <button class="burger-btn" id="burger-btn" aria-label="Merken bekijken">☰</button>
-  </div>
-  <div class="chips-mobile" id="chips-mobile">
-    ${mobileChipsHTML}
-  </div>
-</header>
-
-<div class="search-section">
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="search-input" placeholder="Zoek een merk, item of categorie…" autocomplete="off">
-  </div>
-</div>
-
-<div class="status-bar">
-  <span class="status-text" id="status-text">Laden…</span>
-</div>
-
-<main class="grid-wrap">
-  <div class="grid" id="grid"></div>
-</main>
-<div class="grid-wrap" style="margin-top:0">
-  <div class="grid" id="grid2"></div>
-</div>
-
-<footer>
-  <span>🔥 Hot on Vinted — niet gelieerd aan Vinted UAB</span>
-  <span style="display:flex;gap:16px;align-items:center;">
-    <a href="/privacy" style="color:inherit;text-decoration:underline;">Privacybeleid</a>
-    <span id="footer-updated"></span>
-  </span>
-</footer>
-
-<script>
-  const burgerBtn = document.getElementById('burger-btn');
-  const chipsMobile = document.getElementById('chips-mobile');
-  burgerBtn.addEventListener('click', () => chipsMobile.classList.toggle('open'));
-  chipsMobile.addEventListener('click', e => {
-    if (e.target.classList.contains('chip')) chipsMobile.classList.remove('open');
+  return homePageHTML({
+    country: 'nl', lang: 'nl', logoLabel: 'NL',
+    title: 'Hot on Vinted Nederland — De populairste items 2026',
+    description: 'Ontdek de meest gelikte items op Vinted Nederland, gesorteerd op populariteit. Zoek een merk om de meest favoriete items te vinden.',
+    canonical: 'https://hotonvinted.com/nl', ogUrl: 'https://hotonvinted.com/nl', jsonLdUrl: 'https://hotonvinted.com/nl',
+    heroTitle: 'Vind de populairste', heroSpan: 'Vinted Nederland items',
+    heroSub: 'Zoek een merk, item of categorie — gesorteerd op meest gelikt',
+    searchPlaceholder: '🔍  Zoek merken, items, categorieën…',
+    trendingLabel: '🔥 Trending', loadMoreLabel: 'Meer laden',
+    footerText: '🔥 Hot on Vinted — niet gelieerd aan Vinted UAB',
+    privacyLabel: 'Privacybeleid',
+    heroBrandsHTML, mobileChipsHTML,
+    script: homePageScript({
+      apiPath: '/nl/api/listings', searchPath: '/nl/api/search',
+      currency: '€', locale: 'nl-NL', updatedPrefix: 'Bijgewerkt:',
+      trendingStatus: '🔥 De meest gelikte items op Vinted Nederland op dit moment',
+      loadMoreLabel: 'Meer laden', feesLabel: 'incl. kosten',
+      searchingMsg: '🔍 Zoeken naar de meest gelikte {term} items op Vinted…',
+      resultsMsg: '{n} resultaten voor {term} — gesorteerd op meest gelikt',
+      noResultsMsg: 'Geen resultaten voor {term}. Probeer een ander merk.',
+      searchFailMsg: 'Zoeken mislukt — probeer het opnieuw.',
+    }),
   });
-  document.addEventListener('click', e => {
-    if (!burgerBtn.contains(e.target) && !chipsMobile.contains(e.target)) chipsMobile.classList.remove('open');
-  });
-  const countryBtn = document.getElementById('country-btn');
-  const countryDropdown = document.getElementById('country-dropdown');
-  countryBtn.addEventListener('click', e => { e.stopPropagation(); countryDropdown.classList.toggle('open'); });
-  document.addEventListener('click', () => countryDropdown.classList.remove('open'));
-
-  let homeItems = [];
-  let currentTerm = '';
-  let searchTimer;
-  let activeSearch = null;
-
-  async function loadListings() {
-    const grid = document.getElementById('grid');
-    const grid2 = document.getElementById('grid2');
-    const status = document.getElementById('status-text');
-    if (currentTerm) return;
-    if (!homeItems.length) {
-      grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
-      grid2.innerHTML = '';
-    }
-    try {
-      const res = await fetch('/nl/api/listings');
-      const data = await res.json();
-      if (data.loading) {
-        status.innerHTML = '';
-        grid.innerHTML = '<div class="empty"><h2>⏳</h2><p>' + data.message + '</p></div>';
-        setTimeout(loadListings, 30000);
-        return;
-      }
-      homeItems = data.items || [];
-      if (data.lastUpdated) {
-        const d = new Date(data.lastUpdated);
-        document.getElementById('footer-updated').textContent = 'Bijgewerkt: ' + d.toLocaleTimeString('nl-NL');
-      }
-      renderHome();
-    } catch {
-      status.innerHTML = 'Fout bij laden.';
-      grid.innerHTML = '<div class="empty"><h2>😬</h2><p>Kan items niet laden.</p></div>';
-    }
-  }
-
-  function renderHome() {
-    const status = document.getElementById('status-text');
-    status.innerHTML = 'Een selectie van de <strong>meest gelikte</strong> items op Vinted Nederland — 🔍 zoek een merk voor meer';
-    if (!homeItems.length) {
-      document.getElementById('grid').innerHTML = '<div class="empty"><h2>🤷</h2><p>Nog geen items.</p></div>';
-      document.getElementById('grid2').innerHTML = '';
-      return;
-    }
-    document.getElementById('grid').innerHTML = homeItems.slice(0, 100).map(cardHTML).join('');
-    document.getElementById('grid2').innerHTML = '';
-  }
-
-  function setActiveChip(q) {
-    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.q === q));
-  }
-
-  function handleChipClick(e) {
-    const chip = e.target.closest('.chip');
-    if (!chip || !chip.dataset.q) return;
-    e.preventDefault();
-    const q = chip.dataset.q;
-    document.getElementById('search-input').value = q;
-    clearTimeout(searchTimer);
-    currentTerm = q;
-    setActiveChip(q);
-    runSearch(q);
-  }
-  document.getElementById('chips').addEventListener('click', handleChipClick);
-  document.getElementById('chips-mobile').addEventListener('click', handleChipClick);
-
-  async function runSearch(term) {
-    const status = document.getElementById('status-text');
-    const grid = document.getElementById('grid');
-    const grid2 = document.getElementById('grid2');
-    if (activeSearch) activeSearch.abort();
-    const ctrl = new AbortController();
-    activeSearch = ctrl;
-    status.innerHTML = '🔍 Meest gelikte <strong>' + esc(term) + '</strong> items zoeken op Vinted…';
-    grid.innerHTML = Array(20).fill('<div class="skeleton"></div>').join('');
-    grid2.innerHTML = '';
-    try {
-      const res = await fetch('/nl/api/search?q=' + encodeURIComponent(term), { signal: ctrl.signal });
-      const data = await res.json();
-      if (ctrl.signal.aborted) return;
-      const items = data.items || [];
-      status.innerHTML = items.length
-        ? '<strong>' + items.length + '</strong> resultaten voor <strong>' + esc(term) + '</strong> — gesorteerd op meest geliked'
-        : 'Geen resultaten voor <strong>' + esc(term) + '</strong>. Probeer een ander merk.';
-      grid.innerHTML = items.slice(0, 100).map(cardHTML).join('');
-      grid2.innerHTML = items.slice(100).map(cardHTML).join('');
-    } catch (err) {
-      if (err.name === 'AbortError') return;
-      status.innerHTML = 'Zoeken mislukt — probeer het opnieuw.';
-      grid.innerHTML = '<div class="empty"><h2>😬</h2><p>Zoeken mislukt.</p></div>';
-    } finally {
-      if (activeSearch === ctrl) activeSearch = null;
-    }
-  }
-
-  function clearSearch() {
-    currentTerm = '';
-    if (activeSearch) { activeSearch.abort(); activeSearch = null; }
-    setActiveChip(null);
-    renderHome();
-  }
-
-  function cardHTML(item) {
-    const thumb150 = item.photo?.thumbnails?.find(t => t.type === 'thumb150x210')?.url || '';
-    const thumb310 = item.photo?.thumbnails?.find(t => t.type === 'thumb310x430')?.url || '';
-    const photo = thumb150 || thumb310 || item.photo?.url || '';
-    const srcset = thumb150 && thumb310 ? thumb150 + ' 150w, ' + thumb310 + ' 310w' : '';
-    const price = item.price ? '€' + parseFloat(item.price.amount).toFixed(2) : '';
-    const totalPrice = item.total_item_price ? '€' + parseFloat(item.total_item_price.amount).toFixed(2) + ' incl. kosten' : '';
-    const pills = [item.size_title, item.status].filter(Boolean).map(p => '<span class="pill">' + esc(p) + '</span>').join('');
-    return '<a class="card" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">'
-      + '<div class="card-img-wrap">'
-      + (photo ? '<img class="card-img" src="' + esc(photo) + '"' + (srcset ? ' srcset="' + srcset + '" sizes="(max-width: 600px) 150px, 310px"' : '') + ' alt="' + esc(item.title || '') + '" loading="lazy">' : '')
-      + '<span class="like-badge">❤️ ' + item.favourite_count + '</span>'
-      + '</div><div class="card-body">'
-      + (item.brand_title ? '<div class="card-brand">' + esc(item.brand_title) + '</div>' : '')
-      + '<div class="card-title">' + esc(item.title || '') + '</div>'
-      + (pills ? '<div class="card-meta">' + pills + '</div>' : '')
-      + '</div><div class="card-footer">'
-      + '<span class="price">' + price + '</span>'
-      + '<span class="total-price">' + totalPrice + '</span>'
-      + '</div></a>';
-  }
-
-  function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  document.getElementById('search-input').addEventListener('input', e => {
-    clearTimeout(searchTimer);
-    const val = e.target.value.trim();
-    setActiveChip(null);
-    if (!val) { clearSearch(); return; }
-    searchTimer = setTimeout(() => { currentTerm = val; runSearch(currentTerm); }, 600);
-  });
-
-  loadListings();
-  setInterval(() => { if (!currentTerm) loadListings(); }, 5 * 60 * 1000);
-</script>
-</body>
-</html>`;
 }
+
 
 // ── Netherlands brand page HTML ────────────────────────────────────────────────
 function nlBrandPageHTML(brand, items) {
