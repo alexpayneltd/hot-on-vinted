@@ -936,7 +936,15 @@ async function scrapeAndCacheAllBrands(country = 'uk') {
   console.log(`🏷️  Brand cache complete (${country.toUpperCase()})\n`);
 }
 
-// ── Root: geo-detect and dispatch ─────────────────────────────────────────────
+// ── www → non-www (301) ────────────────────────────────────────────────────────
+app.use((req, res, next) => {
+  if (req.hostname && req.hostname.startsWith('www.')) {
+    return res.redirect(301, `https://hotonvinted.com${req.url}`);
+  }
+  next();
+});
+
+// ── Root: geo-detect and dispatch (302 — intentional, content varies by locale) ─
 app.get('/', (req, res) => {
   const cfCountry = req.headers['cf-ipcountry'];
   if (cfCountry === 'FR') return res.redirect(302, '/fr');
