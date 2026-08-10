@@ -35,6 +35,7 @@ async function getWarmPage(domain = 'vinted.co.uk') {
     headless: true,
     executablePath: CHROME_EXEC,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    protocolTimeout: 120000,
   });
   const page = (await browser.pages())[0];
   await page.setViewport({ width: 1280, height: 900 });
@@ -111,7 +112,7 @@ export async function scrapeAll(domain = 'vinted.co.uk', cacheFile = path.join(C
     headless: true,
     executablePath: CHROME_EXEC,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-    protocolTimeout: 60000,
+    protocolTimeout: 120000,
   });
 
   try {
@@ -234,7 +235,7 @@ export async function scrapeAllBrands(brands, domain = 'vinted.co.uk', cacheDir,
     headless: true,
     executablePath: CHROME_EXEC,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-    protocolTimeout: 60000,
+    protocolTimeout: 120000,
   });
   try {
     const page = await browser.newPage();
